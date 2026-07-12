@@ -1,0 +1,5 @@
+# Separate app, deployed as its own Vercel project (not built here).
+admin
+
+# Not needed for the static site build.
+supabase
