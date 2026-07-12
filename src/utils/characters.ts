@@ -1,0 +1,78 @@
+import type { Character, CharacterFilterValues, SkillType } from '@/types/character';
+import type { TranslationKey } from '@/i18n';
+
+export function searchCharacters(characters: Character[], query: string): Character[] {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return characters;
+
+  return characters.filter((character) => {
+    const haystack = [character.name, character.type, character.faction, character.role, ...character.tags]
+      .join(' ')
+      .toLowerCase();
+    return haystack.includes(normalized);
+  });
+}
+
+export function filterCharacters(
+  characters: Character[],
+  filters: CharacterFilterValues
+): Character[] {
+  return characters.filter((character) => {
+    if (filters.rarity && character.rarity !== filters.rarity) return false;
+    if (filters.type && character.type !== filters.type) return false;
+    if (filters.faction && character.faction !== filters.faction) return false;
+    if (filters.role && character.role !== filters.role) return false;
+    return true;
+  });
+}
+
+export function getUniqueSortedValues(
+  characters: Character[],
+  key: 'type' | 'faction' | 'role'
+): string[] {
+  return Array.from(new Set(characters.map((character) => character[key]))).sort((a, b) =>
+    a.localeCompare(b)
+  );
+}
+
+export function getInitials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) return words[0].slice(0, 1).toUpperCase();
+  return (words[0].slice(0, 1) + words[1].slice(0, 1)).toUpperCase();
+}
+
+export const SKILL_TYPE_STYLES: Record<SkillType, { badge: string; iconWrap: string; glow: string }> = {
+  Attack: {
+    badge: 'bg-accent-info/15 text-accent-info',
+    iconWrap: 'border-accent-info/40 text-accent-info',
+    glow: 'bg-accent-info',
+  },
+  Ultimate: {
+    badge: 'bg-accent-secondary/15 text-accent-secondary',
+    iconWrap: 'border-accent-secondary/40 text-accent-secondary',
+    glow: 'bg-accent-secondary',
+  },
+  Passive: {
+    badge: 'bg-rarity-ur/15 text-rarity-ur',
+    iconWrap: 'border-rarity-ur/40 text-rarity-ur',
+    glow: 'bg-rarity-ur',
+  },
+  'Awaken Passive': {
+    badge: 'bg-accent/15 text-accent',
+    iconWrap: 'border-accent/40 text-accent',
+    glow: 'bg-accent',
+  },
+  Core: {
+    badge: 'bg-rarity-sr/15 text-rarity-sr',
+    iconWrap: 'border-rarity-sr/40 text-rarity-sr',
+    glow: 'bg-rarity-sr',
+  },
+};
+
+export const SKILL_TYPE_LABEL_KEYS: Record<SkillType, TranslationKey> = {
+  Attack: 'characterDetail.skillType.attack',
+  Ultimate: 'characterDetail.skillType.ultimate',
+  Passive: 'characterDetail.skillType.passive',
+  'Awaken Passive': 'characterDetail.skillType.awakenPassive',
+  Core: 'characterDetail.skillType.core',
+};
