@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { CheckIcon, CoinIcon, CopyIcon, HeartIcon, XIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
+import { DONATE_ACCOUNT_HOLDER, DONATE_ACCOUNT_NUMBER, buildVietQrUrl } from '@/utils/donate';
 
-const MB_BANK_BIN = '970422';
-const ACCOUNT_NUMBER = '0918498961';
-const ACCOUNT_HOLDER = 'NGUYEN THANH DAT';
+const ACCOUNT_NUMBER = DONATE_ACCOUNT_NUMBER;
+const ACCOUNT_HOLDER = DONATE_ACCOUNT_HOLDER;
 
 interface DonateMethod {
   id: 'momo' | 'bank';
@@ -17,9 +17,7 @@ const DONATE_METHODS: DonateMethod[] = [
   { id: 'bank', name: 'MB Bank', accent: 'var(--color-accent-info)' },
 ];
 
-const QR_URL = `https://img.vietqr.io/image/${MB_BANK_BIN}-${ACCOUNT_NUMBER}-compact2.png?accountName=${encodeURIComponent(
-  ACCOUNT_HOLDER
-)}`;
+const QR_URL = buildVietQrUrl();
 
 export function DonateWidget() {
   const { t } = useTranslation();

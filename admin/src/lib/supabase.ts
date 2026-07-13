@@ -12,4 +12,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder-anon-key');
+// Distinct storageKey so this app's session never collides with the main site's in
+// localStorage if the two ever end up served from the same origin.
+export const supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder-anon-key', {
+  auth: { storageKey: 'sclass-admin-auth' },
+});

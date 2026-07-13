@@ -178,6 +178,38 @@ export function EyeOffIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function TagIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
+      <path
+        d="M11.5 3.5H5.5a2 2 0 00-2 2v6l9.6 9.6a2 2 0 002.83 0l5.77-5.77a2 2 0 000-2.83L11.5 3.5z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="8" r="1.5" />
+    </svg>
+  );
+}
+
+export function LogOutIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
+      <path d="M9 4.5H6a2 2 0 00-2 2v11a2 2 0 002 2h3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 15.5 19 12l-5-3.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M19 12H9" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function CoinIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5v9M9.25 10c0-1 1.1-1.5 2.75-1.5s2.75.5 2.75 1.5-1.1 1.5-2.75 1.5-2.75.5-2.75 1.5 1.1 1.5 2.75 1.5 2.75-.5 2.75-1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function TrashIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>

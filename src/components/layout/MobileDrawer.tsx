@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Navigation } from './Navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { AccountMenuItems } from './AccountMenu';
 import { ArrowUpIcon, XIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -63,6 +64,10 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           linkClassName="h-12 w-full text-sm"
           onLinkClick={onClose}
         />
+
+        <div className="border-t-2 border-black/25 pt-4">
+          <AccountMenuItems onItemClick={onClose} />
+        </div>
 
         <div className="my-2 flex items-center justify-between gap-3 border-t-2 border-black/25 pt-4">
           <span className="text-xs font-bold uppercase tracking-wider text-canvas/80">

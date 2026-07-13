@@ -9,4 +9,5 @@ export const NAV_LINKS: NavLink[] = [
   { labelKey: 'common.home', path: '/' },
   { labelKey: 'common.characters', path: '/characters' },
   { labelKey: 'common.updates', path: '/updates' },
+  { labelKey: 'common.trade', path: '/trade' },
 ];

@@ -50,6 +50,12 @@ export function Footer() {
           >
             {t('footer.disclaimerLink')}
           </Link>
+          <Link
+            to="/feedback"
+            className="text-sm text-muted transition-colors duration-200 hover:text-foreground"
+          >
+            {t('feedback.title')}
+          </Link>
         </nav>
       </div>
 

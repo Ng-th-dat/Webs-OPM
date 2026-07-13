@@ -2,7 +2,9 @@ import { Outlet } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { DonateWidget } from '@/components/layout/DonateWidget';
+import { MarqueeBanner } from '@/components/layout/MarqueeBanner';
 import { ScrollToTop } from '@/components/common/ScrollToTop';
+import { LoginModal } from '@/components/auth/LoginModal';
 
 export function AppLayout() {
   return (
@@ -23,11 +25,13 @@ export function AppLayout() {
       </div>
 
       <Header />
+      <MarqueeBanner />
       <main className="flex-1">
         <Outlet />
       </main>
       <Footer />
       <DonateWidget />
+      <LoginModal />
     </div>
   );
 }

@@ -77,6 +77,25 @@ export const RELEASE_TYPE_OPTIONS: BadgeOption[] = [
   { value: 'Event', color: '#8b5cf6' },
 ];
 
+export const TRADE_STATUS_OPTIONS: BadgeOption[] = [
+  { value: 'pending', color: '#f97316' },
+  { value: 'approved', color: '#22c55e' },
+  { value: 'rejected', color: '#dc2626' },
+  { value: 'sold', color: '#9ca3af' },
+];
+
+export const TOPUP_STATUS_OPTIONS: BadgeOption[] = [
+  { value: 'pending', color: '#f97316' },
+  { value: 'approved', color: '#22c55e' },
+  { value: 'rejected', color: '#dc2626' },
+];
+
+/** Provenance of an approved top-up — auto = SePay webhook matched it, manual = an admin approved it by hand. */
+export const TOPUP_PROVENANCE_OPTIONS: BadgeOption[] = [
+  { value: 'Auto', color: '#3da9fc' },
+  { value: 'Manual', color: '#6b7280' },
+];
+
 export const TIMING_OPTIONS: BadgeOption[] = [
   { value: 'Start of Month' },
   { value: 'Mid Month' },

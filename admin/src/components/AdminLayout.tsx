@@ -1,13 +1,18 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import {
   AtomIcon,
   CalendarIcon,
+  CoinIcon,
   ExternalLinkIcon,
   GridIcon,
+  HelpCircleIcon,
   LockIcon,
+  LogOutIcon,
   MegaphoneIcon,
   PlusIcon,
   SparklesIcon,
+  TagIcon,
   UsersIcon,
 } from './icons';
 
@@ -16,6 +21,9 @@ const NAV_ITEMS = [
   { to: '/characters', label: 'Characters', icon: UsersIcon, end: false },
   { to: '/schedule', label: 'Schedule', icon: CalendarIcon, end: false },
   { to: '/updates', label: 'Updates', icon: MegaphoneIcon, end: false },
+  { to: '/trade-listings', label: 'Trade', icon: TagIcon, end: false },
+  { to: '/topups', label: 'Top-ups', icon: CoinIcon, end: false },
+  { to: '/feedback', label: 'Feedback', icon: HelpCircleIcon, end: false },
 ];
 
 const SOON_ITEMS = [
@@ -31,17 +39,24 @@ const PAGE_TITLES: Record<string, string> = {
   '/schedule/new': 'Add Schedule Entry',
   '/updates': 'Game Updates',
   '/updates/new': 'Add Update',
+  '/trade-listings': 'Trade Listings',
+  '/feedback': 'Feedback',
+  '/topups': 'Phiếu Top-ups',
 };
 
 function editTitleFor(pathname: string): string {
   if (pathname.startsWith('/schedule')) return 'Edit Schedule Entry';
   if (pathname.startsWith('/updates')) return 'Edit Update';
+  if (pathname.startsWith('/trade-listings')) return 'Trade Listing';
+  if (pathname.startsWith('/topups')) return 'Top-up';
   return 'Edit Character';
 }
 
 export function AdminLayout() {
   const location = useLocation();
   const { pathname } = location;
+  const { state, signOut } = useAuth();
+  const email = state.status === 'authorized' ? state.user.email : null;
   const isFormRoute = pathname.endsWith('/new') || pathname.endsWith('/edit');
   const title = PAGE_TITLES[pathname] ?? (pathname.endsWith('/edit') ? editTitleFor(pathname) : 'S-Class Codex Admin');
 
@@ -51,7 +66,9 @@ export function AdminLayout() {
       ? { label: 'Add Schedule Entry', to: '/schedule/new' }
       : pathname.startsWith('/updates')
         ? { label: 'Add Update', to: '/updates/new' }
-        : { label: 'Add Character', to: '/characters/new' };
+        : pathname.startsWith('/trade-listings') || pathname.startsWith('/feedback') || pathname.startsWith('/topups')
+          ? null
+          : { label: 'Add Character', to: '/characters/new' };
 
   return (
     <div className="flex min-h-screen gap-4 p-4">
@@ -102,6 +119,16 @@ export function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-3">
+            {email && <span className="hidden text-sm text-subtle md:inline">{email}</span>}
+            <button
+              type="button"
+              onClick={() => signOut()}
+              title="Sign out"
+              aria-label="Sign out"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-all duration-150 hover:bg-danger/10 hover:text-danger"
+            >
+              <LogOutIcon className="h-4 w-4" />
+            </button>
             <a
               href="http://localhost:5173"
               target="_blank"

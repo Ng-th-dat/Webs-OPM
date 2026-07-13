@@ -211,3 +211,42 @@ export function HeartIcon(props: SVGProps<SVGSVGElement>) {
     </IconBase>
   );
 }
+
+export function UserIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 19.5a7.5 7.5 0 0 1 15 0" />
+    </IconBase>
+  );
+}
+
+export function LogOutIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <IconBase {...props}>
+      <path d="M9 4.5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3" />
+      <path d="M14 15.5 19 12l-5-3.5" />
+      <path d="M19 12H9" />
+    </IconBase>
+  );
+}
+
+export function AlertTriangleIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 4 21 19.5H3L12 4Z" strokeLinejoin="round" />
+      <path d="M12 10v4.5" />
+      <path d="M12 17.5h.01" />
+    </IconBase>
+  );
+}
+
+export function ImageIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <IconBase {...props}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+      <circle cx="9" cy="10" r="1.6" />
+      <path d="M20.5 16.5 15 11l-8 8" />
+    </IconBase>
+  );
+}

@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { AdminLayout } from './components/AdminLayout';
+import { RequireAdmin } from './routes/RequireAdmin';
+import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CharacterListPage } from './pages/CharacterListPage';
 import { CharacterFormPage } from './pages/CharacterFormPage';
@@ -7,21 +9,34 @@ import { SchedulePage } from './pages/SchedulePage';
 import { ScheduleFormPage } from './pages/ScheduleFormPage';
 import { UpdatesListPage } from './pages/UpdatesListPage';
 import { UpdateFormPage } from './pages/UpdateFormPage';
+import { TradeListingsPage } from './pages/TradeListingsPage';
+import { TradeListingDetailPage } from './pages/TradeListingDetailPage';
+import { FeedbackPage } from './pages/FeedbackPage';
+import { TopupsPage } from './pages/TopupsPage';
+import { TopupDetailPage } from './pages/TopupDetailPage';
 
 export function App() {
   return (
     <Routes>
-      <Route element={<AdminLayout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="characters" element={<CharacterListPage />} />
-        <Route path="characters/new" element={<CharacterFormPage />} />
-        <Route path="characters/:id/edit" element={<CharacterFormPage />} />
-        <Route path="schedule" element={<SchedulePage />} />
-        <Route path="schedule/new" element={<ScheduleFormPage />} />
-        <Route path="schedule/:id/edit" element={<ScheduleFormPage />} />
-        <Route path="updates" element={<UpdatesListPage />} />
-        <Route path="updates/new" element={<UpdateFormPage />} />
-        <Route path="updates/:id/edit" element={<UpdateFormPage />} />
+      <Route path="login" element={<LoginPage />} />
+      <Route element={<RequireAdmin />}>
+        <Route element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="characters" element={<CharacterListPage />} />
+          <Route path="characters/new" element={<CharacterFormPage />} />
+          <Route path="characters/:id/edit" element={<CharacterFormPage />} />
+          <Route path="schedule" element={<SchedulePage />} />
+          <Route path="schedule/new" element={<ScheduleFormPage />} />
+          <Route path="schedule/:id/edit" element={<ScheduleFormPage />} />
+          <Route path="updates" element={<UpdatesListPage />} />
+          <Route path="updates/new" element={<UpdateFormPage />} />
+          <Route path="updates/:id/edit" element={<UpdateFormPage />} />
+          <Route path="trade-listings" element={<TradeListingsPage />} />
+          <Route path="trade-listings/:id" element={<TradeListingDetailPage />} />
+          <Route path="feedback" element={<FeedbackPage />} />
+          <Route path="topups" element={<TopupsPage />} />
+          <Route path="topups/:id" element={<TopupDetailPage />} />
+        </Route>
       </Route>
     </Routes>
   );
