@@ -1,9 +1,12 @@
 const TOKEN_SPLIT = /(\[[^\]]+\]|\d+(?:\.\d+)?%?)/g;
 const NUMBER_PATTERN = /^\d+(?:\.\d+)?%?$/;
+/** Authors use a run of dashes ("———") in admin to mark "what follows explains a bracketed mechanic" — render it on its own line instead of running into the paragraph. */
+const SEPARATOR_SPLIT = /(—{2,}|-{3,})/g;
+const SEPARATOR_PATTERN = /^(—{2,}|-{3,})$/;
 
 interface HighlightedTextProps {
   text: string;
-  /** Same description from the previous tier — when given, numbers that increased are highlighted with a delta badge. */
+  /** Same description from the previous tier — when given, numbers that changed are emphasized. */
   previousText?: string;
 }
 
@@ -11,12 +14,8 @@ function isBracket(token: string): boolean {
   return token.startsWith('[') && token.endsWith(']');
 }
 
-function parseNumber(token: string): { value: number; isPercent: boolean } {
-  return { value: parseFloat(token), isPercent: token.endsWith('%') };
-}
-
 export function HighlightedText({ text, previousText }: HighlightedTextProps) {
-  const tokens = text.split(TOKEN_SPLIT).filter((part) => part !== '');
+  const segments = text.split(SEPARATOR_SPLIT).filter((part) => part !== '');
   const previousNumbers = previousText
     ? previousText.split(TOKEN_SPLIT).filter((part) => part !== '' && NUMBER_PATTERN.test(part))
     : [];
@@ -25,47 +24,48 @@ export function HighlightedText({ text, previousText }: HighlightedTextProps) {
 
   return (
     <>
-      {tokens.map((token, index) => {
-        if (isBracket(token)) {
+      {segments.map((segment, segmentIndex) => {
+        if (SEPARATOR_PATTERN.test(segment)) {
           return (
-            <span key={index} className="font-semibold text-foreground">
-              {token}
+            <span key={segmentIndex} aria-hidden="true" className="my-1.5 block text-subtle/40">
+              {segment}
             </span>
           );
         }
 
-        if (NUMBER_PATTERN.test(token)) {
-          numberIndex += 1;
-          const previous = previousNumbers[numberIndex];
+        const tokens = segment.trim().split(TOKEN_SPLIT).filter((part) => part !== '');
 
-          if (previous !== undefined) {
-            const current = parseNumber(token);
-            const before = parseNumber(previous);
-            const delta = Math.round((current.value - before.value) * 100) / 100;
+        return tokens.map((token, tokenIndex) => {
+          const key = `${segmentIndex}-${tokenIndex}`;
 
-            if (delta !== 0) {
-              const sign = delta > 0 ? '+' : '';
-              return (
-                <span key={index} className="font-bold text-rarity-r">
-                  {token}
-                  <span className="ml-1 inline-block rounded bg-rarity-r/15 px-1 py-0.5 align-middle text-[9px] font-bold leading-none text-rarity-r">
-                    {sign}
-                    {delta}
-                    {current.isPercent ? '%' : ''}
-                  </span>
-                </span>
-              );
-            }
+          if (isBracket(token)) {
+            return (
+              <span key={key} className="font-semibold text-foreground">
+                {token}
+              </span>
+            );
           }
 
-          return (
-            <span key={index} className="font-semibold text-accent-secondary">
-              {token}
-            </span>
-          );
-        }
+          if (NUMBER_PATTERN.test(token)) {
+            numberIndex += 1;
+            const changed = previousNumbers[numberIndex] !== undefined && previousNumbers[numberIndex] !== token;
 
-        return <span key={index}>{token}</span>;
+            return (
+              <span
+                key={key}
+                className={
+                  changed
+                    ? 'font-black text-accent-secondary drop-shadow-[0_0_5px_rgba(255,176,32,0.7)]'
+                    : 'font-semibold text-accent-secondary'
+                }
+              >
+                {token}
+              </span>
+            );
+          }
+
+          return <span key={key}>{token}</span>;
+        });
       })}
     </>
   );

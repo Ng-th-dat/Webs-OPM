@@ -22,23 +22,24 @@ const TIER_STAR_STYLES: Record<TierAccent, string> = {
 };
 
 interface SkillCardProps {
-  name: string;
   description: string;
+  previousDescription?: string;
   skillType?: SkillType;
   cost?: string;
   tierAccent?: TierAccent;
-  previousDescription?: string;
   image?: string;
+  /** Hide the type badge — used when a parent (e.g. TierSwitcher) already shows it once for the whole section. */
+  showTypeBadge?: boolean;
 }
 
 export function SkillCard({
-  name,
   description,
+  previousDescription,
   skillType,
   cost,
   tierAccent,
-  previousDescription,
   image,
+  showTypeBadge = true,
 }: SkillCardProps) {
   const { t } = useTranslation();
   const style = SKILL_TYPE_STYLES[skillType ?? 'Attack'];
@@ -54,21 +55,18 @@ export function SkillCard({
       {tierAccent && (
         <StarIcon className={`absolute right-4 top-4 h-4 w-4 ${TIER_STAR_STYLES[tierAccent]}`} />
       )}
-      <div className="relative flex items-start gap-3">
+      <div className={`relative flex gap-3 ${showTypeBadge && skillType ? 'items-start' : 'items-center'}`}>
         <SkillIcon skillType={skillType} image={image} />
         <div className="min-w-0 flex-1 pr-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-foreground">{name}</h3>
-            {skillType && (
-              <span
-                className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${style.badge}`}
-              >
-                {t(SKILL_TYPE_LABEL_KEYS[skillType])}
-              </span>
-            )}
-          </div>
+          {showTypeBadge && skillType && (
+            <span
+              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold uppercase tracking-wide ${style.badge}`}
+            >
+              {t(SKILL_TYPE_LABEL_KEYS[skillType])}
+            </span>
+          )}
           {cost !== undefined && (
-            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-subtle">
+            <p className={`text-xs font-medium uppercase tracking-wide text-subtle ${showTypeBadge && skillType ? 'mt-1' : ''}`}>
               {t('characterDetail.cost', { value: cost })}
             </p>
           )}

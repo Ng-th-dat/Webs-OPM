@@ -1,7 +1,7 @@
-import type { Rarity, ReleaseStatus } from './character';
+import type { Rarity, ReleaseStatus, ReleaseTiming } from './character';
 
+export type { ReleaseTiming };
 export type ReleaseType = 'Debut' | 'Comeback' | 'Limited' | 'Core' | 'Event';
-export type ReleaseTiming = 'Start of Month' | 'Mid Month' | 'End of Month';
 export type Server = 'CN' | 'SEA' | 'Global';
 
 export interface ReleaseScheduleEntry {

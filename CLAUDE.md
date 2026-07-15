@@ -172,7 +172,8 @@ Rules:
 | `/core-lab` | Core-Lab | Core-Lab guide + resource calculator preview |
 | `/spec-calculator` | Spec Calculator | Spec ATK/DEF calculator tool |
 | `/core-lab-calculator` | Core-Lab Calculator | Core-Lab resource calculator tool |
-| `/calculators` | Calculators Hub | Links out to both calculator tools |
+| `/ticket-calculator` | Ticket Calculator | Projects black/STK ticket totals to a target date (next Debut/Comeback or a custom date), against the fixed monthly ticket sources in `src/data/ticketSources.ts` |
+| `/calculators` | Calculators Hub | Links out to all three calculator tools |
 | `/trade` | Trade Listings | Public classifieds board, approved listings only, filterable by server |
 | `/trade/:id` | Trade Listing Detail | Full listing view; images, contact info, disclaimer callout, owner-only edit/mark-sold |
 | `/trade/disclaimer` | Trade Disclaimer | Legal-page-pattern disclaimer — no mediation, no held funds, off-platform risk |
@@ -371,6 +372,30 @@ interface CoreLabCalculatorResult {
   totalMaterials: MaterialCost[];
   totalLevelsToUpgrade: number;
 }
+
+// Ticket Calculator — the first real (non-stub) calculator; local data in src/data/ticketSources.ts
+interface TicketSource {
+  id: string;
+  ticketType: 'black' | 'stk';
+  amount: number;
+  timing: ReleaseTiming;      // 'Start of Month' | 'Mid Month' | 'End of Month'
+  labelKey: TranslationKey;
+}
+
+interface TicketCalculatorInput {
+  currentBlackTickets: number;
+  currentStkTickets: number;
+  claimedSourceIds: string[]; // this month's sources already claimed, excluded from the projection
+  targetDate: string;
+}
+
+interface TicketCalculatorResult {
+  projectedBlackTickets: number;
+  projectedStkTickets: number;
+  blackTicketsGained: number;
+  stkTicketsGained: number;
+  upcomingSources: { source: TicketSource; date: string }[];
+}
 ```
 
 ---
@@ -400,6 +425,7 @@ src/
     CoreLabPage.tsx
     SpecCalculatorPage.tsx
     CoreLabCalculatorPage.tsx
+    TicketCalculatorPage.tsx      # real, working calculator — projects black/STK ticket totals to a target date
     CalculatorsPage.tsx
     TradePage.tsx
     TradeListingDetailPage.tsx
@@ -414,6 +440,7 @@ src/
   data/
     mastery.ts             # still local mock data — see "Data Backend" in section 2
     coreLab.ts
+    ticketSources.ts        # TICKET_SOURCES — the 10 fixed monthly black/STK ticket sources, consumed by TicketCalculatorPage
   lib/
     supabase.ts           # Supabase client, reads VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
     tradeListingImageStorage.ts   # uploadTradeListingImage, uploadTradeListingPaymentProof — trade-listing-images bucket
@@ -433,6 +460,7 @@ src/
   utils/
     specCalculator.ts
     coreLabCalculator.ts
+    ticketCalculator.ts     # calculateProjectedTickets() — walks month-by-month from today to a target date
     filters.ts
     format.ts
     tradeListings.ts      # TRADE_STATUS_LABEL_KEYS/STYLES, formatTradeListingDate, TRADE_LISTING_FEE_VND

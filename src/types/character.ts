@@ -1,5 +1,6 @@
 export type Rarity = 'UR+' | 'UR' | 'SSR+' | 'SSR' | 'SR' | 'R' | 'N';
 export type ReleaseStatus = 'Upcoming' | 'Released' | 'TBD';
+export type ReleaseTiming = 'Start of Month' | 'Mid Month' | 'End of Month';
 export type SkillType = 'Attack' | 'Ultimate' | 'Passive' | 'Awaken Passive' | 'Core';
 /** Which side a character fights for. */
 export type CharacterFaction = 'Hero' | 'Monster' | 'Third-party';
@@ -7,7 +8,6 @@ export type CharacterFaction = 'Hero' | 'Monster' | 'Third-party';
 export type CharacterRank = 'S-1' | 'S-2' | 'A' | 'Demon' | 'Dragon';
 
 export interface Skill {
-  name: string;
   description: string;
   skillType?: SkillType;
   /** Resource cost as shown in-game, e.g. "None" or "2 Energy". */
@@ -19,7 +19,6 @@ export interface Skill {
 }
 
 export interface Passive {
-  name: string;
   description: string;
   /** Full effect text once the character reaches 5-star Gold. */
   goldDescription?: string;
@@ -31,7 +30,6 @@ export interface Passive {
 
 export interface AwakeningTier {
   tier: number;
-  name: string;
   description: string;
   requirement?: string;
   /** Path under public/characters/<slug>/, named awaken-{tier}.png; falls back to a generic type icon when missing. */
@@ -70,6 +68,14 @@ export interface Character {
   recommendedUsage: string;
   releaseVersion: string;
   releaseStatus: ReleaseStatus;
+  /** CN timing — SEA is derived automatically (CN + 4 months) for the homepage's upcoming-releases spotlight. */
+  debutMonth?: number;
+  debutYear?: number;
+  debutTiming?: ReleaseTiming;
+  /** CN timing, only the current/next comeback — editing this in place is how a new comeback gets recorded. */
+  comebackMonth?: number;
+  comebackYear?: number;
+  comebackTiming?: ReleaseTiming;
 }
 
 export interface CharacterFilterValues {

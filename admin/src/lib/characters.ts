@@ -8,6 +8,7 @@ import type {
   Passive,
   Rarity,
   ReleaseStatus,
+  ReleaseTiming,
   Skill,
 } from '@main/types/character';
 
@@ -36,6 +37,12 @@ interface CharacterRow {
   release_version: string;
   release_status: ReleaseStatus;
   is_visible: boolean;
+  debut_month: number | null;
+  debut_year: number | null;
+  debut_timing: ReleaseTiming | null;
+  comeback_month: number | null;
+  comeback_year: number | null;
+  comeback_timing: ReleaseTiming | null;
 }
 
 function mapRowToCharacter(row: CharacterRow): AdminCharacter {
@@ -60,6 +67,12 @@ function mapRowToCharacter(row: CharacterRow): AdminCharacter {
     releaseVersion: row.release_version,
     releaseStatus: row.release_status,
     isVisible: row.is_visible,
+    debutMonth: row.debut_month ?? undefined,
+    debutYear: row.debut_year ?? undefined,
+    debutTiming: row.debut_timing ?? undefined,
+    comebackMonth: row.comeback_month ?? undefined,
+    comebackYear: row.comeback_year ?? undefined,
+    comebackTiming: row.comeback_timing ?? undefined,
   };
 }
 
@@ -95,6 +108,12 @@ export interface NewCharacterInput {
   recommendedUsage: string;
   releaseVersion: string;
   releaseStatus: ReleaseStatus;
+  debutMonth: number | null;
+  debutYear: number | null;
+  debutTiming: ReleaseTiming | null;
+  comebackMonth: number | null;
+  comebackYear: number | null;
+  comebackTiming: ReleaseTiming | null;
 }
 
 export async function createCharacter(input: NewCharacterInput): Promise<Character> {
@@ -120,6 +139,12 @@ export async function createCharacter(input: NewCharacterInput): Promise<Charact
       recommended_usage: input.recommendedUsage,
       release_version: input.releaseVersion,
       release_status: input.releaseStatus,
+      debut_month: input.debutMonth,
+      debut_year: input.debutYear,
+      debut_timing: input.debutTiming,
+      comeback_month: input.comebackMonth,
+      comeback_year: input.comebackYear,
+      comeback_timing: input.comebackTiming,
     })
     .select('*')
     .single();
@@ -149,6 +174,12 @@ export async function updateCharacter(id: string, input: NewCharacterInput): Pro
       recommended_usage: input.recommendedUsage,
       release_version: input.releaseVersion,
       release_status: input.releaseStatus,
+      debut_month: input.debutMonth,
+      debut_year: input.debutYear,
+      debut_timing: input.debutTiming,
+      comeback_month: input.comebackMonth,
+      comeback_year: input.comebackYear,
+      comeback_timing: input.comebackTiming,
     })
     .eq('id', id)
     .select('*')

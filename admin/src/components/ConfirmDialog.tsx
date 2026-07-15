@@ -52,7 +52,7 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
             aria-modal="true"
             aria-labelledby="confirm-dialog-title"
             onClick={(event) => event.stopPropagation()}
-            className="animate-modal-in w-full max-w-sm rounded-3xl border border-border bg-surface p-6 shadow-elevated-lg"
+            className="animate-modal-in w-full max-w-sm rounded-card border border-border bg-surface p-6 shadow-elevated-lg"
           >
             <h2 id="confirm-dialog-title" className="text-lg font-bold text-foreground">
               {options.title}
@@ -71,9 +71,7 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
                 autoFocus
                 onClick={() => settle(true)}
                 className={`rounded-full px-5 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
-                  options.variant === 'danger'
-                    ? 'bg-[linear-gradient(135deg,var(--color-danger),#b91c1c)]'
-                    : 'bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))]'
+                  options.variant === 'danger' ? 'bg-danger hover:bg-danger-hover' : 'bg-accent hover:bg-accent-hover'
                 }`}
               >
                 {options.confirmLabel ?? 'Confirm'}

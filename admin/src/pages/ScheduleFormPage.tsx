@@ -21,6 +21,11 @@ import { BadgeSelect } from '@/components/BadgeSelect';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
 
+/** Debut/Comeback are now derived automatically from each character's Release Timing (CN) fields — not selectable here anymore. */
+const SELECTABLE_RELEASE_TYPE_OPTIONS = RELEASE_TYPE_OPTIONS.filter(
+  (option) => option.value !== 'Debut' && option.value !== 'Comeback'
+);
+
 function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
   return (
     <label className="flex flex-col gap-1.5">
@@ -38,7 +43,7 @@ const inputClasses =
 
 function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <section className="rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:p-6">
+    <section className="rounded-card border border-border bg-surface p-4 shadow-elevated sm:p-6">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-foreground">{title}</h2>
         {description && <p className="mt-1 text-sm text-muted">{description}</p>}
@@ -195,7 +200,10 @@ export function ScheduleFormPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <Panel title="Schedule Entry" description="One row here is one character's release slot for a given month.">
+        <Panel
+          title="Schedule Entry"
+          description="For Limited/Core/Event slots only — Debut and Comeback are now handled automatically via each character's Release Timing (CN) fields."
+        >
           <div className="grid grid-cols-2 gap-4">
             <Field label="Month" required>
               <BadgeSelect value={form.monthAbbr} onChange={(value) => updateField('monthAbbr', value)} options={MONTH_OPTIONS} />
@@ -231,7 +239,11 @@ export function ScheduleFormPage() {
           </Field>
 
           <Field label="Release type" required>
-            <BadgeSelect value={form.releaseType} onChange={(value) => updateField('releaseType', value as ReleaseType)} options={RELEASE_TYPE_OPTIONS} />
+            <BadgeSelect
+              value={form.releaseType}
+              onChange={(value) => updateField('releaseType', value as ReleaseType)}
+              options={SELECTABLE_RELEASE_TYPE_OPTIONS}
+            />
           </Field>
 
           <Field label="Timing" required>
@@ -251,7 +263,7 @@ export function ScheduleFormPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="self-start rounded-full bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))] px-6 py-3 text-sm font-bold text-white shadow-glow-accent transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            className="self-start rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? 'Saving…' : isEditMode ? 'Save changes' : 'Save entry'}
           </button>

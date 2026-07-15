@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import type { Character, Skill, SkillType } from '@/types/character';
-import { getGlossaryEntries } from '@/utils/glossary';
 import { hasAwakeningTier } from '@/utils/rarity';
+import { SKILL_TYPE_LABEL_KEYS } from '@/utils/characters';
 import { SkillCard, SkillIcon, type TierAccent } from './SkillCard';
-import { TierBlock } from './TierBlock';
+import { TierGroup } from './TierGroup';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface SkillShowcaseProps {
@@ -17,8 +17,11 @@ type HubTab =
   | { key: 'awakening'; kind: 'awakening'; label: string; skillType: SkillType; image?: string }
   | { key: 'core'; kind: 'core'; label: string; skillType: SkillType; image?: string };
 
-const AWAKENING_TIER_COUNT = 3;
-const AWAKENING_TIER_ACCENTS: TierAccent[] = ['base', 'gold', 'purple'];
+/** Awakening only ever has 2 tiers — unlike Passive/Core, it has no 5★ gold/purple grading. */
+const AWAKENING_TIER_COUNT = 2;
+const AWAKENING_TIER_ACCENTS: TierAccent[] = ['base', 'gold'];
+const CORE_TIER_COUNT = 3;
+const CORE_TIER_ACCENTS: TierAccent[] = ['base', 'gold', 'purple'];
 /** `role: 'Core'` characters get a Core section instead of Awakening (same rarity gate). */
 const CORE_ROLE = 'Core';
 
@@ -30,20 +33,23 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
     const basicSkills = character.skills.filter((skill) => skill.skillType !== 'Ultimate');
     const ultimate = character.skills.find((skill) => skill.skillType === 'Ultimate');
 
-    const result: HubTab[] = basicSkills.map((skill) => ({
-      key: skill.name,
-      kind: 'skill',
-      label: skill.name,
-      skillType: skill.skillType ?? 'Attack',
-      image: skill.image,
-      skill,
-    }));
+    const result: HubTab[] = basicSkills.map((skill, index) => {
+      const typeLabel = t(SKILL_TYPE_LABEL_KEYS[skill.skillType ?? 'Attack']);
+      return {
+        key: `skill-${index}`,
+        kind: 'skill',
+        label: basicSkills.length > 1 ? `${typeLabel} ${index + 1}` : typeLabel,
+        skillType: skill.skillType ?? 'Attack',
+        image: skill.image,
+        skill,
+      };
+    });
 
     if (ultimate) {
       result.push({
-        key: ultimate.name,
+        key: 'ultimate',
         kind: 'ultimate',
-        label: ultimate.name,
+        label: t(SKILL_TYPE_LABEL_KEYS.Ultimate),
         skillType: 'Ultimate',
         image: ultimate.image,
         skill: ultimate,
@@ -53,7 +59,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
     result.push({
       key: 'passive',
       kind: 'passive',
-      label: character.passive.name,
+      label: t('characterDetail.passive'),
       skillType: 'Passive',
       image: character.passive.image,
     });
@@ -82,25 +88,6 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
   }, [character, t]);
 
   const active = tabs[activeIndex] ?? tabs[0];
-
-  const glossaryEntries = useMemo(() => {
-    const texts: (string | undefined)[] =
-      active.kind === 'skill'
-        ? [active.skill.description]
-        : active.kind === 'ultimate'
-          ? [active.skill.description, active.skill.upgradedDescription]
-          : active.kind === 'passive'
-            ? [
-                character.passive.description,
-                character.passive.goldDescription,
-                character.passive.purpleDescription,
-              ]
-            : active.kind === 'core'
-              ? (character.core?.map((entry) => entry.description) ?? [])
-              : (character.awakenings?.map((entry) => entry.description) ?? []);
-
-    return getGlossaryEntries(...texts);
-  }, [active, character]);
 
   return (
     <section className="flex flex-col gap-6 rounded-3xl border border-border bg-surface p-6 sm:p-8">
@@ -133,7 +120,6 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
       <div className="flex flex-col gap-4 rounded-2xl border border-border bg-canvas/60 p-5 sm:p-6">
         {active.kind === 'skill' && (
           <SkillCard
-            name={active.skill.name}
             description={active.skill.description}
             skillType={active.skill.skillType}
             cost={active.skill.cost}
@@ -142,115 +128,100 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
         )}
 
         {active.kind === 'ultimate' && (
-          <>
-            <TierBlock
-              label={t('characterDetail.tierBase')}
-              name={active.skill.name}
-              description={active.skill.description}
-              skillType={active.skill.skillType}
-              cost={active.skill.cost}
-              tierAccent="base"
-              image={active.skill.image}
-            />
-            <TierBlock
-              label={t('characterDetail.tierUltimateUpgrade')}
-              name={active.skill.name}
-              description={active.skill.upgradedDescription}
-              previousDescription={active.skill.description}
-              skillType={active.skill.skillType}
-              cost={active.skill.cost}
-              tierAccent="gold"
-              image={active.skill.image}
-            />
-          </>
+          <TierGroup
+            showDelta
+            tiers={[
+              {
+                key: 'base',
+                label: t('characterDetail.tierBase'),
+                accent: 'base',
+                description: active.skill.description,
+                skillType: active.skill.skillType,
+                cost: active.skill.cost,
+                image: active.skill.image,
+              },
+              {
+                key: 'upgrade',
+                label: t('characterDetail.tierUltimateUpgrade'),
+                accent: 'gold',
+                description: active.skill.upgradedDescription,
+                skillType: active.skill.skillType,
+                cost: active.skill.cost,
+                image: active.skill.image,
+              },
+            ]}
+          />
         )}
 
         {active.kind === 'passive' && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <TierBlock
-              label={t('characterDetail.tierBase')}
-              name={character.passive.name}
-              description={character.passive.description}
-              skillType="Passive"
-              cost="None"
-              tierAccent="base"
-              image={character.passive.image}
-            />
-            <TierBlock
-              label={t('characterDetail.tierPassiveGold')}
-              name={character.passive.name}
-              description={character.passive.goldDescription}
-              previousDescription={character.passive.description}
-              skillType="Passive"
-              cost="None"
-              tierAccent="gold"
-              image={character.passive.image}
-            />
-            <TierBlock
-              label={t('characterDetail.tierPassivePurple')}
-              name={character.passive.name}
-              description={character.passive.purpleDescription}
-              previousDescription={character.passive.goldDescription}
-              skillType="Passive"
-              cost="None"
-              tierAccent="purple"
-              image={character.passive.image}
-            />
-          </div>
+          <TierGroup
+            showDelta
+            tiers={[
+              {
+                key: 'base',
+                label: t('characterDetail.tierBase'),
+                accent: 'base',
+                description: character.passive.description,
+                skillType: 'Passive',
+                cost: 'None',
+                image: character.passive.image,
+              },
+              {
+                key: 'gold',
+                label: t('characterDetail.tierPassiveGold'),
+                accent: 'gold',
+                description: character.passive.goldDescription,
+                skillType: 'Passive',
+                cost: 'None',
+                image: character.passive.image,
+              },
+              {
+                key: 'purple',
+                label: t('characterDetail.tierPassivePurple'),
+                accent: 'purple',
+                description: character.passive.purpleDescription,
+                skillType: 'Passive',
+                cost: 'None',
+                image: character.passive.image,
+              },
+            ]}
+          />
         )}
 
         {active.kind === 'awakening' && (
-          <>
-            {Array.from({ length: AWAKENING_TIER_COUNT }, (_, index) => index + 1).map((tier) => {
+          <TierGroup
+            tiers={Array.from({ length: AWAKENING_TIER_COUNT }, (_, index) => index + 1).map((tier) => {
               const data = character.awakenings?.find((entry) => entry.tier === tier);
-              return (
-                <TierBlock
-                  key={tier}
-                  label={t('characterDetail.awakeningTier', { tier })}
-                  name={data?.name}
-                  description={data?.description}
-                  skillType="Awaken Passive"
-                  cost="None"
-                  tierAccent={AWAKENING_TIER_ACCENTS[tier - 1]}
-                  image={data?.image}
-                />
-              );
+              return {
+                key: `awakening-${tier}`,
+                label: t('characterDetail.awakeningTier', { tier }),
+                accent: AWAKENING_TIER_ACCENTS[tier - 1],
+                description: data?.description,
+                skillType: 'Awaken Passive',
+                cost: 'None',
+                requirement: data?.requirement,
+                image: data?.image,
+              };
             })}
-          </>
+          />
         )}
 
         {active.kind === 'core' && (
-          <>
-            {Array.from({ length: AWAKENING_TIER_COUNT }, (_, index) => index + 1).map((tier) => {
+          <TierGroup
+            tiers={Array.from({ length: CORE_TIER_COUNT }, (_, index) => index + 1).map((tier) => {
               const data = character.core?.find((entry) => entry.tier === tier);
-              return (
-                <TierBlock
-                  key={tier}
-                  label={t('characterDetail.coreTier', { tier })}
-                  name={data?.name}
-                  description={data?.description}
-                  skillType="Core"
-                  cost="None"
-                  requirement={data?.requirement}
-                  tierAccent={AWAKENING_TIER_ACCENTS[tier - 1]}
-                  image={data?.image}
-                />
-              );
+              return {
+                key: `core-${tier}`,
+                label: t('characterDetail.coreTier', { tier }),
+                accent: CORE_TIER_ACCENTS[tier - 1],
+                description: data?.description,
+                skillType: 'Core',
+                cost: 'None',
+                requirement: data?.requirement,
+                image: data?.image,
+              };
             })}
-          </>
-        )}
-
-        {glossaryEntries.length > 0 && (
-          <div className="flex flex-col gap-1.5 rounded-card border border-border bg-surface/60 p-4">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle">
-              {t('characterDetail.glossary')}
-            </span>
-            {glossaryEntries.map((entry) => (
-              <p key={entry.term} className="text-xs leading-relaxed text-subtle">
-                <span className="font-semibold text-foreground">[{entry.term}]</span> {entry.definition}
-              </p>
-            ))}
-          </div>
+          />
         )}
       </div>
     </section>

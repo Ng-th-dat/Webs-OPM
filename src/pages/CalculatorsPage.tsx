@@ -1,5 +1,5 @@
 import { FeatureCard } from '@/components/home/FeatureCard';
-import { CalculatorIcon, GaugeIcon } from '@/components/common/icons';
+import { CalculatorIcon, CoinIcon, GaugeIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { TranslationKey } from '@/i18n';
 
@@ -21,6 +21,12 @@ const CALCULATORS: {
     href: '/core-lab-calculator',
     icon: GaugeIcon,
   },
+  {
+    titleKey: 'home.features.ticketCalculator.title',
+    descriptionKey: 'home.features.ticketCalculator.description',
+    href: '/ticket-calculator',
+    icon: CoinIcon,
+  },
 ];
 
 export function CalculatorsPage() {
@@ -40,7 +46,7 @@ export function CalculatorsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {CALCULATORS.map((calculator) => (
           <FeatureCard
             key={calculator.href}

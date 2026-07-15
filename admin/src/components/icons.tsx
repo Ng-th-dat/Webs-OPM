@@ -223,3 +223,16 @@ export function TrashIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function BellIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
+      <path
+        d="M12 3.5c-2.9 0-5.25 2.35-5.25 5.25v3.1c0 .55-.2 1.08-.55 1.5L5 14.75c-.65.75-.1 1.9.9 1.9h12.2c1 0 1.55-1.15.9-1.9l-1.2-1.4a2.25 2.25 0 01-.55-1.5v-3.1c0-2.9-2.35-5.25-5.25-5.25z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M10 19.5a2 2 0 004 0" strokeLinecap="round" />
+    </svg>
+  );
+}

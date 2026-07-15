@@ -8,6 +8,7 @@ import type {
   Passive,
   Rarity,
   ReleaseStatus,
+  ReleaseTiming,
   Skill,
 } from '@/types/character';
 
@@ -31,6 +32,12 @@ interface CharacterRow {
   recommended_usage: string;
   release_version: string;
   release_status: ReleaseStatus;
+  debut_month: number | null;
+  debut_year: number | null;
+  debut_timing: ReleaseTiming | null;
+  comeback_month: number | null;
+  comeback_year: number | null;
+  comeback_timing: ReleaseTiming | null;
 }
 
 function mapRowToCharacter(row: CharacterRow): Character {
@@ -54,6 +61,12 @@ function mapRowToCharacter(row: CharacterRow): Character {
     recommendedUsage: row.recommended_usage,
     releaseVersion: row.release_version,
     releaseStatus: row.release_status,
+    debutMonth: row.debut_month ?? undefined,
+    debutYear: row.debut_year ?? undefined,
+    debutTiming: row.debut_timing ?? undefined,
+    comebackMonth: row.comeback_month ?? undefined,
+    comebackYear: row.comeback_year ?? undefined,
+    comebackTiming: row.comeback_timing ?? undefined,
   };
 }
 

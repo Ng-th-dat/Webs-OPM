@@ -35,7 +35,7 @@ const inputClasses =
 
 function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <section className="rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:p-6">
+    <section className="rounded-card border border-border bg-surface p-4 shadow-elevated sm:p-6">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-foreground">{title}</h2>
         {description && <p className="mt-1 text-sm text-muted">{description}</p>}
@@ -364,7 +364,7 @@ export function UpdateFormPage() {
           <button
             type="submit"
             disabled={status.kind === 'submitting'}
-            className="self-start rounded-full bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))] px-6 py-3 text-sm font-bold text-white shadow-glow-accent transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            className="self-start rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status.kind === 'submitting' ? 'Saving…' : isEditMode ? 'Save changes' : 'Publish update'}
           </button>

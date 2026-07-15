@@ -57,23 +57,23 @@ export function FeedbackPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:p-5">
+      <div className="rounded-card border border-border bg-surface p-4 shadow-elevated sm:p-5">
         <p className="text-sm font-medium text-muted">{loading ? 'Loading…' : `${entries.length} feedback entries`}</p>
       </div>
 
       {loading ? (
-        <p className="rounded-3xl border border-border bg-surface p-6 text-sm text-muted shadow-elevated">Loading…</p>
+        <p className="rounded-card border border-border bg-surface p-6 text-sm text-muted shadow-elevated">Loading…</p>
       ) : error ? (
-        <p className="rounded-3xl border border-border bg-surface p-6 text-sm text-danger shadow-elevated">{error}</p>
+        <p className="rounded-card border border-border bg-surface p-6 text-sm text-danger shadow-elevated">{error}</p>
       ) : entries.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-border bg-surface p-10 text-center shadow-elevated">
+        <div className="rounded-card border border-dashed border-border bg-surface p-10 text-center shadow-elevated">
           <p className="text-sm font-semibold text-foreground">No feedback yet</p>
           <p className="mt-1 text-sm text-muted">Submissions from the public /feedback form will show up here.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
           {entries.map((entry) => (
-            <div key={entry.id} className="rounded-3xl border border-border bg-surface p-5 shadow-elevated">
+            <div key={entry.id} className="rounded-card border border-border bg-surface p-5 shadow-elevated">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs font-medium text-subtle">{formatDate(entry.createdAt)}</span>

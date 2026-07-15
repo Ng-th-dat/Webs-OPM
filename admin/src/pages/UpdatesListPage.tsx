@@ -84,7 +84,7 @@ export function UpdatesListPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-elevated sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <p className="text-sm font-medium text-muted">
           {loading ? 'Loading…' : `${filteredEntries.length} of ${entries.length} updates`}
         </p>
@@ -103,71 +103,90 @@ export function UpdatesListPage() {
       </div>
 
       {loading ? (
-        <p className="rounded-3xl border border-border bg-surface p-6 text-sm text-muted shadow-elevated">Loading…</p>
+        <p className="rounded-card border border-border bg-surface p-6 text-sm text-muted shadow-elevated">Loading…</p>
       ) : error ? (
-        <p className="rounded-3xl border border-border bg-surface p-6 text-sm text-danger shadow-elevated">{error}</p>
+        <p className="rounded-card border border-border bg-surface p-6 text-sm text-danger shadow-elevated">{error}</p>
       ) : entries.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-border bg-surface p-10 text-center shadow-elevated">
+        <div className="rounded-card border border-dashed border-border bg-surface p-10 text-center shadow-elevated">
           <p className="text-sm font-semibold text-foreground">No updates yet</p>
           <p className="mt-1 text-sm text-muted">Upload a banner image and let AI draft the first post.</p>
           <Link
             to="/updates/new"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))] px-4 py-2 text-sm font-semibold text-white shadow-glow-accent transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98]"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98]"
           >
             <PlusIcon className="h-4 w-4" />
             Add Update
           </Link>
         </div>
       ) : (
-        <div className="rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:p-5">
-          <div className="flex flex-col gap-2">
-            {filteredEntries.map((entry) => (
-              <div
-                key={entry.id}
-                className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-elevated/50 p-3"
-              >
-                <UpdateThumb entry={entry} />
-                <div className="min-w-[10rem] flex-1">
-                  <p className="text-sm font-semibold text-foreground">{entry.title}</p>
-                  <p className="text-xs text-subtle">{entry.date}</p>
-                </div>
-                <span
-                  className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
-                  style={{ backgroundColor: CATEGORY_COLOR[entry.category] }}
-                >
-                  {entry.category}
-                </span>
-                {entry.server && (
-                  <span
-                    className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
-                    style={{ backgroundColor: SERVER_COLOR[entry.server] }}
-                  >
-                    {entry.server}
-                  </span>
-                )}
-                <div className="ml-auto flex items-center gap-1.5">
-                  <Link
-                    to={`/updates/${entry.id}/edit`}
-                    title="Edit update"
-                    aria-label={`Edit ${entry.title}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-accent/10 hover:text-accent"
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(entry)}
-                    disabled={deletingId === entry.id}
-                    title="Delete update"
-                    aria-label={`Delete ${entry.title}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-danger/10 hover:text-danger disabled:opacity-50 disabled:hover:translate-y-0"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-elevated">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-border text-xs uppercase tracking-wide text-subtle">
+              <tr>
+                <th className="px-5 pb-3 pt-5 font-semibold">Update</th>
+                <th className="px-5 pb-3 pt-5 font-semibold">Category</th>
+                <th className="px-5 pb-3 pt-5 font-semibold">Server</th>
+                <th className="px-5 pb-3 pt-5 font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filteredEntries.map((entry) => (
+                <tr key={entry.id} className="transition-colors duration-150 hover:bg-elevated/70">
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-3">
+                      <UpdateThumb entry={entry} />
+                      <div>
+                        <p className="font-semibold text-foreground">{entry.title}</p>
+                        <p className="text-xs text-subtle">{entry.date}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3">
+                    <span
+                      className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
+                      style={{ backgroundColor: CATEGORY_COLOR[entry.category] }}
+                    >
+                      {entry.category}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3">
+                    {entry.server ? (
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
+                        style={{ backgroundColor: SERVER_COLOR[entry.server] }}
+                      >
+                        {entry.server}
+                      </span>
+                    ) : (
+                      <span className="text-muted">—</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Link
+                        to={`/updates/${entry.id}/edit`}
+                        title="Edit update"
+                        aria-label={`Edit ${entry.title}`}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-accent/10 hover:text-accent"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(entry)}
+                        disabled={deletingId === entry.id}
+                        title="Delete update"
+                        aria-label={`Delete ${entry.title}`}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-danger/10 hover:text-danger disabled:opacity-50 disabled:hover:translate-y-0"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

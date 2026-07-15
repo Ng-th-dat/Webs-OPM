@@ -20,16 +20,14 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 const AUTO_DISMISS_MS = 4000;
 const EXIT_ANIMATION_MS = 180;
 
-const VARIANT_STYLES: Record<ToastVariant, { chip: string; bar: string; shadow: string }> = {
+const VARIANT_STYLES: Record<ToastVariant, { chip: string; bar: string }> = {
   success: {
-    chip: 'bg-gradient-to-br from-success to-emerald-600',
+    chip: 'bg-success',
     bar: 'bg-success',
-    shadow: 'shadow-[0_1px_2px_rgba(31,36,66,0.03),0_16px_32px_-10px_rgba(34,197,94,0.35)]',
   },
   error: {
-    chip: 'bg-gradient-to-br from-danger to-rose-700',
+    chip: 'bg-danger',
     bar: 'bg-danger',
-    shadow: 'shadow-[0_1px_2px_rgba(31,36,66,0.03),0_16px_32px_-10px_rgba(220,38,38,0.35)]',
   },
 };
 
@@ -67,7 +65,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <div
               key={toast.id}
               role="status"
-              className={`pointer-events-auto relative w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-surface/95 backdrop-blur-sm ${style.shadow} ${
+              className={`pointer-events-auto relative w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-surface/95 shadow-elevated backdrop-blur-sm ${
                 toast.leaving ? 'animate-toast-out' : 'animate-toast-in'
               }`}
             >

@@ -10,4 +10,5 @@ export const NAV_LINKS: NavLink[] = [
   { labelKey: 'common.characters', path: '/characters' },
   { labelKey: 'common.updates', path: '/updates' },
   { labelKey: 'common.trade', path: '/trade' },
+  { labelKey: 'common.ticketCalculator', path: '/ticket-calculator' },
 ];

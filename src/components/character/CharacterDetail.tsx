@@ -9,6 +9,7 @@ import {
   RANK_LABEL_KEYS,
   TYPE_BADGE_ICONS,
 } from '@/utils/badges';
+import { CheckIcon, XIcon } from '@/components/common/icons';
 import { CharacterGallery } from './CharacterGallery';
 import { SkillShowcase } from './SkillShowcase';
 
@@ -158,6 +159,42 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
       </header>
 
       <SkillShowcase character={character} />
+
+      {(character.strengths.length > 0 || character.weaknesses.length > 0) && (
+        <section className="grid grid-cols-1 gap-8 rounded-3xl border border-border bg-surface p-6 sm:grid-cols-2 sm:p-8">
+          {character.strengths.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <h2 className="text-sm font-extrabold uppercase tracking-[0.2em] text-rarity-r">
+                {t('characterDetail.strengths')}
+              </h2>
+              <ul className="flex flex-col gap-2.5">
+                {character.strengths.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-muted">
+                    <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-rarity-r" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {character.weaknesses.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <h2 className="text-sm font-extrabold uppercase tracking-[0.2em] text-accent">
+                {t('characterDetail.weaknesses')}
+              </h2>
+              <ul className="flex flex-col gap-2.5">
+                {character.weaknesses.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-muted">
+                    <XIcon className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
 
       {character.image && (
         <CharacterGallery

@@ -9,7 +9,7 @@ import { useToast } from '@/components/Toast';
 
 const STATUS_BADGE: Record<ReleaseStatus, string> = {
   Released: 'bg-success/10 text-success',
-  Upcoming: 'bg-accent-purple/10 text-accent-purple',
+  Upcoming: 'bg-accent-info/10 text-accent-info',
   TBD: 'bg-elevated text-subtle',
 };
 
@@ -26,7 +26,7 @@ function CharacterThumb({ character }: { character: AdminCharacter }) {
   if (!character.image || hasError) {
     return (
       <span
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xs font-bold"
+        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xs font-bold"
         style={{ backgroundColor: `${color}1a`, color, boxShadow: `inset 0 0 0 1px ${color}33` }}
       >
         {getInitials(character.name)}
@@ -39,7 +39,7 @@ function CharacterThumb({ character }: { character: AdminCharacter }) {
       src={character.image}
       alt=""
       onError={() => setHasError(true)}
-      className="h-12 w-12 shrink-0 rounded-2xl object-cover shadow-sm ring-1 ring-black/5"
+      className="h-12 w-12 shrink-0 rounded-xl object-cover shadow-sm ring-1 ring-black/5"
     />
   );
 }
@@ -118,7 +118,7 @@ export function CharacterListPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-elevated sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <p className="text-sm font-medium text-muted">
           {loading ? 'Loading…' : `${visibleCharacters.length} of ${characters.length} character(s)`}
         </p>
@@ -134,7 +134,7 @@ export function CharacterListPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-3xl border border-border bg-surface shadow-elevated">
+      <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-elevated">
         {loading ? (
           <p className="p-6 text-sm text-muted">Loading…</p>
         ) : error ? (
@@ -145,7 +145,7 @@ export function CharacterListPage() {
           <p className="p-6 text-sm text-muted">No characters match "{query}".</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-wide text-subtle">
+            <thead className="border-b border-border text-xs uppercase tracking-wide text-subtle">
               <tr>
                 <th className="px-5 pb-3 pt-5 font-semibold">Character</th>
                 <th className="px-5 pb-3 pt-5 font-semibold">Rarity</th>

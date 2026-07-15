@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import {
-  getUpcomingEntriesForServer,
+  getCurrentMonthSpotlightEntries,
   RELEASE_TIMING_LABEL_KEYS,
   RELEASE_TYPE_LABEL_KEYS,
   RELEASE_TYPE_STYLES,
@@ -12,9 +12,7 @@ import { HudFrame } from '@/components/character/HudFrame';
 import { ArrowRightIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCharacters } from '@/hooks/useCharacters';
-import { useReleaseSchedule } from '@/hooks/useReleaseSchedule';
 
-const SPOTLIGHT_LIMIT_PER_SERVER = 2;
 const HEADLINE_ACCENT = 'One Punch Man';
 
 const EMBERS = [
@@ -46,12 +44,8 @@ function HeroHeadline({ text }: { text: string }) {
 export function HeroSection() {
   const { t } = useTranslation();
   const { characters } = useCharacters();
-  const { entries: releaseSchedule } = useReleaseSchedule();
-  const spotlightEntries = [
-    ...getUpcomingEntriesForServer(releaseSchedule, 'CN', SPOTLIGHT_LIMIT_PER_SERVER),
-    ...getUpcomingEntriesForServer(releaseSchedule, 'SEA', SPOTLIGHT_LIMIT_PER_SERVER),
-  ];
-  const upcomingCount = releaseSchedule.filter((entry) => entry.status === 'Upcoming').length;
+  const spotlightEntries = getCurrentMonthSpotlightEntries(characters);
+  const upcomingCount = spotlightEntries.length;
   const featuredRarity =
     (characters.find((character) => character.slug === 'saitama') ?? characters[0])?.rarity ?? 'UR+';
 
@@ -175,7 +169,7 @@ export function HeroSection() {
             />
             {spotlightEntries.map((entry, index) => (
               <div
-                key={entry.id}
+                key={entry.key}
                 className="animate-float perspective-distant"
                 style={{ animationDelay: `${index * 0.5}s` }}
               >

@@ -23,12 +23,12 @@ export function BadgeSelect({ value, onChange, options }: BadgeSelectProps) {
               aria-pressed={isActive}
               className={`group relative flex w-20 flex-col items-center gap-2 rounded-2xl border p-3 text-center transition-all duration-200 ${
                 isActive
-                  ? 'border-accent/40 bg-accent/5 shadow-glow-accent'
+                  ? 'border-accent/40 bg-accent/5 shadow-sm'
                   : 'border-border bg-elevated hover:-translate-y-0.5 hover:border-accent/30 hover:bg-surface hover:shadow-elevated'
               }`}
             >
               {isActive && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))] text-white shadow-sm ring-2 ring-surface">
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white shadow-sm ring-2 ring-surface">
                   <CheckIcon className="h-3 w-3" strokeWidth={3} />
                 </span>
               )}
@@ -65,20 +65,12 @@ export function BadgeSelect({ value, onChange, options }: BadgeSelectProps) {
             aria-pressed={isActive}
             className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition-all duration-200 ${
               isActive
-                ? 'border-transparent text-white shadow-md'
+                ? 'border-transparent text-white shadow-sm'
                 : 'border-border bg-elevated text-muted hover:-translate-y-0.5 hover:border-accent/40 hover:text-foreground'
             }`}
             style={
               isActive
-                ? option.color
-                  ? {
-                      background: `linear-gradient(135deg, ${option.color}, ${option.color}cc)`,
-                      boxShadow: `0 6px 16px -4px ${option.color}66`,
-                    }
-                  : {
-                      background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-hover))',
-                      boxShadow: 'var(--shadow-glow-accent)',
-                    }
+                ? { background: option.color ?? 'var(--color-accent)' }
                 : undefined
             }
           >

@@ -1,4 +1,5 @@
 import type { MaterialCost } from './mastery';
+import type { TicketSource } from '@/data/ticketSources';
 
 export interface SpecCalculatorInput {
   baseAtk: number;
@@ -23,4 +24,20 @@ export interface CoreLabCalculatorInput {
 export interface CoreLabCalculatorResult {
   totalMaterials: MaterialCost[];
   totalLevelsToUpgrade: number;
+}
+
+export interface TicketCalculatorInput {
+  currentBlackTickets: number;
+  currentStkTickets: number;
+  /** This month's source ids already claimed — excluded from the projection. */
+  claimedSourceIds: string[];
+  targetDate: string;
+}
+
+export interface TicketCalculatorResult {
+  projectedBlackTickets: number;
+  projectedStkTickets: number;
+  blackTicketsGained: number;
+  stkTicketsGained: number;
+  upcomingSources: { source: TicketSource; date: string }[];
 }

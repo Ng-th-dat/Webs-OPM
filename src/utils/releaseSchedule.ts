@@ -1,5 +1,5 @@
 import type { ReleaseScheduleEntry, ReleaseTiming, ReleaseType, Server } from '@/types/releaseSchedule';
-import type { ReleaseStatus } from '@/types/character';
+import type { Character, Rarity, ReleaseStatus } from '@/types/character';
 import type { TranslationKey } from '@/i18n';
 
 export const RELEASE_TYPE_STYLES: Record<ReleaseType, { badge: string; border: string }> = {
@@ -113,6 +113,205 @@ export function getUpcomingEntriesForServer(
       return TIMING_ORDER[a.timing] - TIMING_ORDER[b.timing];
     })
     .slice(0, limit);
+}
+
+/**
+ * Characters carry one entered debut/comeback month — that value is CN's timing (CN
+ * releases first, so it's the value the admin actually tracks). SEA always follows 4
+ * months later, so SEA's month/year is derived, never entered separately.
+ */
+export const SEA_LAG_MONTHS = 4;
+
+export function shiftMonth(month: number, year: number, offsetMonths: number): { month: number; year: number } {
+  const total = year * 12 + (month - 1) + offsetMonths;
+  return { year: Math.floor(total / 12), month: ((total % 12) + 12) % 12 + 1 };
+}
+
+export const TIMING_DAY: Record<ReleaseTiming, number> = {
+  'Start of Month': 1,
+  'Mid Month': 15,
+  'End of Month': 28,
+};
+
+export function timingToDate(month: number, year: number, timing: ReleaseTiming): Date {
+  return new Date(year, month - 1, TIMING_DAY[timing]);
+}
+
+/** Midnight today — comparisons against `timingToDate` (also midnight) must use this, not `new Date()`, or today's own event reads as "already past" once any time has elapsed since midnight. */
+export function startOfToday(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+export interface SpotlightEntry {
+  key: string;
+  server: Server;
+  releaseType: 'Debut' | 'Comeback';
+  timing: ReleaseTiming;
+  date: Date;
+  characterId: string;
+  characterName: string;
+  characterSlug: string;
+  image: string;
+  rarity: Rarity;
+}
+
+const SPOTLIGHT_SERVER_ORDER: Record<Server, number> = { CN: 0, SEA: 1, Global: 2 };
+
+/**
+ * Derives this month's Debut/Comeback spotlight cards straight from character records —
+ * no release_schedule row needed. For each character, CN fires in its entered month;
+ * SEA fires 4 months later — only entries landing in the current month are returned.
+ */
+export function getCurrentMonthSpotlightEntries(characters: Character[]): SpotlightEntry[] {
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const entries: SpotlightEntry[] = [];
+
+  function addIfCurrentMonth(
+    character: Character,
+    cnMonth: number,
+    cnYear: number,
+    releaseType: 'Debut' | 'Comeback',
+    timing: ReleaseTiming
+  ) {
+    const sea = shiftMonth(cnMonth, cnYear, SEA_LAG_MONTHS);
+    if (cnMonth === currentMonth && cnYear === currentYear) {
+      entries.push({
+        key: `${character.id}-cn-${releaseType}`,
+        server: 'CN',
+        releaseType,
+        timing,
+        date: timingToDate(cnMonth, cnYear, timing),
+        characterId: character.id,
+        characterName: character.name,
+        characterSlug: character.slug,
+        image: character.image,
+        rarity: character.rarity,
+      });
+    }
+    if (sea.month === currentMonth && sea.year === currentYear) {
+      entries.push({
+        key: `${character.id}-sea-${releaseType}`,
+        server: 'SEA',
+        releaseType,
+        timing,
+        date: timingToDate(sea.month, sea.year, timing),
+        characterId: character.id,
+        characterName: character.name,
+        characterSlug: character.slug,
+        image: character.image,
+        rarity: character.rarity,
+      });
+    }
+  }
+
+  for (const character of characters) {
+    if (character.debutMonth && character.debutYear) {
+      addIfCurrentMonth(character, character.debutMonth, character.debutYear, 'Debut', character.debutTiming ?? 'Start of Month');
+    }
+    if (character.comebackMonth && character.comebackYear) {
+      addIfCurrentMonth(character, character.comebackMonth, character.comebackYear, 'Comeback', character.comebackTiming ?? 'Mid Month');
+    }
+  }
+
+  return entries.sort((a, b) => SPOTLIGHT_SERVER_ORDER[a.server] - SPOTLIGHT_SERVER_ORDER[b.server]);
+}
+
+/**
+ * Every Debut/Comeback for a single server landing within [fromDate, toDate], sorted
+ * chronologically — the Ticket Calculator timeline's event list (unlike
+ * `getCurrentMonthSpotlightEntries`, which is locked to the current calendar month and
+ * both servers).
+ */
+export function getSpotlightEntriesInRange(
+  characters: Character[],
+  server: Server,
+  fromDate: Date,
+  toDate: Date
+): SpotlightEntry[] {
+  const entries: SpotlightEntry[] = [];
+
+  function addIfInRange(character: Character, cnMonth: number, cnYear: number, releaseType: 'Debut' | 'Comeback', timing: ReleaseTiming) {
+    let date: Date;
+    if (server === 'CN') {
+      date = timingToDate(cnMonth, cnYear, timing);
+    } else {
+      const sea = shiftMonth(cnMonth, cnYear, SEA_LAG_MONTHS);
+      date = timingToDate(sea.month, sea.year, timing);
+    }
+    if (date >= fromDate && date <= toDate) {
+      entries.push({
+        key: `${character.id}-${server.toLowerCase()}-${releaseType}`,
+        server,
+        releaseType,
+        timing,
+        date,
+        characterId: character.id,
+        characterName: character.name,
+        characterSlug: character.slug,
+        image: character.image,
+        rarity: character.rarity,
+      });
+    }
+  }
+
+  for (const character of characters) {
+    if (character.debutMonth && character.debutYear) {
+      addIfInRange(character, character.debutMonth, character.debutYear, 'Debut', character.debutTiming ?? 'Start of Month');
+    }
+    if (character.comebackMonth && character.comebackYear) {
+      addIfInRange(character, character.comebackMonth, character.comebackYear, 'Comeback', character.comebackTiming ?? 'Mid Month');
+    }
+  }
+
+  return entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+export interface UpcomingReleaseEvent {
+  server: Server;
+  releaseType: 'Debut' | 'Comeback';
+  date: Date;
+  characterName: string;
+  characterSlug: string;
+}
+
+/** Earliest future Debut/Comeback across every character, for the requested server(s) — the Ticket Calculator's default target date. */
+export function getNextUpcomingRelease(
+  characters: Character[],
+  servers: Server[] = ['CN', 'SEA']
+): UpcomingReleaseEvent | null {
+  const now = startOfToday();
+  const candidates: UpcomingReleaseEvent[] = [];
+
+  function addCandidates(character: Character, cnMonth: number, cnYear: number, releaseType: 'Debut' | 'Comeback', timing: ReleaseTiming) {
+    if (servers.includes('CN')) {
+      const cnDate = timingToDate(cnMonth, cnYear, timing);
+      if (cnDate >= now) {
+        candidates.push({ server: 'CN', releaseType, date: cnDate, characterName: character.name, characterSlug: character.slug });
+      }
+    }
+    if (servers.includes('SEA')) {
+      const sea = shiftMonth(cnMonth, cnYear, SEA_LAG_MONTHS);
+      const seaDate = timingToDate(sea.month, sea.year, timing);
+      if (seaDate >= now) {
+        candidates.push({ server: 'SEA', releaseType, date: seaDate, characterName: character.name, characterSlug: character.slug });
+      }
+    }
+  }
+
+  for (const character of characters) {
+    if (character.debutMonth && character.debutYear) {
+      addCandidates(character, character.debutMonth, character.debutYear, 'Debut', character.debutTiming ?? 'Start of Month');
+    }
+    if (character.comebackMonth && character.comebackYear) {
+      addCandidates(character, character.comebackMonth, character.comebackYear, 'Comeback', character.comebackTiming ?? 'Mid Month');
+    }
+  }
+
+  candidates.sort((a, b) => a.date.getTime() - b.date.getTime());
+  return candidates[0] ?? null;
 }
 
 export function getLatestMonthYear(

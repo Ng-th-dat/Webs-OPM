@@ -4,6 +4,7 @@ export const en = {
     characters: 'Characters',
     updates: 'Updates',
     trade: 'Trade',
+    ticketCalculator: 'Tickets',
     mastery: 'Mastery',
     coreLab: 'Core Lab',
     calculators: 'Calculators',
@@ -55,6 +56,11 @@ export const en = {
         title: 'Core-Lab Calculator',
         description:
           'Set your current and target level to get a full resource breakdown for your next Core-Lab push.',
+      },
+      ticketCalculator: {
+        title: 'Ticket Calculator',
+        description:
+          'Track your black/STK ticket income and project how many you\'ll have saved by the next debut or comeback.',
       },
     },
   },
@@ -217,6 +223,56 @@ export const en = {
     eyebrow: 'Tools',
     title: 'Calculators',
     description: 'Run the numbers before you commit resources — pick a calculator below.',
+  },
+  ticketCalculator: {
+    eyebrow: 'Planning Tool',
+    title: 'Ticket Calculator',
+    description:
+      'Every month you earn a fixed 81 black tickets and 18 STK tickets from the same sources. Project how many you\'ll have saved by a debut, a comeback, or any date you pick.',
+    table: {
+      blackTitle: 'Black Tickets — Fixed Monthly Sources',
+      stkTitle: 'STK Tickets — Fixed Monthly Sources',
+      source: 'Source',
+      timing: 'Timing',
+      amount: 'Amount',
+      total: 'Total',
+    },
+    sources: {
+      blackShopEarly: 'Buy with diamonds from the shop (start of month)',
+      blackShopMid: 'Buy with diamonds from the shop (mid month)',
+      blackEvent: 'Monthly event participation ticket',
+      blackLogin: 'Daily login reward',
+      blackBingo: 'Monthly bingo event participation',
+      stkShop: 'Buy with diamonds from the shop (any day this month)',
+      stkEvent: 'Monthly event participation ticket',
+      stkLoginEarly: 'Daily login reward (start of month)',
+      stkLoginMid: 'Daily login reward (mid month)',
+      stkBingo: 'Monthly bingo event participation',
+    },
+    form: {
+      currentTickets: 'Tickets you have now',
+      currentBlackTickets: 'Black tickets',
+      currentStkTickets: 'STK tickets',
+      claimedTitle: 'Already claimed this month',
+      claimedHint: 'Uncheck a source and it still counts toward the projection — check it once you\'ve actually claimed it.',
+      targetTitle: 'Project up to',
+      targetNextRelease: 'Next release',
+      targetCustomDate: 'Custom date',
+      targetServer: 'Server',
+      nextReleaseFound: '{characterName} — {releaseType} on {server}, {date}',
+      nextReleaseNone: 'No upcoming release found for this server yet.',
+      customDateLabel: 'Target date',
+    },
+    result: {
+      title: 'Projected Total',
+      blackTickets: 'Black tickets',
+      stkTickets: 'STK tickets',
+    },
+    timeline: {
+      includedLabel: 'Included:',
+      targetRowLabel: 'As of your target date',
+      noEvents: 'No character events in this range yet — showing the flat total for your target date.',
+    },
   },
   comingSoonPages: {
     specCalculator: {

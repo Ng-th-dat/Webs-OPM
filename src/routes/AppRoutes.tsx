@@ -10,6 +10,7 @@ import { SpecCalculatorPage } from '@/pages/SpecCalculatorPage';
 import { MasteryPage } from '@/pages/MasteryPage';
 import { CoreLabPage } from '@/pages/CoreLabPage';
 import { CoreLabCalculatorPage } from '@/pages/CoreLabCalculatorPage';
+import { TicketCalculatorPage } from '@/pages/TicketCalculatorPage';
 import { CalculatorsPage } from '@/pages/CalculatorsPage';
 import { PrivacyPolicyPage } from '@/pages/PrivacyPolicyPage';
 import { DisclaimerPage } from '@/pages/DisclaimerPage';
@@ -36,6 +37,7 @@ export function AppRoutes() {
         <Route path="calculators" element={<CalculatorsPage />} />
         <Route path="spec-calculator" element={<SpecCalculatorPage />} />
         <Route path="core-lab-calculator" element={<CoreLabCalculatorPage />} />
+        <Route path="ticket-calculator" element={<TicketCalculatorPage />} />
         <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="disclaimer" element={<DisclaimerPage />} />
         <Route path="feedback" element={<FeedbackPage />} />

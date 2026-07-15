@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { Rarity, CharacterFaction, CharacterRank, ReleaseStatus, SkillType } from '@main/types/character';
+import type { Rarity, CharacterFaction, CharacterRank, ReleaseStatus, ReleaseTiming, SkillType } from '@main/types/character';
 import { createCharacter, fetchCharacterById, updateCharacter } from '@/lib/characters';
 import { AWAKENING_ELIGIBLE_RARITIES } from '@/lib/rarity';
 import {
   FACTION_OPTIONS,
+  MONTH_ABBREVIATIONS,
+  MONTH_OPTIONS,
   RANK_OPTIONS,
   RARITY_OPTIONS,
   RELEASE_STATUS_OPTIONS,
   ROLE_OPTIONS,
   SKILL_TYPE_OPTIONS,
+  TIMING_OPTIONS,
   TYPE_OPTIONS,
 } from '@/lib/badges';
 import { XIcon } from '@/components/icons';
@@ -22,7 +25,6 @@ import { useConfirm } from '@/components/ConfirmDialog';
 const CORE_ROLE = 'Core';
 
 interface SkillFormValue {
-  name: string;
   description: string;
   upgradedDescription: string;
   skillType: SkillType | '';
@@ -32,7 +34,6 @@ interface SkillFormValue {
 
 interface AwakeningFormValue {
   tier: string;
-  name: string;
   description: string;
   requirement: string;
   image: string;
@@ -58,7 +59,12 @@ interface FormState {
   tags: string;
   releaseVersion: string;
   releaseStatus: ReleaseStatus | '';
-  passiveName: string;
+  debutMonthAbbr: string;
+  debutYear: string;
+  debutTiming: ReleaseTiming | '';
+  comebackMonthAbbr: string;
+  comebackYear: string;
+  comebackTiming: ReleaseTiming | '';
   passiveDescription: string;
   passiveGoldDescription: string;
   passivePurpleDescription: string;
@@ -69,7 +75,6 @@ interface FormState {
 }
 
 const EMPTY_SKILL: SkillFormValue = {
-  name: '',
   description: '',
   upgradedDescription: '',
   skillType: '',
@@ -79,7 +84,6 @@ const EMPTY_SKILL: SkillFormValue = {
 
 const EMPTY_AWAKENING: AwakeningFormValue = {
   tier: '1',
-  name: '',
   description: '',
   requirement: '',
   image: '',
@@ -105,7 +109,12 @@ const EMPTY_FORM: FormState = {
   tags: '',
   releaseVersion: '',
   releaseStatus: '',
-  passiveName: '',
+  debutMonthAbbr: '',
+  debutYear: '',
+  debutTiming: '',
+  comebackMonthAbbr: '',
+  comebackYear: '',
+  comebackTiming: '',
   passiveDescription: '',
   passiveGoldDescription: '',
   passivePurpleDescription: '',
@@ -159,7 +168,7 @@ function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
 
 function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <section className="rounded-3xl border border-border bg-surface p-4 shadow-elevated transition-shadow duration-300 sm:p-6">
+    <section className="rounded-card border border-border bg-surface p-4 shadow-elevated transition-shadow duration-300 sm:p-6">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-foreground">{title}</h2>
         {description && <p className="mt-1 text-sm text-muted">{description}</p>}
@@ -225,7 +234,12 @@ export function CharacterFormPage() {
           tags: character.tags.join(', '),
           releaseVersion: character.releaseVersion,
           releaseStatus: character.releaseStatus,
-          passiveName: character.passive.name,
+          debutMonthAbbr: character.debutMonth ? MONTH_ABBREVIATIONS[character.debutMonth - 1] : '',
+          debutYear: character.debutYear ? String(character.debutYear) : '',
+          debutTiming: character.debutTiming ?? '',
+          comebackMonthAbbr: character.comebackMonth ? MONTH_ABBREVIATIONS[character.comebackMonth - 1] : '',
+          comebackYear: character.comebackYear ? String(character.comebackYear) : '',
+          comebackTiming: character.comebackTiming ?? '',
           passiveDescription: character.passive.description,
           passiveGoldDescription: character.passive.goldDescription ?? '',
           passivePurpleDescription: character.passive.purpleDescription ?? '',
@@ -237,7 +251,6 @@ export function CharacterFormPage() {
         setSlugTouched(true);
         setSkills(
           character.skills.map((skill) => ({
-            name: skill.name,
             description: skill.description,
             upgradedDescription: skill.upgradedDescription ?? '',
             skillType: skill.skillType ?? '',
@@ -248,7 +261,6 @@ export function CharacterFormPage() {
         setAwakenings(
           (character.awakenings ?? []).map((awakening) => ({
             tier: String(awakening.tier),
-            name: awakening.name,
             description: awakening.description,
             requirement: awakening.requirement ?? '',
             image: awakening.image ?? '',
@@ -318,7 +330,6 @@ export function CharacterFormPage() {
         .map((tag) => tag.trim())
         .filter(Boolean),
       skills: skills.map((skill) => ({
-        name: skill.name.trim(),
         description: skill.description.trim(),
         upgradedDescription: skill.upgradedDescription.trim() || undefined,
         skillType: skill.skillType || undefined,
@@ -326,7 +337,6 @@ export function CharacterFormPage() {
         image: skill.image || undefined,
       })),
       passive: {
-        name: form.passiveName.trim(),
         description: form.passiveDescription.trim(),
         goldDescription: form.passiveGoldDescription.trim() || undefined,
         purpleDescription: form.passivePurpleDescription.trim() || undefined,
@@ -335,7 +345,6 @@ export function CharacterFormPage() {
       awakenings: showAwakenings
         ? awakenings.map((awakening) => ({
             tier: Number(awakening.tier),
-            name: awakening.name.trim(),
             description: awakening.description.trim(),
             requirement: awakening.requirement.trim() || undefined,
             image: awakening.image || undefined,
@@ -355,6 +364,16 @@ export function CharacterFormPage() {
       recommendedUsage: form.recommendedUsage.trim(),
       releaseVersion: form.releaseVersion.trim(),
       releaseStatus: form.releaseStatus,
+      debutMonth: form.debutMonthAbbr
+        ? MONTH_ABBREVIATIONS.indexOf(form.debutMonthAbbr as (typeof MONTH_ABBREVIATIONS)[number]) + 1
+        : null,
+      debutYear: form.debutMonthAbbr && form.debutYear ? Number(form.debutYear) : null,
+      debutTiming: form.debutMonthAbbr ? form.debutTiming || 'Start of Month' : null,
+      comebackMonth: form.comebackMonthAbbr
+        ? MONTH_ABBREVIATIONS.indexOf(form.comebackMonthAbbr as (typeof MONTH_ABBREVIATIONS)[number]) + 1
+        : null,
+      comebackYear: form.comebackMonthAbbr && form.comebackYear ? Number(form.comebackYear) : null,
+      comebackTiming: form.comebackMonthAbbr ? form.comebackTiming || 'Mid Month' : null,
     };
 
     const confirmed = await confirm(
@@ -475,12 +494,61 @@ export function CharacterFormPage() {
           </Field>
         </Panel>
 
+        <Panel
+          title="Release Timing (CN)"
+          description="CN's timing only — SEA is derived automatically (CN + 4 months) for the homepage's upcoming-releases spotlight. Leave blank if not yet announced. Comeback holds only the current/next one; edit it again when the next comeback happens."
+        >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Field label="Debut month (CN)">
+              <BadgeSelect
+                value={form.debutMonthAbbr}
+                onChange={(value) => updateField('debutMonthAbbr', value)}
+                options={[{ value: '' }, ...MONTH_OPTIONS]}
+              />
+            </Field>
+            <Field label="Debut year (CN)">
+              <TextInput
+                type="number"
+                value={form.debutYear}
+                onChange={(event) => updateField('debutYear', event.target.value)}
+                placeholder="e.g. 2026"
+              />
+            </Field>
+            <Field label="Debut timing (CN)">
+              <BadgeSelect
+                value={form.debutTiming}
+                onChange={(value) => updateField('debutTiming', value as ReleaseTiming)}
+                options={TIMING_OPTIONS}
+              />
+            </Field>
+            <Field label="Comeback month (CN)">
+              <BadgeSelect
+                value={form.comebackMonthAbbr}
+                onChange={(value) => updateField('comebackMonthAbbr', value)}
+                options={[{ value: '' }, ...MONTH_OPTIONS]}
+              />
+            </Field>
+            <Field label="Comeback year (CN)">
+              <TextInput
+                type="number"
+                value={form.comebackYear}
+                onChange={(event) => updateField('comebackYear', event.target.value)}
+                placeholder="e.g. 2026"
+              />
+            </Field>
+            <Field label="Comeback timing (CN)">
+              <BadgeSelect
+                value={form.comebackTiming}
+                onChange={(value) => updateField('comebackTiming', value as ReleaseTiming)}
+                options={TIMING_OPTIONS}
+              />
+            </Field>
+          </div>
+        </Panel>
+
         <Panel title="Skills" description="Basic attack skills and the ultimate. Passive and Awakening/Core have their own sections below.">
           {skills.map((skill, index) => (
             <RemovableRow key={index} onRemove={() => setSkills((current) => current.filter((_, i) => i !== index))}>
-              <Field label="Name" required>
-                <TextInput value={skill.name} onChange={(event) => updateSkill(index, { name: event.target.value })} />
-              </Field>
               <Field label="Skill type">
                 <BadgeSelect value={skill.skillType} onChange={(value) => updateSkill(index, { skillType: value as SkillType })} options={SKILL_TYPE_OPTIONS} />
               </Field>
@@ -513,9 +581,6 @@ export function CharacterFormPage() {
         </Panel>
 
         <Panel title="Passive">
-          <Field label="Name" required>
-            <TextInput value={form.passiveName} onChange={(event) => updateField('passiveName', event.target.value)} />
-          </Field>
           <Field label="Icon">
             <ImageUpload slug={slugPreview} slot="passive" value={form.passiveImage} onChange={(url) => updateField('passiveImage', url)} />
           </Field>
@@ -533,17 +598,12 @@ export function CharacterFormPage() {
         </Panel>
 
         {showAwakenings && (
-          <Panel title="Awakening" description="Only shown for SSR+/UR/UR+ rarity with a non-Core role.">
+          <Panel title="Awakening" description="Only shown for SSR+/UR/UR+ rarity with a non-Core role. Tier 1 and Tier 2 only.">
             {awakenings.map((awakening, index) => (
               <RemovableRow key={index} onRemove={() => setAwakenings((current) => current.filter((_, i) => i !== index))}>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-[6rem_1fr]">
-                  <Field label="Tier" required>
-                    <TextInput type="number" min={1} value={awakening.tier} onChange={(event) => updateAwakening(index, { tier: event.target.value })} />
-                  </Field>
-                  <Field label="Name" required>
-                    <TextInput value={awakening.name} onChange={(event) => updateAwakening(index, { name: event.target.value })} />
-                  </Field>
-                </div>
+                <Field label="Tier" required>
+                  <TextInput type="number" min={1} max={2} value={awakening.tier} onChange={(event) => updateAwakening(index, { tier: event.target.value })} />
+                </Field>
                 <Field label="Art">
                   <ImageUpload
                     slug={slugPreview}
@@ -560,13 +620,15 @@ export function CharacterFormPage() {
                 </Field>
               </RemovableRow>
             ))}
-            <button
-              type="button"
-              onClick={() => setAwakenings((current) => [...current, { ...EMPTY_AWAKENING, tier: String(current.length + 1) }])}
-              className="self-start rounded-full border border-dashed border-border px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
-            >
-              + Add awakening tier
-            </button>
+            {awakenings.length < 2 && (
+              <button
+                type="button"
+                onClick={() => setAwakenings((current) => [...current, { ...EMPTY_AWAKENING, tier: String(current.length + 1) }])}
+                className="self-start rounded-full border border-dashed border-border px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
+              >
+                + Add awakening tier
+              </button>
+            )}
           </Panel>
         )}
 
@@ -632,7 +694,7 @@ export function CharacterFormPage() {
           <button
             type="submit"
             disabled={status.kind === 'submitting'}
-            className="self-start rounded-full bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))] px-6 py-3 text-sm font-bold text-white shadow-glow-accent transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-glow-accent"
+            className="self-start rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
           >
             {status.kind === 'submitting' ? 'Saving…' : isEditMode ? 'Save changes' : 'Save character'}
           </button>

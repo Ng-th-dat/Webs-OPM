@@ -85,7 +85,7 @@ export function TradeListingDetailPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4">
-      <section className="rounded-3xl border border-border bg-surface p-6 shadow-elevated">
+      <section className="rounded-card border border-border bg-surface p-6 shadow-elevated">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <span
             className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
@@ -129,7 +129,7 @@ export function TradeListingDetailPage() {
       </section>
 
       {listing.status === 'pending' && (
-        <section className="rounded-3xl border border-border bg-surface p-6 shadow-elevated">
+        <section className="rounded-card border border-border bg-surface p-6 shadow-elevated">
           <h2 className="text-sm font-bold text-foreground">Moderation</h2>
 
           {!showRejectForm ? (
@@ -138,7 +138,7 @@ export function TradeListingDetailPage() {
                 type="button"
                 onClick={handleApprove}
                 disabled={submitting}
-                className="rounded-full bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))] px-5 py-2.5 text-sm font-bold text-white shadow-glow-accent transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50"
+                className="rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover disabled:opacity-50"
               >
                 Approve
               </button>
@@ -167,7 +167,7 @@ export function TradeListingDetailPage() {
                   type="button"
                   onClick={handleReject}
                   disabled={submitting || !rejectReason.trim()}
-                  className="rounded-full bg-[linear-gradient(135deg,var(--color-danger),#b91c1c)] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-full bg-danger px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-danger-hover disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Confirm rejection
                 </button>

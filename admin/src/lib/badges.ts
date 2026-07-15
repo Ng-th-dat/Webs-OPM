@@ -31,7 +31,7 @@ export const RANK_OPTIONS: BadgeOption[] = [
 ];
 
 export const RELEASE_STATUS_OPTIONS: BadgeOption[] = [
-  { value: 'Upcoming', color: '#8b5cf6' },
+  { value: 'Upcoming', color: '#0ea5e9' },
   { value: 'Released', color: '#22c55e' },
   { value: 'TBD', color: '#9ca3af' },
 ];
@@ -57,42 +57,42 @@ export const RARITY_OPTIONS: BadgeOption[] = RARITY_ORDER.map((rarity) => ({
 }));
 
 export const SERVER_OPTIONS: BadgeOption[] = [
-  { value: 'CN', color: '#8b5cf6' },
-  { value: 'SEA', color: '#ec4899' },
-  { value: 'Global', color: '#f97316' },
+  { value: 'CN', color: '#64748b' },
+  { value: 'SEA', color: '#0d9488' },
+  { value: 'Global', color: '#d97706' },
 ];
 
 export const UPDATE_CATEGORY_OPTIONS: BadgeOption[] = [
-  { value: 'Update', color: '#3da9fc' },
-  { value: 'Event', color: '#ffb020' },
-  { value: 'CnNews', color: '#a970ff' },
-  { value: 'Maintenance', color: '#5c6470' },
+  { value: 'Update', color: '#3b82f6' },
+  { value: 'Event', color: '#d97706' },
+  { value: 'CnNews', color: '#0ea5e9' },
+  { value: 'Maintenance', color: '#64748b' },
 ];
 
 export const RELEASE_TYPE_OPTIONS: BadgeOption[] = [
-  { value: 'Debut', color: '#f97316' },
+  { value: 'Debut', color: '#d97706' },
   { value: 'Comeback', color: '#3b82f6' },
   { value: 'Limited', color: '#dc2626' },
   { value: 'Core', color: '#14b8a6' },
-  { value: 'Event', color: '#8b5cf6' },
+  { value: 'Event', color: '#0ea5e9' },
 ];
 
 export const TRADE_STATUS_OPTIONS: BadgeOption[] = [
-  { value: 'pending', color: '#f97316' },
+  { value: 'pending', color: '#d97706' },
   { value: 'approved', color: '#22c55e' },
   { value: 'rejected', color: '#dc2626' },
   { value: 'sold', color: '#9ca3af' },
 ];
 
 export const TOPUP_STATUS_OPTIONS: BadgeOption[] = [
-  { value: 'pending', color: '#f97316' },
+  { value: 'pending', color: '#d97706' },
   { value: 'approved', color: '#22c55e' },
   { value: 'rejected', color: '#dc2626' },
 ];
 
 /** Provenance of an approved top-up — auto = SePay webhook matched it, manual = an admin approved it by hand. */
 export const TOPUP_PROVENANCE_OPTIONS: BadgeOption[] = [
-  { value: 'Auto', color: '#3da9fc' },
+  { value: 'Auto', color: '#3b82f6' },
   { value: 'Manual', color: '#6b7280' },
 ];
 

@@ -60,7 +60,7 @@ export function TopupsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-elevated sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <p className="text-sm font-medium text-muted">
           {loading ? 'Loading…' : `${filteredTopups.length} of ${topups.length} top-ups`}
         </p>
@@ -68,67 +68,87 @@ export function TopupsPage() {
       </div>
 
       {loading ? (
-        <p className="rounded-3xl border border-border bg-surface p-6 text-sm text-muted shadow-elevated">Loading…</p>
+        <p className="rounded-card border border-border bg-surface p-6 text-sm text-muted shadow-elevated">Loading…</p>
       ) : error ? (
-        <p className="rounded-3xl border border-border bg-surface p-6 text-sm text-danger shadow-elevated">{error}</p>
+        <p className="rounded-card border border-border bg-surface p-6 text-sm text-danger shadow-elevated">{error}</p>
       ) : filteredTopups.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-border bg-surface p-10 text-center shadow-elevated">
+        <div className="rounded-card border border-dashed border-border bg-surface p-10 text-center shadow-elevated">
           <p className="text-sm font-semibold text-foreground">No top-ups</p>
           <p className="mt-1 text-sm text-muted">Requests submitted from the wallet page will show up here.</p>
         </div>
       ) : (
-        <div className="rounded-3xl border border-border bg-surface p-4 shadow-elevated sm:p-5">
-          <div className="flex flex-col gap-2">
-            {filteredTopups.map((topup) => (
-              <div key={topup.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-elevated/50 p-3">
-                {topup.paymentProofUrl ? (
-                  <a href={topup.paymentProofUrl} target="_blank" rel="noreferrer" className="h-10 w-14 shrink-0 overflow-hidden rounded-xl border border-border">
-                    <img src={topup.paymentProofUrl} alt="" className="h-full w-full object-cover" />
-                  </a>
-                ) : (
-                  <div className="flex h-10 w-14 shrink-0 items-center justify-center rounded-xl border border-dashed border-border text-[9px] font-semibold text-subtle">
-                    No proof
-                  </div>
-                )}
-                <div className="min-w-[10rem] flex-1">
-                  <p className="text-sm font-semibold text-foreground">{topup.phieuAmount} phiếu — {formatVnd(topup.amountVnd)}</p>
-                  <p className="text-xs text-subtle">{new Date(topup.createdAt).toLocaleString('en-US')}</p>
-                </div>
-                <span
-                  className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-                  style={{ backgroundColor: STATUS_COLOR[topup.status] }}
-                >
-                  {topup.status}
-                </span>
-                {topup.status === 'approved' && (
-                  <span
-                    className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-                    style={{ backgroundColor: topup.autoMatched ? PROVENANCE_COLOR.Auto : PROVENANCE_COLOR.Manual }}
-                  >
-                    {topup.autoMatched ? 'Auto' : 'Manual'}
-                  </span>
-                )}
-                <div className="ml-auto flex items-center gap-2">
-                  {topup.status === 'pending' && (
-                    <button
-                      type="button"
-                      onClick={() => handleApprove(topup)}
-                      disabled={approvingId === topup.id}
-                      className="rounded-full bg-success/10 px-3 py-1.5 text-xs font-semibold text-success transition-colors hover:bg-success/20 disabled:opacity-50"
-                    >
-                      Approve
-                    </button>
-                  )}
-                  <Link
-                    to={`/topups/${topup.id}`}
-                    className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-elevated"
-                  >
-                    View
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-elevated">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-border text-xs uppercase tracking-wide text-subtle">
+              <tr>
+                <th className="px-5 pb-3 pt-5 font-semibold">Proof</th>
+                <th className="px-5 pb-3 pt-5 font-semibold">Amount</th>
+                <th className="px-5 pb-3 pt-5 font-semibold">Created</th>
+                <th className="px-5 pb-3 pt-5 font-semibold">Status</th>
+                <th className="px-5 pb-3 pt-5 font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filteredTopups.map((topup) => (
+                <tr key={topup.id} className="transition-colors duration-150 hover:bg-elevated/70">
+                  <td className="px-5 py-3">
+                    {topup.paymentProofUrl ? (
+                      <a href={topup.paymentProofUrl} target="_blank" rel="noreferrer" className="block h-10 w-14 shrink-0 overflow-hidden rounded-xl border border-border">
+                        <img src={topup.paymentProofUrl} alt="" className="h-full w-full object-cover" />
+                      </a>
+                    ) : (
+                      <div className="flex h-10 w-14 shrink-0 items-center justify-center rounded-xl border border-dashed border-border text-[9px] font-semibold text-subtle">
+                        No proof
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    <p className="font-semibold text-foreground">{topup.phieuAmount} phiếu</p>
+                    <p className="text-xs text-subtle">{formatVnd(topup.amountVnd)}</p>
+                  </td>
+                  <td className="px-5 py-3 text-muted">{new Date(topup.createdAt).toLocaleString('en-US')}</td>
+                  <td className="px-5 py-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
+                        style={{ backgroundColor: STATUS_COLOR[topup.status] }}
+                      >
+                        {topup.status}
+                      </span>
+                      {topup.status === 'approved' && (
+                        <span
+                          className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
+                          style={{ backgroundColor: topup.autoMatched ? PROVENANCE_COLOR.Auto : PROVENANCE_COLOR.Manual }}
+                        >
+                          {topup.autoMatched ? 'Auto' : 'Manual'}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      {topup.status === 'pending' && (
+                        <button
+                          type="button"
+                          onClick={() => handleApprove(topup)}
+                          disabled={approvingId === topup.id}
+                          className="rounded-full bg-success/10 px-3 py-1.5 text-xs font-semibold text-success transition-colors hover:bg-success/20 disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                      )}
+                      <Link
+                        to={`/topups/${topup.id}`}
+                        className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-elevated"
+                      >
+                        View
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

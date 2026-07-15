@@ -30,10 +30,10 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <form
         onSubmit={handleSubmit}
-        className="flex w-full max-w-sm flex-col gap-4 rounded-3xl border border-border bg-surface p-6 shadow-elevated"
+        className="flex w-full max-w-sm flex-col gap-4 rounded-card border border-border bg-surface p-6 shadow-elevated"
       >
         <div>
-          <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-purple))] text-base font-bold text-white shadow-glow-accent">
+          <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-base font-bold text-white shadow-sm">
             S
           </div>
           <h1 className="text-lg font-bold text-foreground">S-Class Codex Admin</h1>
@@ -69,7 +69,7 @@ export function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="h-11 rounded-full bg-[linear-gradient(135deg,var(--color-accent),var(--color-accent-hover))] text-sm font-bold text-white shadow-glow-accent transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated-lg disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-11 rounded-full bg-accent text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg disabled:cursor-not-allowed disabled:opacity-60"
         >
           {submitting ? 'Signing in…' : 'Sign in'}
         </button>
