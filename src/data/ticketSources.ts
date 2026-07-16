@@ -9,8 +9,6 @@ export interface TicketSource {
   amount: number;
   timing: ReleaseTiming;
   labelKey: TranslationKey;
-  /** Optional source icon — falls back to a generic ticket icon until set. */
-  image?: string;
 }
 
 /** Fixed monthly sources — 81 black tickets + 18 STK tickets, every month, same cadence. */

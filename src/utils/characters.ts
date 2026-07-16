@@ -1,5 +1,5 @@
 import type { Character, CharacterFilterValues, SkillType } from '@/types/character';
-import type { TranslationKey } from '@/i18n';
+import type { Language, TranslationKey } from '@/i18n';
 
 export function searchCharacters(characters: Character[], query: string): Character[] {
   const normalized = query.trim().toLowerCase();
@@ -39,6 +39,11 @@ export function getInitials(name: string): string {
   const words = name.trim().split(/\s+/);
   if (words.length === 1) return words[0].slice(0, 1).toUpperCase();
   return (words[0].slice(0, 1) + words[1].slice(0, 1)).toUpperCase();
+}
+
+/** Falls back to English whenever the Vietnamese field is missing/empty — a character/field not translated yet never renders blank. */
+export function pickLocalizedText(en: string | undefined, vi: string | undefined, language: Language): string | undefined {
+  return language === 'vi' && vi ? vi : en;
 }
 
 export const SKILL_TYPE_STYLES: Record<SkillType, { badge: string; iconWrap: string; glow: string }> = {

@@ -9,6 +9,8 @@ import { SchedulePage } from './pages/SchedulePage';
 import { ScheduleFormPage } from './pages/ScheduleFormPage';
 import { UpdatesListPage } from './pages/UpdatesListPage';
 import { UpdateFormPage } from './pages/UpdateFormPage';
+import { MasteryMaterialsPage } from './pages/MasteryMaterialsPage';
+import { TicketTypeImagesPage } from './pages/TicketTypeImagesPage';
 import { TradeListingsPage } from './pages/TradeListingsPage';
 import { TradeListingDetailPage } from './pages/TradeListingDetailPage';
 import { FeedbackPage } from './pages/FeedbackPage';
@@ -31,6 +33,8 @@ export function App() {
           <Route path="updates" element={<UpdatesListPage />} />
           <Route path="updates/new" element={<UpdateFormPage />} />
           <Route path="updates/:id/edit" element={<UpdateFormPage />} />
+          <Route path="mastery-materials" element={<MasteryMaterialsPage />} />
+          <Route path="ticket-images" element={<TicketTypeImagesPage />} />
           <Route path="trade-listings" element={<TradeListingsPage />} />
           <Route path="trade-listings/:id" element={<TradeListingDetailPage />} />
           <Route path="feedback" element={<FeedbackPage />} />

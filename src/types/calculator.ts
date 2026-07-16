@@ -1,4 +1,4 @@
-import type { MaterialCost } from './mastery';
+import type { MasteryBranch, MaterialCost } from './mastery';
 import type { TicketSource } from '@/data/ticketSources';
 
 export interface SpecCalculatorInput {
@@ -40,4 +40,21 @@ export interface TicketCalculatorResult {
   blackTicketsGained: number;
   stkTicketsGained: number;
   upcomingSources: { source: TicketSource; date: string }[];
+}
+
+export interface MasteryCalculatorInput {
+  branch: MasteryBranch;
+  fromTier: number;
+  toTier: number;
+}
+
+export interface MasteryStatGain {
+  stat: string;
+  fromValue: number;
+  toValue: number;
+}
+
+export interface MasteryCalculatorResult {
+  statGain: MasteryStatGain[];
+  materials: MaterialCost[];
 }

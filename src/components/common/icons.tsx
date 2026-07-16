@@ -179,6 +179,15 @@ export function CoinIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function TicketIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <IconBase {...props}>
+      <path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v1.5a1.75 1.75 0 000 3.5V16a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a1.75 1.75 0 000-3.5V9z" />
+      <path d="M9.5 7.5v9" strokeDasharray="2 2" />
+    </IconBase>
+  );
+}
+
 export function StarIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase fill="currentColor" strokeWidth={1} {...props}>

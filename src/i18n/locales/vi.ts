@@ -174,26 +174,56 @@ export const vi: Translations = {
     eyebrow: 'Hướng dẫn & Công cụ tính',
     title: 'Tinh Thông',
     description:
-      'Bảng chi tiết về chỉ số Tinh Thông cùng công cụ tính Spec ATK/DEF đang được phát triển. Đây là những gì sắp ra mắt.',
-    formulaGuide: 'Hướng dẫn công thức',
-    sections: {
-      statGrowth: {
-        title: 'Tăng trưởng chỉ số',
-        description: 'Mỗi cấp Tinh Thông cộng thêm bao nhiêu Spec ATK và DEF.',
-      },
-      upgradeMaterials: {
-        title: 'Nguyên liệu nâng cấp',
-        description: 'Mỗi cấp cần nguyên liệu gì và có thể farm ở đâu.',
-      },
-      optimizationTips: {
-        title: 'Mẹo tối ưu',
-        description: 'Thứ tự đầu tư điểm Tinh Thông hiệu quả nhất.',
-      },
+      'Tinh Thông là hệ thống chỉ dùng cho Đấu Trường, gồm ba nhánh độc lập. Chọn một nhánh và khoảng cấp để xem chỉ số cộng thêm và tổng nguyên liệu cần dùng.',
+    about: {
+      title: 'Tinh Thông hoạt động thế nào',
+      arenaOnly: 'Tinh Thông chỉ ảnh hưởng đến Đấu Trường — không có tác dụng ở PvE. Ba nhánh độc lập, mỗi nhánh 10 cấp:',
+      type: 'Cộng Spec ATK, gắn với hệ chiến đấu của nhân vật (ví dụ: Đấu Sĩ).',
+      faction: 'Cộng Spec DEF, gắn với phe của nhân vật.',
+      level: 'Chỉ cộng ATK/DEF/HP thường — không có chỉ số Spec.',
     },
-    calculatorTitle: 'Công cụ tính',
-    calculatorPreview:
-      'Công cụ tính Spec ATK/DEF sẽ được tích hợp tại đây. Trong lúc chờ, hãy dùng công cụ độc lập.',
-    calculatorLink: 'Đến công cụ tính Spec ATK/DEF →',
+    info: {
+      trigger: 'Tinh Thông hoạt động thế nào',
+      title: 'Tinh Thông hoạt động thế nào',
+      specTitle: 'Spec ATK & Spec DEF',
+      specAtk:
+        'Spec ATK và Spec DEF được tính dựa trên BP. Trong Đấu Trường, tỉ lệ giữa Spec ATK của người tấn công và Spec DEF của người phòng thủ càng cao, sát thương gây ra càng lớn.',
+      specDef:
+        'Ngược lại, tỉ lệ Spec DEF giữa nhân vật phòng thủ và nhân vật tấn công càng cao, sát thương nhận vào càng thấp.',
+      trainingTitle: 'Hướng dẫn Tinh Thông',
+      trainingRule1: 'Luyện Tinh Thông cần có Nhân vật hỗ trợ. Nhân vật hỗ trợ phải đáp ứng đủ điều kiện yêu cầu.',
+      trainingRule2:
+        'Nhân vật hỗ trợ phải luôn duy trì đủ điều kiện hiệu ứng — nếu không, các chỉ số và hiệu ứng Tinh Thông nhận được sẽ mất hiệu lực.',
+      trainingRule3:
+        'Một nhân vật chỉ có thể Hỗ trợ hoặc Được hỗ trợ, không thể cùng lúc cả hai. Ví dụ: nếu A hỗ trợ B thì cả A và B đều không thể hỗ trợ C — và A cũng không thể được nhân vật khác hỗ trợ.',
+    },
+    branches: {
+      type: 'Tinh Thông Hệ',
+      faction: 'Tinh Thông Phe',
+      level: 'Tinh Thông Cấp',
+    },
+    form: {
+      fromTier: 'Từ cấp',
+      toTier: 'Đến cấp',
+      notStarted: 'Chưa bắt đầu',
+      tier: 'Cấp {tier}',
+    },
+    result: {
+      title: 'Công cụ tính',
+      statGain: 'Chỉ số cộng thêm',
+      materials: 'Nguyên liệu cần dùng',
+      atk: 'ATK',
+      def: 'DEF',
+      hp: 'HP',
+      noMaterials: 'Không cần nguyên liệu cho khoảng cấp này.',
+    },
+    requirements: {
+      title: 'Điều kiện',
+      characterLabel: 'Xem cho',
+      changeHero: 'Đổi nhân vật',
+      searchHero: 'Tìm nhân vật...',
+      noResults: 'Không tìm thấy nhân vật phù hợp.',
+    },
   },
   coreLab: {
     eyebrow: 'Hướng dẫn & Bảng điều khiển',
@@ -274,6 +304,10 @@ export const vi: Translations = {
       targetRowLabel: 'Tính đến ngày mục tiêu',
       noEvents: 'Chưa có sự kiện nhân vật nào trong khoảng này — hiển thị tổng số vé tại ngày mục tiêu.',
     },
+  },
+  ticketWidget: {
+    ariaLabel: 'Đến Công cụ tính vé',
+    slogan: 'Đừng quên tính vé tháng này nhé!',
   },
   comingSoonPages: {
     specCalculator: {

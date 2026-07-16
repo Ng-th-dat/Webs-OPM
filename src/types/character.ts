@@ -9,21 +9,31 @@ export type CharacterRank = 'S-1' | 'S-2' | 'A' | 'Demon' | 'Dragon';
 
 export interface Skill {
   description: string;
+  /** Vietnamese translation of `description` — falls back to `description` when missing. */
+  descriptionVi?: string;
   skillType?: SkillType;
   /** Resource cost as shown in-game, e.g. "None" or "2 Energy". */
   cost?: string;
   /** Ultimate-only: full effect text once upgraded to 3-star. */
   upgradedDescription?: string;
+  /** Vietnamese translation of `upgradedDescription`. */
+  upgradedDescriptionVi?: string;
   /** Path under public/characters/<slug>/, named skill-{index in skills[], 1-based}.png; falls back to a generic type icon when missing. */
   image?: string;
 }
 
 export interface Passive {
   description: string;
+  /** Vietnamese translation of `description`. */
+  descriptionVi?: string;
   /** Full effect text once the character reaches 5-star Gold. */
   goldDescription?: string;
+  /** Vietnamese translation of `goldDescription`. */
+  goldDescriptionVi?: string;
   /** Full effect text once the character reaches 5-star Purple. */
   purpleDescription?: string;
+  /** Vietnamese translation of `purpleDescription`. */
+  purpleDescriptionVi?: string;
   /** Path under public/characters/<slug>/passive.png, shared across all tiers; falls back to a generic type icon when missing. */
   image?: string;
 }
@@ -31,6 +41,8 @@ export interface Passive {
 export interface AwakeningTier {
   tier: number;
   description: string;
+  /** Vietnamese translation of `description`. */
+  descriptionVi?: string;
   requirement?: string;
   /** Path under public/characters/<slug>/, named awaken-{tier}.png; falls back to a generic type icon when missing. */
   image?: string;
@@ -41,6 +53,8 @@ export interface CoreTier {
   tier: number;
   name: string;
   description: string;
+  /** Vietnamese translation of `description`. */
+  descriptionVi?: string;
   requirement?: string;
   /** Path under public/characters/<slug>/, named core-{tier}.png; falls back to a generic type icon when missing. */
   image?: string;

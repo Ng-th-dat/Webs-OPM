@@ -210,6 +210,19 @@ export function CoinIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function TicketIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
+      <path
+        d="M3 9a2 2 0 012-2h14a2 2 0 012 2v1.5a1.75 1.75 0 000 3.5V16a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a1.75 1.75 0 000-3.5V9z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M9.5 7.5v9" strokeLinecap="round" strokeDasharray="2 2" />
+    </svg>
+  );
+}
+
 export function TrashIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>

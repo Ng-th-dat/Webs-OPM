@@ -173,26 +173,56 @@ export const en = {
     eyebrow: 'Guide & Calculator',
     title: 'Mastery',
     description:
-      "A full breakdown of Mastery stat growth, paired with the Spec ATK/DEF calculator, is in development. Here's what's coming.",
-    formulaGuide: 'Formula Guide',
-    sections: {
-      statGrowth: {
-        title: 'Stat Growth',
-        description: 'How each Mastery level adds to Spec ATK and DEF.',
-      },
-      upgradeMaterials: {
-        title: 'Upgrade Materials',
-        description: 'What each level costs and where to farm it.',
-      },
-      optimizationTips: {
-        title: 'Optimization Tips',
-        description: 'The most efficient order to invest Mastery points.',
-      },
+      'Mastery is an Arena-only Specialization system with three independent branches. Pick a branch and a tier range to see the stat gain and total materials needed.',
+    about: {
+      title: 'How Mastery works',
+      arenaOnly: 'Mastery only affects Arena combat — it has no effect in PvE. Three independent branches, each with 10 tiers:',
+      type: 'Grants Spec ATK, tied to a character’s combat type (e.g. Duelist).',
+      faction: 'Grants Spec DEF, tied to a character’s faction.',
+      level: 'Grants flat ATK/DEF/HP only — no Spec stats.',
     },
-    calculatorTitle: 'Calculator',
-    calculatorPreview:
-      'The Spec ATK/DEF calculator will be embedded here. In the meantime, try the standalone tool.',
-    calculatorLink: 'Go to Spec ATK/DEF Calculator →',
+    info: {
+      trigger: 'How Mastery works',
+      title: 'How Mastery Works',
+      specTitle: 'Specialized Attack & Defense',
+      specAtk:
+        "Specialized Attack and Defense are based on BP. In the Arena, the higher the ratio between the attacker's Specialized Attack and the defender's Specialized Defense, the more damage the attacker deals.",
+      specDef:
+        'Conversely, the higher the ratio of Specialized Defense between the defending character and the attacking character, the lower the damage received.',
+      trainingTitle: 'Mastery Training Help',
+      trainingRule1: 'Mastery Training requires a Support Character. Support Characters must meet specific requirements.',
+      trainingRule2:
+        'Support Characters must continue to meet the Effect requirements — otherwise, the attributes and Mastery Effects granted will become invalid.',
+      trainingRule3:
+        'A character can either Support or be Supported, but not both at the same time. For example, if A Supports B, neither A nor B can Support C — and A cannot be Supported by another character.',
+    },
+    branches: {
+      type: 'Type Mastery',
+      faction: 'Faction Mastery',
+      level: 'Level Mastery',
+    },
+    form: {
+      fromTier: 'From tier',
+      toTier: 'To tier',
+      notStarted: 'Not started',
+      tier: 'Tier {tier}',
+    },
+    result: {
+      title: 'Calculator',
+      statGain: 'Stat Gain',
+      materials: 'Materials Needed',
+      atk: 'ATK',
+      def: 'DEF',
+      hp: 'HP',
+      noMaterials: 'No materials needed for this range.',
+    },
+    requirements: {
+      title: 'Requirements',
+      characterLabel: 'Show for',
+      changeHero: 'Change hero',
+      searchHero: 'Search hero...',
+      noResults: 'No characters match your search.',
+    },
   },
   coreLab: {
     eyebrow: 'Guide & Dashboard',
@@ -273,6 +303,10 @@ export const en = {
       targetRowLabel: 'As of your target date',
       noEvents: 'No character events in this range yet — showing the flat total for your target date.',
     },
+  },
+  ticketWidget: {
+    ariaLabel: 'Go to Ticket Calculator',
+    slogan: "Don't forget to count your tickets this month!",
   },
   comingSoonPages: {
     specCalculator: {

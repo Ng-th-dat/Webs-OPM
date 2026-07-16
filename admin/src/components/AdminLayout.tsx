@@ -17,6 +17,7 @@ import {
   PlusIcon,
   SparklesIcon,
   TagIcon,
+  TicketIcon,
   UsersIcon,
 } from './icons';
 
@@ -39,6 +40,8 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { to: '/characters', label: 'Characters', icon: UsersIcon, end: false },
       { to: '/schedule', label: 'Schedule', icon: CalendarIcon, end: false },
       { to: '/updates', label: 'Updates', icon: MegaphoneIcon, end: false },
+      { to: '/mastery-materials', label: 'Mastery', icon: SparklesIcon, end: false },
+      { to: '/ticket-images', label: 'Tickets', icon: TicketIcon, end: false },
     ],
   },
   {
@@ -51,10 +54,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   },
 ];
 
-const SOON_ITEMS = [
-  { label: 'Mastery', icon: SparklesIcon },
-  { label: 'Core-Lab', icon: AtomIcon },
-];
+const SOON_ITEMS = [{ label: 'Core-Lab', icon: AtomIcon }];
 
 const PAGE_TITLES: Record<string, string> = {
   '/': 'Overview',
@@ -64,6 +64,8 @@ const PAGE_TITLES: Record<string, string> = {
   '/schedule/new': 'Add Schedule Entry',
   '/updates': 'Game Updates',
   '/updates/new': 'Add Update',
+  '/mastery-materials': 'Mastery Materials',
+  '/ticket-images': 'Ticket Icons',
   '/trade-listings': 'Trade Listings',
   '/feedback': 'Feedback',
   '/topups': 'Phiếu Top-ups',

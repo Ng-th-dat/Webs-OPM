@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useCharacters } from '@/hooks/useCharacters';
+import { useTicketTypeImages } from '@/hooks/useTicketTypeImages';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TICKET_SOURCES, type TicketSource } from '@/data/ticketSources';
 import { calculateProjectedTickets, buildTicketTimeline, type TicketTimelineRow } from '@/utils/ticketCalculator';
@@ -33,10 +34,12 @@ function SourceTable({
   titleKey,
   sources,
   total,
+  typeImages,
 }: {
   titleKey: 'ticketCalculator.table.blackTitle' | 'ticketCalculator.table.stkTitle';
   sources: TicketSource[];
   total: number;
+  typeImages: Record<string, string>;
 }) {
   const { t } = useTranslation();
 
@@ -55,7 +58,12 @@ function SourceTable({
           <tbody className="divide-y divide-border">
             {sources.map((source) => (
               <tr key={source.id}>
-                <td className="py-2 pr-3 text-muted">{t(source.labelKey)}</td>
+                <td className="py-2 pr-3 text-muted">
+                  <div className="flex items-center gap-2">
+                    <TicketSourceIcon imageUrl={typeImages[source.ticketType]} />
+                    <span className="min-w-0">{t(source.labelKey)}</span>
+                  </div>
+                </td>
                 <td className="py-2 pr-3 text-subtle">{t(RELEASE_TIMING_LABEL_KEYS[source.timing])}</td>
                 <td className="py-2 text-right font-semibold text-foreground">{source.amount}</td>
               </tr>
@@ -75,11 +83,11 @@ function SourceTable({
   );
 }
 
-function TicketSourceIcon({ source }: { source: TicketSource }) {
+function TicketSourceIcon({ imageUrl }: { imageUrl?: string }) {
   return (
     <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-surface">
-      {source.image ? (
-        <img src={source.image} alt="" className="h-full w-full object-cover" />
+      {imageUrl ? (
+        <img src={imageUrl} alt="" className="h-full w-full object-cover" />
       ) : (
         <ImageIcon className="h-3.5 w-3.5 text-subtle" />
       )}
@@ -93,12 +101,14 @@ function TicketBox({
   sources,
   total,
   accentClassName,
+  typeImages,
 }: {
   label: string;
   includedLabel: string;
   sources: { source: TicketSource; date: string }[];
   total: number;
   accentClassName: string;
+  typeImages: Record<string, string>;
 }) {
   const { t } = useTranslation();
 
@@ -113,7 +123,7 @@ function TicketBox({
           <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle">{includedLabel}</span>
           {sources.map((entry, index) => (
             <div key={`${entry.source.id}-${index}`} className="flex items-center gap-2 text-xs text-muted">
-              <TicketSourceIcon source={entry.source} />
+              <TicketSourceIcon imageUrl={typeImages[entry.source.ticketType]} />
               <span className="min-w-0 flex-1 truncate">{t(entry.source.labelKey)}</span>
               <span className="shrink-0 font-semibold text-foreground">+{entry.source.amount}</span>
             </div>
@@ -124,7 +134,15 @@ function TicketBox({
   );
 }
 
-function TimelineRowView({ row, language }: { row: TicketTimelineRow; language: string }) {
+function TimelineRowView({
+  row,
+  language,
+  typeImages,
+}: {
+  row: TicketTimelineRow;
+  language: string;
+  typeImages: Record<string, string>;
+}) {
   const { t } = useTranslation();
 
   return (
@@ -162,6 +180,7 @@ function TimelineRowView({ row, language }: { row: TicketTimelineRow; language: 
           sources={row.includedBlack}
           total={row.cumulativeBlack}
           accentClassName="text-accent-secondary"
+          typeImages={typeImages}
         />
         <TicketBox
           label={t('ticketCalculator.result.stkTickets')}
@@ -169,6 +188,7 @@ function TimelineRowView({ row, language }: { row: TicketTimelineRow; language: 
           sources={row.includedStk}
           total={row.cumulativeStk}
           accentClassName="text-accent-info"
+          typeImages={typeImages}
         />
       </div>
     </div>
@@ -178,6 +198,7 @@ function TimelineRowView({ row, language }: { row: TicketTimelineRow; language: 
 export function TicketCalculatorPage() {
   const { t, language } = useTranslation();
   const { characters, loading, error } = useCharacters();
+  const { images: typeImages } = useTicketTypeImages();
 
   const [currentBlack, setCurrentBlack] = useState('0');
   const [currentStk, setCurrentStk] = useState('0');
@@ -262,8 +283,18 @@ export function TicketCalculatorPage() {
       </div>
 
       <div className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <SourceTable titleKey="ticketCalculator.table.blackTitle" sources={blackSources} total={blackTotal} />
-        <SourceTable titleKey="ticketCalculator.table.stkTitle" sources={stkSources} total={stkTotal} />
+        <SourceTable
+          titleKey="ticketCalculator.table.blackTitle"
+          sources={blackSources}
+          total={blackTotal}
+          typeImages={typeImages}
+        />
+        <SourceTable
+          titleKey="ticketCalculator.table.stkTitle"
+          sources={stkSources}
+          total={stkTotal}
+          typeImages={typeImages}
+        />
       </div>
 
       {loading ? (
@@ -442,7 +473,7 @@ export function TicketCalculatorPage() {
                   <p className="text-xs text-subtle">{t('ticketCalculator.timeline.noEvents')}</p>
                 )}
                 {timeline.map((row) => (
-                  <TimelineRowView key={row.key} row={row} language={language} />
+                  <TimelineRowView key={row.key} row={row} language={language} typeImages={typeImages} />
                 ))}
               </div>
             ) : (

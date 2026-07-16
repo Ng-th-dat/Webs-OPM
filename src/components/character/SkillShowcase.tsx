@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Character, Skill, SkillType } from '@/types/character';
 import { hasAwakeningTier } from '@/utils/rarity';
-import { SKILL_TYPE_LABEL_KEYS } from '@/utils/characters';
+import { SKILL_TYPE_LABEL_KEYS, pickLocalizedText } from '@/utils/characters';
 import { SkillCard, SkillIcon, type TierAccent } from './SkillCard';
 import { TierGroup } from './TierGroup';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -26,7 +26,7 @@ const CORE_TIER_ACCENTS: TierAccent[] = ['base', 'gold', 'purple'];
 const CORE_ROLE = 'Core';
 
 export function SkillShowcase({ character }: SkillShowcaseProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
 
   const tabs = useMemo<HubTab[]>(() => {
@@ -120,7 +120,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
       <div className="flex flex-col gap-4 rounded-2xl border border-border bg-canvas/60 p-5 sm:p-6">
         {active.kind === 'skill' && (
           <SkillCard
-            description={active.skill.description}
+            description={pickLocalizedText(active.skill.description, active.skill.descriptionVi, language) ?? ''}
             skillType={active.skill.skillType}
             cost={active.skill.cost}
             image={active.skill.image}
@@ -135,7 +135,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
                 key: 'base',
                 label: t('characterDetail.tierBase'),
                 accent: 'base',
-                description: active.skill.description,
+                description: pickLocalizedText(active.skill.description, active.skill.descriptionVi, language),
                 skillType: active.skill.skillType,
                 cost: active.skill.cost,
                 image: active.skill.image,
@@ -144,7 +144,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
                 key: 'upgrade',
                 label: t('characterDetail.tierUltimateUpgrade'),
                 accent: 'gold',
-                description: active.skill.upgradedDescription,
+                description: pickLocalizedText(active.skill.upgradedDescription, active.skill.upgradedDescriptionVi, language),
                 skillType: active.skill.skillType,
                 cost: active.skill.cost,
                 image: active.skill.image,
@@ -161,7 +161,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
                 key: 'base',
                 label: t('characterDetail.tierBase'),
                 accent: 'base',
-                description: character.passive.description,
+                description: pickLocalizedText(character.passive.description, character.passive.descriptionVi, language),
                 skillType: 'Passive',
                 cost: 'None',
                 image: character.passive.image,
@@ -170,7 +170,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
                 key: 'gold',
                 label: t('characterDetail.tierPassiveGold'),
                 accent: 'gold',
-                description: character.passive.goldDescription,
+                description: pickLocalizedText(character.passive.goldDescription, character.passive.goldDescriptionVi, language),
                 skillType: 'Passive',
                 cost: 'None',
                 image: character.passive.image,
@@ -179,7 +179,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
                 key: 'purple',
                 label: t('characterDetail.tierPassivePurple'),
                 accent: 'purple',
-                description: character.passive.purpleDescription,
+                description: pickLocalizedText(character.passive.purpleDescription, character.passive.purpleDescriptionVi, language),
                 skillType: 'Passive',
                 cost: 'None',
                 image: character.passive.image,
@@ -196,7 +196,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
                 key: `awakening-${tier}`,
                 label: t('characterDetail.awakeningTier', { tier }),
                 accent: AWAKENING_TIER_ACCENTS[tier - 1],
-                description: data?.description,
+                description: pickLocalizedText(data?.description, data?.descriptionVi, language),
                 skillType: 'Awaken Passive',
                 cost: 'None',
                 requirement: data?.requirement,
@@ -214,7 +214,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
                 key: `core-${tier}`,
                 label: t('characterDetail.coreTier', { tier }),
                 accent: CORE_TIER_ACCENTS[tier - 1],
-                description: data?.description,
+                description: pickLocalizedText(data?.description, data?.descriptionVi, language),
                 skillType: 'Core',
                 cost: 'None',
                 requirement: data?.requirement,

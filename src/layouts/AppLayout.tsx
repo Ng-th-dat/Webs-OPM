@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { DonateWidget } from '@/components/layout/DonateWidget';
+import { TicketReminderWidget } from '@/components/layout/TicketReminderWidget';
 import { MarqueeBanner } from '@/components/layout/MarqueeBanner';
 import { ScrollToTop } from '@/components/common/ScrollToTop';
 import { LoginModal } from '@/components/auth/LoginModal';
@@ -30,7 +30,7 @@ export function AppLayout() {
         <Outlet />
       </main>
       <Footer />
-      <DonateWidget />
+      <TicketReminderWidget />
       <LoginModal />
     </div>
   );

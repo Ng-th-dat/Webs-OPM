@@ -26,7 +26,9 @@ const CORE_ROLE = 'Core';
 
 interface SkillFormValue {
   description: string;
+  descriptionVi: string;
   upgradedDescription: string;
+  upgradedDescriptionVi: string;
   skillType: SkillType | '';
   cost: string;
   image: string;
@@ -35,6 +37,7 @@ interface SkillFormValue {
 interface AwakeningFormValue {
   tier: string;
   description: string;
+  descriptionVi: string;
   requirement: string;
   image: string;
 }
@@ -43,6 +46,7 @@ interface CoreFormValue {
   tier: string;
   name: string;
   description: string;
+  descriptionVi: string;
   requirement: string;
   image: string;
 }
@@ -66,8 +70,11 @@ interface FormState {
   comebackYear: string;
   comebackTiming: ReleaseTiming | '';
   passiveDescription: string;
+  passiveDescriptionVi: string;
   passiveGoldDescription: string;
+  passiveGoldDescriptionVi: string;
   passivePurpleDescription: string;
+  passivePurpleDescriptionVi: string;
   passiveImage: string;
   strengths: string;
   weaknesses: string;
@@ -76,7 +83,9 @@ interface FormState {
 
 const EMPTY_SKILL: SkillFormValue = {
   description: '',
+  descriptionVi: '',
   upgradedDescription: '',
+  upgradedDescriptionVi: '',
   skillType: '',
   cost: '',
   image: '',
@@ -85,6 +94,7 @@ const EMPTY_SKILL: SkillFormValue = {
 const EMPTY_AWAKENING: AwakeningFormValue = {
   tier: '1',
   description: '',
+  descriptionVi: '',
   requirement: '',
   image: '',
 };
@@ -93,6 +103,7 @@ const EMPTY_CORE: CoreFormValue = {
   tier: '1',
   name: '',
   description: '',
+  descriptionVi: '',
   requirement: '',
   image: '',
 };
@@ -116,8 +127,11 @@ const EMPTY_FORM: FormState = {
   comebackYear: '',
   comebackTiming: '',
   passiveDescription: '',
+  passiveDescriptionVi: '',
   passiveGoldDescription: '',
+  passiveGoldDescriptionVi: '',
   passivePurpleDescription: '',
+  passivePurpleDescriptionVi: '',
   passiveImage: '',
   strengths: '',
   weaknesses: '',
@@ -241,8 +255,11 @@ export function CharacterFormPage() {
           comebackYear: character.comebackYear ? String(character.comebackYear) : '',
           comebackTiming: character.comebackTiming ?? '',
           passiveDescription: character.passive.description,
+          passiveDescriptionVi: character.passive.descriptionVi ?? '',
           passiveGoldDescription: character.passive.goldDescription ?? '',
+          passiveGoldDescriptionVi: character.passive.goldDescriptionVi ?? '',
           passivePurpleDescription: character.passive.purpleDescription ?? '',
+          passivePurpleDescriptionVi: character.passive.purpleDescriptionVi ?? '',
           passiveImage: character.passive.image ?? '',
           strengths: character.strengths.join('\n'),
           weaknesses: character.weaknesses.join('\n'),
@@ -252,7 +269,9 @@ export function CharacterFormPage() {
         setSkills(
           character.skills.map((skill) => ({
             description: skill.description,
+            descriptionVi: skill.descriptionVi ?? '',
             upgradedDescription: skill.upgradedDescription ?? '',
+            upgradedDescriptionVi: skill.upgradedDescriptionVi ?? '',
             skillType: skill.skillType ?? '',
             cost: skill.cost ?? '',
             image: skill.image ?? '',
@@ -262,6 +281,7 @@ export function CharacterFormPage() {
           (character.awakenings ?? []).map((awakening) => ({
             tier: String(awakening.tier),
             description: awakening.description,
+            descriptionVi: awakening.descriptionVi ?? '',
             requirement: awakening.requirement ?? '',
             image: awakening.image ?? '',
           }))
@@ -271,6 +291,7 @@ export function CharacterFormPage() {
             tier: String(core.tier),
             name: core.name,
             description: core.description,
+            descriptionVi: core.descriptionVi ?? '',
             requirement: core.requirement ?? '',
             image: core.image ?? '',
           }))
@@ -331,21 +352,27 @@ export function CharacterFormPage() {
         .filter(Boolean),
       skills: skills.map((skill) => ({
         description: skill.description.trim(),
+        descriptionVi: skill.descriptionVi.trim() || undefined,
         upgradedDescription: skill.upgradedDescription.trim() || undefined,
+        upgradedDescriptionVi: skill.upgradedDescriptionVi.trim() || undefined,
         skillType: skill.skillType || undefined,
         cost: skill.cost.trim() || undefined,
         image: skill.image || undefined,
       })),
       passive: {
         description: form.passiveDescription.trim(),
+        descriptionVi: form.passiveDescriptionVi.trim() || undefined,
         goldDescription: form.passiveGoldDescription.trim() || undefined,
+        goldDescriptionVi: form.passiveGoldDescriptionVi.trim() || undefined,
         purpleDescription: form.passivePurpleDescription.trim() || undefined,
+        purpleDescriptionVi: form.passivePurpleDescriptionVi.trim() || undefined,
         image: form.passiveImage || undefined,
       },
       awakenings: showAwakenings
         ? awakenings.map((awakening) => ({
             tier: Number(awakening.tier),
             description: awakening.description.trim(),
+            descriptionVi: awakening.descriptionVi.trim() || undefined,
             requirement: awakening.requirement.trim() || undefined,
             image: awakening.image || undefined,
           }))
@@ -355,6 +382,7 @@ export function CharacterFormPage() {
             tier: Number(core.tier),
             name: core.name.trim(),
             description: core.description.trim(),
+            descriptionVi: core.descriptionVi.trim() || undefined,
             requirement: core.requirement.trim() || undefined,
             image: core.image || undefined,
           }))
@@ -563,12 +591,22 @@ export function CharacterFormPage() {
                   onChange={(url) => updateSkill(index, { image: url })}
                 />
               </Field>
-              <Field label="Description" required>
-                <TextArea value={skill.description} onChange={(event) => updateSkill(index, { description: event.target.value })} />
-              </Field>
-              <Field label="Upgraded description" hint="Ultimate-only: full effect once upgraded to 3-star.">
-                <TextArea value={skill.upgradedDescription} onChange={(event) => updateSkill(index, { upgradedDescription: event.target.value })} />
-              </Field>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field label="Description (EN)" required>
+                  <TextArea value={skill.description} onChange={(event) => updateSkill(index, { description: event.target.value })} />
+                </Field>
+                <Field label="Description (VI)">
+                  <TextArea value={skill.descriptionVi} onChange={(event) => updateSkill(index, { descriptionVi: event.target.value })} />
+                </Field>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field label="Upgraded description (EN)" hint="Ultimate-only: full effect once upgraded to 3-star.">
+                  <TextArea value={skill.upgradedDescription} onChange={(event) => updateSkill(index, { upgradedDescription: event.target.value })} />
+                </Field>
+                <Field label="Upgraded description (VI)">
+                  <TextArea value={skill.upgradedDescriptionVi} onChange={(event) => updateSkill(index, { upgradedDescriptionVi: event.target.value })} />
+                </Field>
+              </div>
             </RemovableRow>
           ))}
           <button
@@ -584,15 +622,26 @@ export function CharacterFormPage() {
           <Field label="Icon">
             <ImageUpload slug={slugPreview} slot="passive" value={form.passiveImage} onChange={(url) => updateField('passiveImage', url)} />
           </Field>
-          <Field label="Description" required>
-            <TextArea value={form.passiveDescription} onChange={(event) => updateField('passiveDescription', event.target.value)} />
-          </Field>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Gold description" hint="Full effect at 5-star Gold.">
+            <Field label="Description (EN)" required>
+              <TextArea value={form.passiveDescription} onChange={(event) => updateField('passiveDescription', event.target.value)} />
+            </Field>
+            <Field label="Description (VI)">
+              <TextArea value={form.passiveDescriptionVi} onChange={(event) => updateField('passiveDescriptionVi', event.target.value)} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Gold description (EN)" hint="Full effect at 5-star Gold.">
               <TextArea value={form.passiveGoldDescription} onChange={(event) => updateField('passiveGoldDescription', event.target.value)} />
             </Field>
-            <Field label="Purple description" hint="Full effect at 5-star Purple.">
+            <Field label="Gold description (VI)">
+              <TextArea value={form.passiveGoldDescriptionVi} onChange={(event) => updateField('passiveGoldDescriptionVi', event.target.value)} />
+            </Field>
+            <Field label="Purple description (EN)" hint="Full effect at 5-star Purple.">
               <TextArea value={form.passivePurpleDescription} onChange={(event) => updateField('passivePurpleDescription', event.target.value)} />
+            </Field>
+            <Field label="Purple description (VI)">
+              <TextArea value={form.passivePurpleDescriptionVi} onChange={(event) => updateField('passivePurpleDescriptionVi', event.target.value)} />
             </Field>
           </div>
         </Panel>
@@ -612,9 +661,14 @@ export function CharacterFormPage() {
                     onChange={(url) => updateAwakening(index, { image: url })}
                   />
                 </Field>
-                <Field label="Description" required>
-                  <TextArea value={awakening.description} onChange={(event) => updateAwakening(index, { description: event.target.value })} />
-                </Field>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Field label="Description (EN)" required>
+                    <TextArea value={awakening.description} onChange={(event) => updateAwakening(index, { description: event.target.value })} />
+                  </Field>
+                  <Field label="Description (VI)">
+                    <TextArea value={awakening.descriptionVi} onChange={(event) => updateAwakening(index, { descriptionVi: event.target.value })} />
+                  </Field>
+                </div>
                 <Field label="Requirement">
                   <TextInput value={awakening.requirement} onChange={(event) => updateAwakening(index, { requirement: event.target.value })} />
                 </Field>
@@ -652,9 +706,14 @@ export function CharacterFormPage() {
                     onChange={(url) => updateCore(index, { image: url })}
                   />
                 </Field>
-                <Field label="Description" required>
-                  <TextArea value={core.description} onChange={(event) => updateCore(index, { description: event.target.value })} />
-                </Field>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Field label="Description (EN)" required>
+                    <TextArea value={core.description} onChange={(event) => updateCore(index, { description: event.target.value })} />
+                  </Field>
+                  <Field label="Description (VI)">
+                    <TextArea value={core.descriptionVi} onChange={(event) => updateCore(index, { descriptionVi: event.target.value })} />
+                  </Field>
+                </div>
                 <Field label="Requirement">
                   <TextInput value={core.requirement} onChange={(event) => updateCore(index, { requirement: event.target.value })} />
                 </Field>
