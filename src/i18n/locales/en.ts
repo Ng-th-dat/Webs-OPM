@@ -2,7 +2,9 @@ export const en = {
   common: {
     home: 'Home',
     characters: 'Characters',
+    tierList: 'Tier List',
     updates: 'Updates',
+    intel: 'Intel',
     trade: 'Trade',
     ticketCalculator: 'Tickets',
     mastery: 'Mastery',
@@ -17,6 +19,7 @@ export const en = {
     backToHome: 'Back to home',
     backToCharacters: 'Back to Characters',
     backToUpdates: 'Back to Updates',
+    backToIntel: 'Back to Intel',
     backToTrade: 'Back to Trade Listings',
     explore: 'Explore',
     comingSoon: 'Coming soon',
@@ -30,17 +33,21 @@ export const en = {
     loading: 'Loading…',
     errorTitle: 'Something went wrong',
     errorDescription: "We couldn't load this data. Please refresh the page.",
+    viewImage: 'View full image',
+    closeImage: 'Close image',
+    close: 'Close',
   },
   home: {
     hero: {
       eyebrow: 'Character Wiki & Tools',
       headline: 'Master One Punch Man, one calculation at a time.',
       exploreCharacters: 'Explore Characters',
-      viewUpdates: 'View Updates',
-      upcomingLabel: 'Upcoming on CN & SEA',
+      viewSchedule: 'View Release Schedule',
+      upcomingLabel: '{month} on CN & SEA',
+      intelAlert: 'New intel:',
       stats: {
         characters: 'Characters',
-        upcoming: 'Upcoming Releases',
+        upcoming: "This Month's Releases",
         rarityTiers: 'Rarity Tiers',
       },
     },
@@ -112,6 +119,7 @@ export const en = {
       core: 'Core',
     },
     glossary: 'Effect Glossary',
+    recommendedUsage: 'Recommended Usage',
     strengths: 'Strengths',
     weaknesses: 'Weaknesses',
     requirement: 'Requirement: {value}',
@@ -162,12 +170,38 @@ export const en = {
     eventSchedule: 'Event Schedule',
     emptyTitle: 'No updates yet',
     emptyDescription: 'Check back soon for patch notes, events, and server news.',
+    categoryEmptyDescription: 'No updates in this category yet — try another filter.',
     category: {
       update: 'Update',
       event: 'Event',
       cnNews: 'CN News',
       maintenance: 'Maintenance',
     },
+  },
+  intel: {
+    title: 'Intel',
+    description:
+      "Hints and leaks CN drops before a new character's kit is confirmed — read as speculation, not fact.",
+    emptyTitle: 'No open cases yet',
+    emptyDescription: 'Check back once CN starts teasing the next character.',
+    statusEmptyDescription: 'No dossiers with this status yet — try another filter.',
+    status: {
+      rumored: 'Unconfirmed',
+      confirmed: 'Confirmed',
+    },
+    confidence: {
+      rumor: 'Rumor',
+      likely: 'Likely',
+      confirmed: 'Confirmed',
+    },
+    timelineTitle: 'Leak Timeline',
+    noHints: 'No hints logged yet.',
+    updatedLabel: 'Last updated',
+    confirmedLinkLabel: 'View the official character page',
+    guessLabel: 'Best guess so far',
+    coverWatermark: 'CLASSIFIED',
+    latestHint: 'Latest',
+    hintCount: '{count} hints so far',
   },
   mastery: {
     eyebrow: 'Guide & Calculator',
@@ -176,19 +210,19 @@ export const en = {
       'Mastery is an Arena-only Specialization system with three independent branches. Pick a branch and a tier range to see the stat gain and total materials needed.',
     about: {
       title: 'How Mastery works',
-      arenaOnly: 'Mastery only affects Arena combat — it has no effect in PvE. Three independent branches, each with 10 tiers:',
+      arenaOnly: 'Mastery only affects Arena and other turn-based PVP — it has no effect in PvE or real-time battles. Three independent branches, each with 10 tiers:',
       type: 'Grants Spec ATK, tied to a character’s combat type (e.g. Duelist).',
       faction: 'Grants Spec DEF, tied to a character’s faction.',
-      level: 'Grants flat ATK/DEF/HP only — no Spec stats.',
+      level: 'Grants flat ATK/DEF/HP and permanently unlocks [Specialized Unyielding].',
     },
     info: {
       trigger: 'How Mastery works',
       title: 'How Mastery Works',
       specTitle: 'Specialized Attack & Defense',
       specAtk:
-        "Specialized Attack and Defense are based on BP. In the Arena, the higher the ratio between the attacker's Specialized Attack and the defender's Specialized Defense, the more damage the attacker deals.",
+        "Specialized Attack and Defense are based on BP. In the Arena, the higher the ratio between the attacker's Specialized Attack and the defender's Specialized Defense, the more damage the attacker deals — up to a maximum of +250% bonus damage.",
       specDef:
-        'Conversely, the higher the ratio of Specialized Defense between the defending character and the attacking character, the lower the damage received.',
+        'Conversely, the higher the ratio of Specialized Defense between the defending character and the attacking character, the lower the damage received — up to a maximum of 75% damage reduction.',
       trainingTitle: 'Mastery Training Help',
       trainingRule1: 'Mastery Training requires a Support Character. Support Characters must meet specific requirements.',
       trainingRule2:
@@ -254,6 +288,17 @@ export const en = {
     title: 'Calculators',
     description: 'Run the numbers before you commit resources — pick a calculator below.',
   },
+  tierList: {
+    eyebrow: 'Meta Ranking',
+    title: 'Character Tier List',
+    description:
+      'How every hero currently stacks up, from D to Core. Rankings are curated by the team and updated as the meta shifts.',
+    characterCount: '{count} characters',
+    unrankedTitle: 'Unranked',
+    unrankedDescription: 'Not yet placed on the tier list.',
+    emptyTitle: 'Tier list coming soon',
+    emptyDescription: 'No characters have been ranked yet — check back soon.',
+  },
   ticketCalculator: {
     eyebrow: 'Planning Tool',
     title: 'Ticket Calculator',
@@ -306,7 +351,21 @@ export const en = {
   },
   ticketWidget: {
     ariaLabel: 'Go to Ticket Calculator',
-    slogan: "Don't forget to count your tickets this month!",
+  },
+  topupWidget: {
+    ariaLabel: 'Open top-up site',
+    modalTitle: 'Top Up',
+    closeLabel: 'Close',
+    openInNewTab: 'Open in new tab',
+    loading: 'Loading…',
+    inProgressDescription: "We're still finalizing this feature — check back soon!",
+  },
+  quickActions: {
+    openLabel: 'Quick actions',
+    closeLabel: 'Close quick actions',
+    ticketLabel: 'Ticket Calculator',
+    topupLabel: 'Top Up',
+    slogan: 'Psst — tickets & top-ups live here!',
   },
   comingSoonPages: {
     specCalculator: {
@@ -328,6 +387,7 @@ export const en = {
   footer: {
     navigationLabel: 'Footer navigation',
     tagline: 'An unofficial community wiki and calculator toolkit for One Punch Man players.',
+    signOff: 'To be continued…',
     disclaimer:
       '© {year} S-Class Codex. This is an unofficial, fan-made community wiki — not affiliated with or endorsed by the official One Punch Man game publisher. All game names, artwork, and assets referenced belong to their respective owners.',
     donate: {

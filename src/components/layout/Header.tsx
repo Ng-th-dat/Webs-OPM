@@ -4,7 +4,6 @@ import { Navigation } from './Navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { MobileDrawer } from './MobileDrawer';
 import { LogoMark } from './LogoMark';
-import { AccountMenu } from './AccountMenu';
 import { MenuIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -45,10 +44,6 @@ export function Header() {
         />
 
         <div className="flex items-center gap-3">
-          <div className="hidden lg:block">
-            <AccountMenu />
-          </div>
-
           <div className="hidden sm:block">
             <LanguageSwitcher />
           </div>

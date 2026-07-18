@@ -23,7 +23,7 @@ export function FilterBar<K extends string>({ groups, values, onChange, onReset 
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
       {groups.map((group) => (
         <SelectFilter
           key={group.key}
@@ -40,7 +40,7 @@ export function FilterBar<K extends string>({ groups, values, onChange, onReset 
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex h-11 items-center rounded-lg border border-border px-3 text-sm font-medium text-muted transition-colors duration-200 hover:border-accent/40 hover:text-foreground"
+          className="comic-pill col-span-2 h-11 px-4 text-xs sm:col-span-1"
         >
           {t('common.resetFilters')}
         </button>

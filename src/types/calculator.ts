@@ -1,5 +1,5 @@
 import type { MasteryBranch, MaterialCost } from './mastery';
-import type { TicketSource } from '@/data/ticketSources';
+import type { TicketSource } from '../data/ticketSources';
 
 export interface SpecCalculatorInput {
   baseAtk: number;

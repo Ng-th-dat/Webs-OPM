@@ -5,6 +5,7 @@ import type {
   CharacterFaction,
   CharacterRank,
   CoreTier,
+  MetaTier,
   Passive,
   Rarity,
   ReleaseStatus,
@@ -26,6 +27,7 @@ interface CharacterRow {
   faction: CharacterFaction;
   rank: CharacterRank;
   role: string;
+  meta_tier: MetaTier | null;
   tags: string[];
   skills: Skill[];
   passive: Passive;
@@ -56,6 +58,7 @@ function mapRowToCharacter(row: CharacterRow): AdminCharacter {
     faction: row.faction,
     rank: row.rank,
     role: row.role,
+    metaTier: row.meta_tier ?? undefined,
     tags: row.tags,
     skills: row.skills,
     passive: row.passive,
@@ -192,5 +195,11 @@ export async function updateCharacter(id: string, input: NewCharacterInput): Pro
 /** Soft delete: hides the character from the public site without touching the row. */
 export async function setCharacterVisibility(id: string, isVisible: boolean): Promise<void> {
   const { error } = await supabase.from('characters').update({ is_visible: isVisible }).eq('id', id);
+  if (error) throw error;
+}
+
+/** Sets (or clears, via `null`) the character's meta tier list ranking. Public site only ever reads this. */
+export async function setCharacterMetaTier(id: string, metaTier: MetaTier | null): Promise<void> {
+  const { error } = await supabase.from('characters').update({ meta_tier: metaTier }).eq('id', id);
   if (error) throw error;
 }

@@ -105,10 +105,8 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
               onClick={() => setActiveIndex(index)}
               aria-pressed={isActive}
               aria-label={tab.label}
-              className={`overflow-hidden rounded-xl border-2 transition duration-200 ${
-                isActive
-                  ? 'border-accent-info shadow-[0_0_16px_var(--color-accent-glow)]'
-                  : 'border-transparent opacity-60 hover:opacity-100'
+              className={`comic-pill h-11 w-11 p-0 transition-opacity duration-200 ${
+                isActive ? 'comic-pill--active' : 'opacity-60 hover:opacity-100'
               }`}
             >
               <SkillIcon skillType={tab.skillType} image={tab.image} />
@@ -117,7 +115,9 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
         })}
       </div>
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-border bg-canvas/60 p-5 sm:p-6">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-canvas/60 p-5 sm:p-6">
+        <div aria-hidden="true" className="comic-dots pointer-events-none absolute inset-0 opacity-[0.04]" />
+        <div className="relative flex flex-col gap-4">
         {active.kind === 'skill' && (
           <SkillCard
             description={pickLocalizedText(active.skill.description, active.skill.descriptionVi, language) ?? ''}
@@ -223,6 +223,7 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
             })}
           />
         )}
+        </div>
       </div>
     </section>
   );

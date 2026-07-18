@@ -15,7 +15,7 @@ export function CharacterDetailPage() {
 
   if (loading) {
     return (
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+      <section className="mx-auto max-w-6xl overflow-x-hidden px-4 py-16 sm:px-8 sm:py-20">
         <BackLink to="/characters">{t('common.backToCharacters')}</BackLink>
         <LoadingState label={t('common.loading')} className="mt-8" />
       </section>
@@ -24,7 +24,7 @@ export function CharacterDetailPage() {
 
   if (error) {
     return (
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+      <section className="mx-auto max-w-6xl overflow-x-hidden px-4 py-16 sm:px-8 sm:py-20">
         <BackLink to="/characters">{t('common.backToCharacters')}</BackLink>
         <EmptyState
           icon={BurstIcon}
@@ -41,7 +41,7 @@ export function CharacterDetailPage() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+    <section className="mx-auto max-w-6xl overflow-x-hidden px-4 py-16 sm:px-8 sm:py-20">
       <BackLink to="/characters">{t('common.backToCharacters')}</BackLink>
 
       <CharacterDetail character={character} />

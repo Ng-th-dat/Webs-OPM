@@ -4,7 +4,9 @@ export const vi: Translations = {
   common: {
     home: 'Trang chủ',
     characters: 'Nhân vật',
+    tierList: 'Bảng Xếp Hạng',
     updates: 'Cập nhật',
+    intel: 'Tin Mật',
     trade: 'Trao đổi',
     ticketCalculator: 'Tính vé',
     mastery: 'Tinh Thông',
@@ -19,6 +21,7 @@ export const vi: Translations = {
     backToHome: 'Về trang chủ',
     backToCharacters: 'Quay lại danh sách nhân vật',
     backToUpdates: 'Quay lại Cập nhật',
+    backToIntel: 'Quay lại Hồ Sơ Mật',
     backToTrade: 'Quay lại Bảng trao đổi',
     explore: 'Khám phá',
     comingSoon: 'Sắp ra mắt',
@@ -32,14 +35,18 @@ export const vi: Translations = {
     loading: 'Đang tải…',
     errorTitle: 'Đã có lỗi xảy ra',
     errorDescription: 'Không thể tải dữ liệu. Vui lòng tải lại trang.',
+    viewImage: 'Xem ảnh đầy đủ',
+    closeImage: 'Đóng ảnh',
+    close: 'Đóng',
   },
   home: {
     hero: {
       eyebrow: 'Wiki & Công cụ nhân vật',
       headline: 'Chinh phục One Punch Man, tính toán chính xác từng bước.',
-      exploreCharacters: 'Khám phá nhân vật',
-      viewUpdates: 'Xem cập nhật',
-      upcomingLabel: 'Sắp ra mắt tại CN & SEA',
+      exploreCharacters: 'Khám Phá Nhân Vật',
+      viewSchedule: 'Xem Lịch Ra Mắt',
+      upcomingLabel: 'Lịch {month} Tại CN & SEA',
+      intelAlert: 'Rò rỉ mới:',
       stats: {
         characters: 'Nhân vật',
         upcoming: 'Lượt ra mắt sắp tới',
@@ -113,6 +120,7 @@ export const vi: Translations = {
       core: 'Lõi',
     },
     glossary: 'Chú Giải Hiệu Ứng',
+    recommendedUsage: 'Cách Dùng Đề Xuất',
     strengths: 'Điểm mạnh',
     weaknesses: 'Điểm yếu',
     requirement: 'Yêu cầu: {value}',
@@ -163,12 +171,38 @@ export const vi: Translations = {
     eventSchedule: 'Lịch trình sự kiện',
     emptyTitle: 'Chưa có cập nhật nào',
     emptyDescription: 'Quay lại sau để xem tin tức bản vá, sự kiện và máy chủ.',
+    categoryEmptyDescription: 'Chưa có cập nhật nào ở mục này — thử bộ lọc khác xem sao.',
     category: {
       update: 'Cập nhật',
       event: 'Sự kiện',
       cnNews: 'Tin CN',
       maintenance: 'Bảo trì',
     },
+  },
+  intel: {
+    title: 'Hồ Sơ Mật',
+    description:
+      'Manh mối và tin rò rỉ CN tung ra trước khi bộ kỹ năng nhân vật mới được xác nhận chính thức — chỉ mang tính tham khảo, chưa chắc chắn 100%.',
+    emptyTitle: 'Chưa có hồ sơ nào',
+    emptyDescription: 'Quay lại khi CN bắt đầu nhá hàng nhân vật tiếp theo nhé.',
+    statusEmptyDescription: 'Chưa có hồ sơ nào ở trạng thái này — thử bộ lọc khác xem sao.',
+    status: {
+      rumored: 'Chưa Xác Nhận',
+      confirmed: 'Đã Xác Nhận',
+    },
+    confidence: {
+      rumor: 'Đồn Đoán',
+      likely: 'Khả Năng Cao',
+      confirmed: 'Xác Nhận',
+    },
+    timelineTitle: 'Dòng Thời Gian Rò Rỉ',
+    noHints: 'Chưa có manh mối nào được ghi nhận.',
+    updatedLabel: 'Cập nhật lần cuối',
+    confirmedLinkLabel: 'Xem hồ sơ nhân vật chính thức',
+    guessLabel: 'Dự đoán gần nhất',
+    coverWatermark: 'TUYỆT MẬT',
+    latestHint: 'Mới nhất',
+    hintCount: '{count} manh mối',
   },
   mastery: {
     eyebrow: 'Hướng dẫn & Công cụ tính',
@@ -177,19 +211,19 @@ export const vi: Translations = {
       'Tinh Thông là hệ thống chỉ dùng cho Đấu Trường, gồm ba nhánh độc lập. Chọn một nhánh và khoảng cấp để xem chỉ số cộng thêm và tổng nguyên liệu cần dùng.',
     about: {
       title: 'Tinh Thông hoạt động thế nào',
-      arenaOnly: 'Tinh Thông chỉ ảnh hưởng đến Đấu Trường — không có tác dụng ở PvE. Ba nhánh độc lập, mỗi nhánh 10 cấp:',
+      arenaOnly: 'Tinh Thông chỉ ảnh hưởng đến Đấu Trường và các chế độ PVP theo lượt khác — không có tác dụng ở PvE hay chế độ đối kháng thời gian thực. Ba nhánh độc lập, mỗi nhánh 10 cấp:',
       type: 'Cộng Spec ATK, gắn với hệ chiến đấu của nhân vật (ví dụ: Đấu Sĩ).',
       faction: 'Cộng Spec DEF, gắn với phe của nhân vật.',
-      level: 'Chỉ cộng ATK/DEF/HP thường — không có chỉ số Spec.',
+      level: 'Cộng ATK/DEF/HP thường và mở khóa vĩnh viễn [Specialized Unyielding].',
     },
     info: {
       trigger: 'Tinh Thông hoạt động thế nào',
       title: 'Tinh Thông hoạt động thế nào',
       specTitle: 'Spec ATK & Spec DEF',
       specAtk:
-        'Spec ATK và Spec DEF được tính dựa trên BP. Trong Đấu Trường, tỉ lệ giữa Spec ATK của người tấn công và Spec DEF của người phòng thủ càng cao, sát thương gây ra càng lớn.',
+        'Spec ATK và Spec DEF được tính dựa trên BP. Trong Đấu Trường, tỉ lệ giữa Spec ATK của người tấn công và Spec DEF của người phòng thủ càng cao, sát thương gây ra càng lớn — tối đa cộng thêm 250% sát thương.',
       specDef:
-        'Ngược lại, tỉ lệ Spec DEF giữa nhân vật phòng thủ và nhân vật tấn công càng cao, sát thương nhận vào càng thấp.',
+        'Ngược lại, tỉ lệ Spec DEF giữa nhân vật phòng thủ và nhân vật tấn công càng cao, sát thương nhận vào càng thấp — tối đa giảm 75% sát thương.',
       trainingTitle: 'Hướng dẫn Tinh Thông',
       trainingRule1: 'Luyện Tinh Thông cần có Nhân vật hỗ trợ. Nhân vật hỗ trợ phải đáp ứng đủ điều kiện yêu cầu.',
       trainingRule2:
@@ -255,6 +289,17 @@ export const vi: Translations = {
     title: 'Công cụ tính',
     description: 'Tính toán kỹ trước khi tiêu tốn tài nguyên — chọn một công cụ bên dưới.',
   },
+  tierList: {
+    eyebrow: 'Xếp Hạng Meta',
+    title: 'Bảng Xếp Hạng Nhân Vật',
+    description:
+      'Sức mạnh hiện tại của từng nhân vật, từ D đến Core. Xếp hạng do đội ngũ biên soạn và cập nhật theo meta.',
+    characterCount: '{count} nhân vật',
+    unrankedTitle: 'Chưa xếp hạng',
+    unrankedDescription: 'Chưa được đưa vào bảng xếp hạng.',
+    emptyTitle: 'Bảng xếp hạng sắp ra mắt',
+    emptyDescription: 'Chưa có nhân vật nào được xếp hạng — quay lại sau nhé.',
+  },
   ticketCalculator: {
     eyebrow: 'Công cụ lên kế hoạch',
     title: 'Công cụ tính vé',
@@ -307,7 +352,21 @@ export const vi: Translations = {
   },
   ticketWidget: {
     ariaLabel: 'Đến Công cụ tính vé',
-    slogan: 'Đừng quên tính vé tháng này nhé!',
+  },
+  topupWidget: {
+    ariaLabel: 'Mở trang nạp',
+    modalTitle: 'Nạp Thẻ',
+    closeLabel: 'Đóng',
+    openInNewTab: 'Mở ở tab mới',
+    loading: 'Đang tải…',
+    inProgressDescription: 'Tính năng này đang được hoàn thiện — quay lại sau nhé!',
+  },
+  quickActions: {
+    openLabel: 'Tiện ích nhanh',
+    closeLabel: 'Đóng tiện ích nhanh',
+    ticketLabel: 'Tính Vé Đen',
+    topupLabel: 'Nạp Thẻ',
+    slogan: 'Bấm vô là có đủ vé với nạp thẻ liền tay!',
   },
   comingSoonPages: {
     specCalculator: {
@@ -329,6 +388,7 @@ export const vi: Translations = {
   footer: {
     navigationLabel: 'Điều hướng chân trang',
     tagline: 'Wiki cộng đồng không chính thức và bộ công cụ tính toán dành cho người chơi One Punch Man.',
+    signOff: 'Còn tiếp…',
     disclaimer:
       '© {year} S-Class Codex. Đây là wiki cộng đồng không chính thức do người hâm mộ thực hiện — không liên kết hay được xác nhận bởi nhà phát hành chính thức của game One Punch Man. Mọi tên gọi, hình ảnh và tài sản trong game thuộc về chủ sở hữu tương ứng.',
     donate: {

@@ -44,13 +44,6 @@ export function AccountMenuItems({ onItemClick, className = '' }: AccountMenuIte
         <CoinIcon className="h-4 w-4" />
         {balance} {t('wallet.tokenUnit')}
       </Link>
-      <Link
-        to="/trade/mine"
-        onClick={onItemClick}
-        className="comic-pill inline-flex h-11 w-full items-center px-4 text-sm"
-      >
-        {t('auth.myListings')}
-      </Link>
       <button
         type="button"
         onClick={() => {

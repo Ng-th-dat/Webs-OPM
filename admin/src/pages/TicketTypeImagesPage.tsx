@@ -5,13 +5,14 @@ import { uploadTicketTypeImage } from '@/lib/ticketTypeImageStorage';
 import { ImageIcon } from '@/components/icons';
 
 interface TicketTypeDef {
-  ticketType: 'black' | 'stk';
+  ticketType: 'black' | 'stk' | 'topup';
   label: string;
 }
 
 const TICKET_TYPES: TicketTypeDef[] = [
   { ticketType: 'black', label: 'Black Ticket' },
   { ticketType: 'stk', label: 'STK Ticket' },
+  { ticketType: 'topup', label: 'Top Up Icon' },
 ];
 
 function Panel({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
@@ -33,7 +34,7 @@ function TicketTypeImageRow({
 }: {
   ticketType: TicketTypeDef;
   imageUrl: string | undefined;
-  onUploaded: (ticketType: 'black' | 'stk', url: string) => void;
+  onUploaded: (ticketType: 'black' | 'stk' | 'topup', url: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -105,7 +106,7 @@ export function TicketTypeImagesPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  function handleUploaded(ticketType: 'black' | 'stk', url: string) {
+  function handleUploaded(ticketType: 'black' | 'stk' | 'topup', url: string) {
     setImages((current) => ({ ...current, [ticketType]: url }));
   }
 

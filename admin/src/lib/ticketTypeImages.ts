@@ -16,7 +16,7 @@ export async function fetchTicketTypeImages(): Promise<Record<string, string>> {
   return images;
 }
 
-export async function setTicketTypeImage(ticketType: 'black' | 'stk', imageUrl: string): Promise<void> {
+export async function setTicketTypeImage(ticketType: 'black' | 'stk' | 'topup', imageUrl: string): Promise<void> {
   const { error } = await supabase
     .from('ticket_type_images')
     .upsert({ ticket_type: ticketType, image_url: imageUrl, updated_at: new Date().toISOString() });

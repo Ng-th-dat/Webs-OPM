@@ -32,6 +32,17 @@
   --color-rarity-r: #6bcf7f;
   --color-rarity-n: #8a94a6;
 
+  /* Meta tier list (combat-strength ranking, distinct from rarity above) — weakest to strongest */
+  --color-tier-d: #6b7785;
+  --color-tier-c: #4fb0a5;
+  --color-tier-b: #5fbf6b;
+  --color-tier-a: #9fd23c;
+  --color-tier-s: #f2b807;
+  --color-tier-s-plus: #f2870a;
+  --color-tier-ss-plus: #f0453f;
+  --color-tier-toc: #b06bff;
+  --color-tier-core: #ff4fa3;
+
   /* Font */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
@@ -45,10 +56,11 @@
   --animate-float-slow: float 9s ease-in-out infinite;
   --animate-ember: ember 8s ease-in-out infinite;
   --animate-logo-bob: logo-bob 3s ease-in-out infinite;
-  --animate-badge-shimmer: badge-shimmer 3.2s ease-in-out infinite;
   --animate-modal-in: modal-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-backdrop-in: backdrop-in 0.2s ease-out;
   --animate-marquee: marquee 90s linear infinite;
+  --animate-rise-in: rise-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-panel-slam: panel-slam 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
 }
 
 @keyframes spin-slow {
@@ -80,22 +92,6 @@
   }
   50% {
     transform: translateY(-3px) rotate(-3deg);
-  }
-}
-
-@keyframes badge-shimmer {
-  0%,
-  15% {
-    transform: translateX(-120%) rotate(20deg);
-    opacity: 0;
-  }
-  35% {
-    opacity: 0.9;
-  }
-  55%,
-  100% {
-    transform: translateX(120%) rotate(20deg);
-    opacity: 0;
   }
 }
 
@@ -139,6 +135,28 @@
   100% {
     transform: translateY(-220px) scale(0.4);
     opacity: 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes panel-slam {
+  from {
+    opacity: 0;
+    transform: rotate(var(--slam-rotate, 0deg)) scale(0.8) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--slam-rotate, 0deg)) scale(1) translateY(0);
   }
 }
 
@@ -189,6 +207,30 @@
       9% 86%,
       2% 100%,
       0 88%
+    );
+  }
+
+  /* Torn-poster edge, used on the footer's top edge (mirrors .comic-jagged-bottom) */
+  .comic-jagged-top {
+    clip-path: polygon(
+      0 100%,
+      100% 100%,
+      100% 0%,
+      93% 14%,
+      86% 0%,
+      79% 14%,
+      72% 0%,
+      65% 14%,
+      58% 0%,
+      51% 14%,
+      44% 0%,
+      37% 14%,
+      30% 0%,
+      23% 14%,
+      16% 0%,
+      9% 14%,
+      2% 0%,
+      0 12%
     );
   }
 
@@ -248,5 +290,54 @@
   .comic-pill.comic-pill--active {
     background-color: var(--color-accent-secondary);
     color: var(--color-canvas);
+  }
+
+  /* Halftone dots only (no bright gradient) — same tiling as .comic-surface, for layering over the dark canvas. */
+  .comic-dots {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.5) 1px, transparent 0);
+    background-size: 9px 9px;
+  }
+
+  /* Comic narration-caption box — accent-colored spine + tinted panel, adapted for dark mode (no literal yellow box). */
+  .comic-caption {
+    position: relative;
+    border-left: 4px solid var(--color-accent-secondary);
+    border-radius: 0 8px 8px 0;
+    background-color: var(--color-elevated);
+    padding: 0.875rem 1.25rem;
+  }
+
+  /* Torn-paper panel edge, scaled for a card rather than a full header/drawer bar. */
+  .comic-panel-torn {
+    clip-path: polygon(
+      2% 0%,
+      15% 3%,
+      30% 0%,
+      45% 3%,
+      60% 0%,
+      75% 3%,
+      90% 0%,
+      100% 4%,
+      97% 15%,
+      100% 30%,
+      97% 45%,
+      100% 60%,
+      97% 75%,
+      100% 90%,
+      96% 100%,
+      85% 97%,
+      70% 100%,
+      55% 97%,
+      40% 100%,
+      25% 97%,
+      10% 100%,
+      0% 96%,
+      3% 85%,
+      0% 70%,
+      3% 55%,
+      0% 40%,
+      3% 25%,
+      0% 10%
+    );
   }
 }

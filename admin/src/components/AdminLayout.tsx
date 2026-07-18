@@ -9,6 +9,7 @@ import {
   CalendarIcon,
   CoinIcon,
   ExternalLinkIcon,
+  EyeIcon,
   GridIcon,
   HelpCircleIcon,
   LockIcon,
@@ -40,6 +41,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { to: '/characters', label: 'Characters', icon: UsersIcon, end: false },
       { to: '/schedule', label: 'Schedule', icon: CalendarIcon, end: false },
       { to: '/updates', label: 'Updates', icon: MegaphoneIcon, end: false },
+      { to: '/intel', label: 'Intel', icon: EyeIcon, end: false },
       { to: '/mastery-materials', label: 'Mastery', icon: SparklesIcon, end: false },
       { to: '/ticket-images', label: 'Tickets', icon: TicketIcon, end: false },
     ],
@@ -64,6 +66,8 @@ const PAGE_TITLES: Record<string, string> = {
   '/schedule/new': 'Add Schedule Entry',
   '/updates': 'Game Updates',
   '/updates/new': 'Add Update',
+  '/intel': 'Intel',
+  '/intel/new': 'Add Dossier',
   '/mastery-materials': 'Mastery Materials',
   '/ticket-images': 'Ticket Icons',
   '/trade-listings': 'Trade Listings',
@@ -74,6 +78,7 @@ const PAGE_TITLES: Record<string, string> = {
 function editTitleFor(pathname: string): string {
   if (pathname.startsWith('/schedule')) return 'Edit Schedule Entry';
   if (pathname.startsWith('/updates')) return 'Edit Update';
+  if (pathname.startsWith('/intel')) return 'Edit Dossier';
   if (pathname.startsWith('/trade-listings')) return 'Trade Listing';
   if (pathname.startsWith('/topups')) return 'Top-up';
   return 'Edit Character';
@@ -120,9 +125,11 @@ export function AdminLayout() {
       ? { label: 'Add Schedule Entry', to: '/schedule/new' }
       : pathname.startsWith('/updates')
         ? { label: 'Add Update', to: '/updates/new' }
-        : pathname.startsWith('/trade-listings') || pathname.startsWith('/feedback') || pathname.startsWith('/topups')
-          ? null
-          : { label: 'Add Character', to: '/characters/new' };
+        : pathname.startsWith('/intel')
+          ? { label: 'Add Dossier', to: '/intel/new' }
+          : pathname.startsWith('/trade-listings') || pathname.startsWith('/feedback') || pathname.startsWith('/topups')
+            ? null
+            : { label: 'Add Character', to: '/characters/new' };
 
   return (
     <div className="flex min-h-screen">

@@ -16,7 +16,7 @@ interface SelectFilterProps {
 
 export function SelectFilter({ id, label, allLabel, value, options, onChange }: SelectFilterProps) {
   return (
-    <div className="relative">
+    <div className="relative w-full sm:w-auto">
       <label htmlFor={id} className="sr-only">
         {label}
       </label>
@@ -24,7 +24,7 @@ export function SelectFilter({ id, label, allLabel, value, options, onChange }: 
         id={id}
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value || null)}
-        className="h-11 min-w-[9.5rem] appearance-none rounded-lg border border-border bg-elevated pl-3.5 pr-9 text-sm font-medium text-foreground transition-colors duration-200 hover:border-accent-info/40 focus:border-accent-info/60 focus:outline-none focus:ring-2 focus:ring-accent-info/20"
+        className="h-11 w-full appearance-none rounded-lg border border-border bg-elevated pl-3.5 pr-9 text-sm font-medium text-foreground transition-colors duration-200 hover:border-accent-info/40 focus:border-accent-info/60 focus:outline-none focus:shadow-[0_0_0_3px_rgba(61,169,252,0.15)] sm:w-auto sm:min-w-[9.5rem]"
       >
         {allLabel && (
           <option value="">

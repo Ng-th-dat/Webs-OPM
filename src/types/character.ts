@@ -6,6 +6,8 @@ export type SkillType = 'Attack' | 'Ultimate' | 'Passive' | 'Awaken Passive' | '
 export type CharacterFaction = 'Hero' | 'Monster' | 'Third-party';
 /** Hero Association class or monster threat level — independent of gacha `rarity`. */
 export type CharacterRank = 'S-1' | 'S-2' | 'A' | 'Demon' | 'Dragon';
+/** Current combat-strength ranking (meta tier list), weakest to strongest — distinct from gacha `rarity` and lore `rank`. Admin-assigned only; unset until ranked. */
+export type MetaTier = 'D' | 'C' | 'B' | 'A' | 'S' | 'S+' | 'SS+' | 'Tốc' | 'Core';
 
 export interface Skill {
   description: string;
@@ -70,6 +72,8 @@ export interface Character {
   faction: CharacterFaction;
   rank: CharacterRank;
   role: string;
+  /** Meta tier list ranking — undefined until an admin assigns one. */
+  metaTier?: MetaTier;
   tags: string[];
   skills: Skill[];
   passive: Passive;

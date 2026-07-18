@@ -1,15 +1,16 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { TicketReminderWidget } from '@/components/layout/TicketReminderWidget';
+import { QuickActionsWidget } from '@/components/layout/QuickActionsWidget';
 import { MarqueeBanner } from '@/components/layout/MarqueeBanner';
+import { MangaFrame } from '@/components/layout/MangaFrame';
 import { ScrollToTop } from '@/components/common/ScrollToTop';
-import { LoginModal } from '@/components/auth/LoginModal';
 
 export function AppLayout() {
   return (
     <div className="relative flex min-h-screen flex-col bg-canvas">
       <ScrollToTop />
+      <MangaFrame />
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[560px] overflow-hidden"
@@ -30,8 +31,7 @@ export function AppLayout() {
         <Outlet />
       </main>
       <Footer />
-      <TicketReminderWidget />
-      <LoginModal />
+      <QuickActionsWidget />
     </div>
   );
 }

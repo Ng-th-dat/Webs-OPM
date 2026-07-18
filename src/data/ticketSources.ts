@@ -1,5 +1,5 @@
-import type { ReleaseTiming } from '@/types/character';
-import type { TranslationKey } from '@/i18n';
+import type { ReleaseTiming } from '../types/character';
+import type { TranslationKey } from '../i18n/types';
 
 export type TicketType = 'black' | 'stk';
 

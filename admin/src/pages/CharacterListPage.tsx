@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { ReleaseStatus } from '@main/types/character';
-import { fetchCharacters, setCharacterVisibility, type AdminCharacter } from '@/lib/characters';
+import type { MetaTier, ReleaseStatus } from '@main/types/character';
+import { fetchCharacters, setCharacterMetaTier, setCharacterVisibility, type AdminCharacter } from '@/lib/characters';
 import { RARITY_SWATCH } from '@/lib/rarity';
+import { META_TIER_ORDER } from '@/lib/metaTier';
 import { EyeIcon, EyeOffIcon, PencilIcon, SearchIcon } from '@/components/icons';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
+
+const TIER_OPTIONS = [...META_TIER_ORDER].reverse();
 
 const STATUS_BADGE: Record<ReleaseStatus, string> = {
   Released: 'bg-success/10 text-success',
@@ -63,6 +66,7 @@ export function CharacterListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [tieringId, setTieringId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
 
   function load() {
@@ -116,6 +120,39 @@ export function CharacterListPage() {
     }
   }
 
+  async function handleTierChange(character: AdminCharacter, nextTier: MetaTier | null) {
+    const confirmed = await confirm(
+      nextTier
+        ? {
+            title: `Set tier to ${nextTier}?`,
+            message: `"${character.name}" will be ranked as ${nextTier} on the public tier list.`,
+            confirmLabel: 'Set tier',
+          }
+        : {
+            title: 'Clear tier?',
+            message: `"${character.name}" will be removed from the public tier list until ranked again.`,
+            confirmLabel: 'Clear',
+          }
+    );
+    if (!confirmed) return;
+
+    setTieringId(character.id);
+    try {
+      await setCharacterMetaTier(character.id, nextTier);
+      setCharacters((current) =>
+        current.map((c) => (c.id === character.id ? { ...c, metaTier: nextTier ?? undefined } : c))
+      );
+      showToast(
+        nextTier ? `"${character.name}" set to ${nextTier}` : `"${character.name}" cleared from tier list`,
+        'success'
+      );
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Failed to update tier', 'error');
+    } finally {
+      setTieringId(null);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-elevated sm:flex-row sm:items-center sm:justify-between sm:p-5">
@@ -149,6 +186,7 @@ export function CharacterListPage() {
               <tr>
                 <th className="px-5 pb-3 pt-5 font-semibold">Character</th>
                 <th className="px-5 pb-3 pt-5 font-semibold">Rarity</th>
+                <th className="px-5 pb-3 pt-5 font-semibold">Tier</th>
                 <th className="px-5 pb-3 pt-5 font-semibold">Type</th>
                 <th className="px-5 pb-3 pt-5 font-semibold">Faction</th>
                 <th className="px-5 pb-3 pt-5 font-semibold">Role</th>
@@ -173,6 +211,24 @@ export function CharacterListPage() {
                   </td>
                   <td className="px-5 py-3">
                     <RarityBadge rarity={character.rarity} />
+                  </td>
+                  <td className="px-5 py-3">
+                    <select
+                      value={character.metaTier ?? ''}
+                      onChange={(event) =>
+                        handleTierChange(character, (event.target.value || null) as MetaTier | null)
+                      }
+                      disabled={tieringId === character.id}
+                      aria-label={`Set tier for ${character.name}`}
+                      className="h-8 rounded-lg border border-border bg-elevated px-2 text-xs font-semibold text-foreground transition-colors focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/15 disabled:opacity-50"
+                    >
+                      <option value="">Unranked</option>
+                      {TIER_OPTIONS.map((tier) => (
+                        <option key={tier} value={tier}>
+                          {tier}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-5 py-3 text-muted">{character.type}</td>
                   <td className="px-5 py-3 text-muted">{character.faction}</td>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useCharacters } from '@/hooks/useCharacters';
 import { CharacterGrid } from '@/components/character/CharacterGrid';
 import { SearchInput } from '@/components/common/SearchInput';
@@ -7,10 +8,10 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { BurstIcon } from '@/components/common/icons';
 import { FilterBar, type FilterGroup } from '@/components/data-table/FilterBar';
+import { RarityFilterChips } from '@/components/data-table/RarityFilterChips';
 import { useFilters } from '@/hooks/useFilters';
 import { useTranslation } from '@/hooks/useTranslation';
 import { filterCharacters, getUniqueSortedValues, searchCharacters } from '@/utils/characters';
-import { RARITY_ORDER } from '@/utils/rarity';
 import type { CharacterFilterValues } from '@/types/character';
 
 const INITIAL_FILTERS: CharacterFilterValues = {
@@ -23,16 +24,12 @@ const INITIAL_FILTERS: CharacterFilterValues = {
 export function CharactersPage() {
   const { t } = useTranslation();
   const { characters, loading, error } = useCharacters();
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get('q') ?? '');
   const { filters, setFilter, resetFilters, hasActiveFilters } = useFilters(INITIAL_FILTERS);
 
   const filterGroups = useMemo<FilterGroup<keyof CharacterFilterValues>[]>(
     () => [
-      {
-        key: 'rarity',
-        label: t('characters.filters.tier'),
-        options: RARITY_ORDER.map((value) => ({ label: value, value })),
-      },
       {
         key: 'type',
         label: t('characters.filters.type'),
@@ -72,29 +69,33 @@ export function CharactersPage() {
         <PageHeader title={t('characters.title')} description={t('characters.description')} />
       </div>
 
-      <div className="sticky top-16 z-30 border-b border-border bg-canvas/90 py-4 backdrop-blur-md">
+      <div className="sticky top-16 z-30 border-b border-border bg-canvas py-4">
         <div className="mx-auto max-w-6xl px-4 sm:px-8">
-          <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 shadow-xl shadow-black/20 sm:p-5">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-              <SearchInput
-                value={query}
-                onChange={setQuery}
-                placeholder={t('characters.searchPlaceholder')}
-                className="lg:max-w-xs"
-              />
-              <FilterBar
-                groups={filterGroups}
-                values={filters}
-                onChange={setFilter}
-                onReset={hasActiveFilters ? resetFilters : undefined}
-              />
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-4 shadow-xl shadow-black/20 sm:p-5">
+            <div aria-hidden="true" className="comic-dots pointer-events-none absolute inset-0 opacity-[0.04]" />
+            <div className="relative flex flex-col gap-4">
+              <RarityFilterChips value={filters.rarity} onChange={(value) => setFilter('rarity', value)} />
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                <SearchInput
+                  value={query}
+                  onChange={setQuery}
+                  placeholder={t('characters.searchPlaceholder')}
+                  className="lg:max-w-xs"
+                />
+                <FilterBar
+                  groups={filterGroups}
+                  values={filters}
+                  onChange={setFilter}
+                  onReset={hasActiveFilters ? resetFilters : undefined}
+                />
+              </div>
+              <p className="text-xs font-medium text-subtle">
+                {t('characters.resultCount', {
+                  count: visibleCharacters.length,
+                  total: characters.length,
+                })}
+              </p>
             </div>
-            <p className="text-xs font-medium text-subtle">
-              {t('characters.resultCount', {
-                count: visibleCharacters.length,
-                total: characters.length,
-              })}
-            </p>
           </div>
         </div>
       </div>

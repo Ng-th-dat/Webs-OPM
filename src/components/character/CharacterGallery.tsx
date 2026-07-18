@@ -29,13 +29,7 @@ export function CharacterGallery({ characterName, images, rarity }: CharacterGal
 
   return (
     <section className="flex flex-col gap-4">
-      <h2
-        className="relative inline-flex w-fit items-center px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.22em] text-canvas"
-        style={{
-          clipPath: 'polygon(8% 0, 100% 0, 92% 100%, 0% 100%)',
-          background: 'linear-gradient(120deg, var(--color-accent-secondary), var(--color-accent))',
-        }}
-      >
+      <h2 className="comic-pill comic-pill--active h-8 w-fit px-4 text-[11px]">
         {t('characterDetail.gallery')}
       </h2>
 

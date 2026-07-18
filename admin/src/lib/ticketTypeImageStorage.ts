@@ -3,10 +3,10 @@ import { supabase } from '@/lib/supabase';
 const BUCKET = 'ticket-source-images';
 
 /**
- * Uploads to `<ticketType>.<ext>` with upsert — one icon per ticket type (black/STK), shared
+ * Uploads to `<ticketType>.<ext>` with upsert — one icon per ticket type (black/STK/topup), shared
  * across every source of that type, not per individual source.
  */
-export async function uploadTicketTypeImage(ticketType: 'black' | 'stk', file: File): Promise<string> {
+export async function uploadTicketTypeImage(ticketType: 'black' | 'stk' | 'topup', file: File): Promise<string> {
   const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
   const path = `${ticketType}.${ext}`;
 

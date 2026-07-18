@@ -45,13 +45,7 @@ export function SkillCard({
   const style = SKILL_TYPE_STYLES[skillType ?? 'Attack'];
 
   return (
-    <div
-      className={`relative overflow-hidden rounded-card border bg-surface p-5 ${skillType === 'Ultimate' ? 'border-accent-secondary/30' : 'border-border'}`}
-    >
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-[0.07] blur-xl ${style.glow}`}
-      />
+    <div className={`relative overflow-hidden rounded-card border-2 bg-surface p-5 ${style.iconWrap}`}>
       {tierAccent && (
         <StarIcon className={`absolute right-4 top-4 h-4 w-4 ${TIER_STAR_STYLES[tierAccent]}`} />
       )}
@@ -59,9 +53,7 @@ export function SkillCard({
         <SkillIcon skillType={skillType} image={image} />
         <div className="min-w-0 flex-1 pr-6">
           {showTypeBadge && skillType && (
-            <span
-              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold uppercase tracking-wide ${style.badge}`}
-            >
+            <span className={`comic-pill h-6 px-2 text-[10px] ${style.badge}`}>
               {t(SKILL_TYPE_LABEL_KEYS[skillType])}
             </span>
           )}

@@ -5,6 +5,7 @@ import type {
   CharacterFaction,
   CharacterRank,
   CoreTier,
+  MetaTier,
   Passive,
   Rarity,
   ReleaseStatus,
@@ -22,6 +23,7 @@ interface CharacterRow {
   faction: CharacterFaction;
   rank: CharacterRank;
   role: string;
+  meta_tier: MetaTier | null;
   tags: string[];
   skills: Skill[];
   passive: Passive;
@@ -51,6 +53,7 @@ function mapRowToCharacter(row: CharacterRow): Character {
     faction: row.faction,
     rank: row.rank,
     role: row.role,
+    metaTier: row.meta_tier ?? undefined,
     tags: row.tags,
     skills: row.skills,
     passive: row.passive,

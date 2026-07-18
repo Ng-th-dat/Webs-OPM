@@ -20,7 +20,7 @@ export function SearchInput({ value, onChange, placeholder, className = '' }: Se
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         aria-label={placeholder ?? t('common.search')}
-        className="h-12 w-full rounded-lg border border-border bg-elevated pl-11 pr-11 text-base text-foreground placeholder:text-subtle transition-colors duration-200 focus:border-accent-info/60 focus:outline-none"
+        className="h-11 w-full rounded-lg border border-border bg-elevated pl-11 pr-11 text-base text-foreground placeholder:text-subtle transition-colors duration-200 hover:border-accent-info/40 focus:border-accent-info/60 focus:outline-none focus:shadow-[0_0_0_3px_rgba(61,169,252,0.15)]"
       />
       {value && (
         <button

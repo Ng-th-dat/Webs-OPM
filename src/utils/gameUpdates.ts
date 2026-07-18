@@ -31,3 +31,11 @@ export function formatUpdateDate(isoDate: string, locale: string): string {
     year: 'numeric',
   });
 }
+
+const BARE_DATE_RANGE_PATTERN = /^(\d{2}\/\d{2}\/\d{4})\s+(\d{2}\/\d{2}\/\d{4})$/;
+
+/** Normalizes a "DD/MM/YYYY DD/MM/YYYY" sub-event range (space-separated, as some entries were entered) into "DD/MM/YYYY - DD/MM/YYYY" — leaves single dates or already-dashed ranges untouched. */
+export function formatEventDateRange(dateRange: string): string {
+  const match = dateRange.match(BARE_DATE_RANGE_PATTERN);
+  return match ? `${match[1]} - ${match[2]}` : dateRange;
+}

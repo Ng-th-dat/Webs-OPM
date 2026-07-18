@@ -7,8 +7,10 @@ export function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="border-t border-border bg-surface">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-8 lg:flex-row lg:items-start lg:justify-between">
+    <footer className="relative border-t border-border bg-surface">
+      <div aria-hidden="true" className="comic-dots pointer-events-none absolute inset-0 opacity-[0.05]" />
+
+      <div className="relative mx-auto flex max-w-6xl flex-col gap-8 px-4 pb-12 pt-12 sm:px-8 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex max-w-xs flex-col gap-3">
           <Link to="/" className="group flex items-center gap-2.5">
             <LogoMark />
@@ -59,10 +61,16 @@ export function Footer() {
         </nav>
       </div>
 
-      <div className="border-t border-border px-4 py-5 sm:px-8">
-        <p className="mx-auto max-w-6xl text-xs text-subtle">
-          {t('footer.disclaimer', { year: new Date().getFullYear() })}
-        </p>
+      <div className="relative border-t border-border px-4 py-5 sm:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+          <span className="flex shrink-0 items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-wide text-accent-secondary">
+            {t('footer.signOff')}
+            <span className="text-subtle">№ 001</span>
+          </span>
+          <p className="flex-1 text-xs text-subtle">
+            {t('footer.disclaimer', { year: new Date().getFullYear() })}
+          </p>
+        </div>
       </div>
     </footer>
   );

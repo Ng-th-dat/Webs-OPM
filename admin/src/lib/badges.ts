@@ -84,6 +84,17 @@ export const TRADE_STATUS_OPTIONS: BadgeOption[] = [
   { value: 'sold', color: '#9ca3af' },
 ];
 
+export const INTEL_STATUS_OPTIONS: BadgeOption[] = [
+  { value: 'rumored', color: '#ff4d4d' },
+  { value: 'confirmed', color: '#22c55e' },
+];
+
+export const INTEL_CONFIDENCE_OPTIONS: BadgeOption[] = [
+  { value: 'rumor', color: '#9ca3af' },
+  { value: 'likely', color: '#d97706' },
+  { value: 'confirmed', color: '#22c55e' },
+];
+
 export const TOPUP_STATUS_OPTIONS: BadgeOption[] = [
   { value: 'pending', color: '#d97706' },
   { value: 'approved', color: '#22c55e' },
