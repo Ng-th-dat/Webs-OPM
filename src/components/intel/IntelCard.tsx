@@ -60,9 +60,12 @@ export function IntelCard({ entry, className = '', style }: IntelCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors duration-200 group-hover:text-accent">
-          {entry.characterName}
-        </h3>
+        {/* line-clamp only truncates on a plain block, not a flex item directly — see CharacterCard */}
+        <div>
+          <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors duration-200 group-hover:text-accent">
+            {entry.characterName}
+          </h3>
+        </div>
 
         {(entry.roleGuess || entry.typeGuess || entry.factionGuess) && (
           <div className="flex flex-wrap items-center gap-1.5">
@@ -76,7 +79,11 @@ export function IntelCard({ entry, className = '', style }: IntelCardProps) {
           </div>
         )}
 
-        {entry.summary && <p className="line-clamp-2 text-sm leading-relaxed text-muted">{entry.summary}</p>}
+        {entry.summary && (
+          <div>
+            <p className="line-clamp-2 text-sm leading-relaxed text-muted">{entry.summary}</p>
+          </div>
+        )}
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-1">
           <span className="text-[11px] font-semibold text-subtle">{t('intel.hintCount', { count: entry.hints.length })}</span>

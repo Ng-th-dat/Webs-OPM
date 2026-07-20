@@ -22,6 +22,8 @@ import { formatUpdateDate } from '@/utils/gameUpdates';
 import { RARITY_STYLES } from '@/utils/rarity';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSeo } from '@/hooks/useSeo';
+import { buildBreadcrumbJsonLd, truncateDescription } from '@/utils/seo';
 import { NotFoundPage } from './NotFoundPage';
 
 const STAGGER_STEP_MS = 90;
@@ -34,6 +36,20 @@ export function IntelDetailPage() {
   const [imageError, setImageError] = useState(false);
   const [lightbox, setLightbox] = useState<{ src: string; filterClass: string } | null>(null);
   const reducedMotion = useReducedMotion();
+
+  useSeo({
+    title: entry ? entry.characterName : t('intel.title'),
+    description: entry ? truncateDescription(entry.summary ?? t('intel.description')) : t('intel.description'),
+    image: entry?.coverImage,
+    noindex: !loading && (Boolean(error) || !entry),
+    jsonLd: entry
+      ? buildBreadcrumbJsonLd([
+          { name: t('common.home'), path: '/' },
+          { name: t('intel.title'), path: '/intel' },
+          { name: entry.characterName, path: `/intel/${entry.slug}` },
+        ])
+      : undefined,
+  });
 
   function reveal(delayMs: number, animationClass = 'animate-rise-in'): { className: string; style?: CSSProperties } {
     if (reducedMotion) return { className: '' };

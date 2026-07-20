@@ -12,6 +12,7 @@ import {
   TYPE_BADGE_ICONS,
 } from '@/utils/badges';
 import { CheckIcon, XIcon } from '@/components/common/icons';
+import { parseCharacterName } from '@/utils/characters';
 import { CharacterGallery } from './CharacterGallery';
 import { SkillShowcase } from './SkillShowcase';
 
@@ -22,6 +23,7 @@ interface CharacterDetailProps {
 export function CharacterDetail({ character }: CharacterDetailProps) {
   const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
+  const { title, mainName } = parseCharacterName(character.name);
   const glowStyle = { '--card-glow': RARITY_GLOW[character.rarity] } as CSSProperties;
   const rarityColor = RARITY_CSS_VAR[character.rarity];
   const metaTierIndex = character.metaTier ? META_TIER_ORDER.indexOf(character.metaTier) : -1;
@@ -90,12 +92,22 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
             </span>
           </div>
 
-          <h1
-            className="w-fit text-5xl font-black uppercase italic leading-[1.02] tracking-tight text-foreground sm:text-6xl"
-            style={{ textShadow: '3px 3px 0 var(--color-canvas), 6px 6px 0 rgba(0,0,0,0.35)' }}
-          >
-            {character.name}
-          </h1>
+          <div>
+            {title && (
+              <p
+                className="mb-1 w-fit text-xs font-extrabold uppercase tracking-[0.25em] text-accent-secondary sm:text-sm"
+                style={{ textShadow: '2px 2px 0 var(--color-canvas)' }}
+              >
+                {title}
+              </p>
+            )}
+            <h1
+              className="w-fit text-5xl font-black uppercase italic leading-[1.02] tracking-tight text-foreground sm:text-6xl"
+              style={{ textShadow: '3px 3px 0 var(--color-canvas), 6px 6px 0 rgba(0,0,0,0.35)' }}
+            >
+              {mainName}
+            </h1>
+          </div>
 
           <div className="flex flex-wrap gap-2">
             {character.tags.map((tag) => (

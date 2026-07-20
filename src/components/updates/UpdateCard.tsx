@@ -57,10 +57,15 @@ export function UpdateCard({ entry }: UpdateCardProps) {
           </span>
         </div>
 
-        <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors duration-200 group-hover:text-accent-info">
-          {entry.title}
-        </h3>
-        <p className="line-clamp-2 text-sm leading-relaxed text-muted">{entry.description}</p>
+        {/* line-clamp only truncates on a plain block, not a flex item directly — see CharacterCard */}
+        <div>
+          <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors duration-200 group-hover:text-accent-info">
+            {entry.title}
+          </h3>
+        </div>
+        <div>
+          <p className="line-clamp-2 text-sm leading-relaxed text-muted">{entry.description}</p>
+        </div>
       </div>
     </Link>
   );

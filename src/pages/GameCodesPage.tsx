@@ -1,6 +1,7 @@
 import { useGameCodes } from '@/hooks/useGameCodes';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSeo } from '@/hooks/useSeo';
 import { PageHeader } from '@/components/common/PageHeader';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -9,6 +10,7 @@ import { CodeCard } from '@/components/gameCodes/CodeCard';
 
 export function GameCodesPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('gameCodes.title'), description: t('gameCodes.description') });
   const { codes, loading, error } = useGameCodes();
   const reducedMotion = useReducedMotion();
 

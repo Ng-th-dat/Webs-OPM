@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import type { CSSProperties } from 'react';
 import type { Character } from '@/types/character';
 import { RARITY_GLOW, RARITY_STYLES } from '@/utils/rarity';
+import { parseCharacterName } from '@/utils/characters';
 import { CharacterPortrait } from './CharacterPortrait';
 
 interface CharacterCardProps {
@@ -10,6 +11,7 @@ interface CharacterCardProps {
 
 export function CharacterCard({ character }: CharacterCardProps) {
   const glowStyle = { '--card-glow': RARITY_GLOW[character.rarity] } as CSSProperties;
+  const { title, mainName } = parseCharacterName(character.name);
 
   return (
     <Link
@@ -43,9 +45,19 @@ export function CharacterCard({ character }: CharacterCardProps) {
           {character.role}
         </span>
 
-        <h3 className="relative mt-auto line-clamp-2 px-3 py-2.5 text-sm font-extrabold italic uppercase leading-tight tracking-wide text-foreground sm:px-3.5 sm:py-3 sm:text-base lg:text-lg">
-          {character.name}
-        </h3>
+        {/* -webkit-line-clamp stops truncating once its element is blockified as a flex item
+            (Chromium reports its display as flow-root instead of -webkit-box) — the wrapper div
+            takes the mt-auto/flex-item role so the clamped h3 stays a plain block child. */}
+        <div className="relative mt-auto flex flex-col gap-0.5 px-3 py-2.5 sm:px-3.5 sm:py-3">
+          {title && (
+            <span className="truncate text-[9px] font-bold uppercase tracking-wider text-accent-secondary/90">
+              {title}
+            </span>
+          )}
+          <h3 className="line-clamp-2 text-sm font-extrabold italic uppercase leading-tight tracking-wide text-foreground sm:text-base lg:text-lg">
+            {mainName}
+          </h3>
+        </div>
       </div>
     </Link>
   );

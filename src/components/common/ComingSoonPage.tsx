@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from './Badge';
 import { ArrowRightIcon } from './icons';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSeo } from '@/hooks/useSeo';
 
 interface ComingSoonPageProps {
   title: string;
@@ -12,6 +13,7 @@ interface ComingSoonPageProps {
 
 export function ComingSoonPage({ title, description, icon: Icon }: ComingSoonPageProps) {
   const { t } = useTranslation();
+  useSeo({ title, description, noindex: true });
 
   return (
     <section className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center gap-5 px-4 py-24 text-center sm:px-8">

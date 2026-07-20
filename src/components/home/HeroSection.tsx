@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -12,6 +12,7 @@ import {
   type SpotlightEntry,
 } from '@/utils/releaseSchedule';
 import { RARITY_ORDER, RARITY_STYLES } from '@/utils/rarity';
+import { parseCharacterName } from '@/utils/characters';
 import { CharacterPortrait } from '@/components/character/CharacterPortrait';
 import { VortexRing } from './VortexRing';
 import { AlertTriangleIcon, ArrowRightIcon } from '@/components/common/icons';
@@ -20,7 +21,6 @@ import { useCharacters } from '@/hooks/useCharacters';
 import { useCharacterIntel } from '@/hooks/useCharacterIntel';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { usePointerParallax } from '@/hooks/usePointerParallax';
 import type { TranslationKey } from '@/i18n';
 
 const HEADLINE_ACCENT = 'One Punch Man';
@@ -38,10 +38,6 @@ const EMBERS = [
 const HERO_EXCLUDED_SLUGS = new Set(['saitama']);
 const PANEL_ROTATIONS = ['-6deg', '4deg', '-3deg', '5deg'];
 const BADGE_ROTATIONS = ['-6deg', '5deg', '-4deg'];
-
-function hasFinePointer(): boolean {
-  return window.matchMedia('(pointer: fine)').matches;
-}
 
 function HeroHeadline({ text, reducedMotion }: { text: string; reducedMotion: boolean }) {
   const splitAt = text.indexOf(HEADLINE_ACCENT);
@@ -112,6 +108,7 @@ function SpotlightCard({
 }) {
   const rotateDeg = PANEL_ROTATIONS[index % PANEL_ROTATIONS.length];
   const panelReveal = reveal(360 + index * 120, 'animate-panel-slam');
+  const { title, mainName } = parseCharacterName(entry.characterName);
 
   return (
     <Link
@@ -155,12 +152,19 @@ function SpotlightCard({
           />
         )}
       </div>
-      <p className="mt-1 truncate text-center text-[10px] font-bold uppercase tracking-wide text-foreground">
-        {entry.characterName}
-      </p>
-      <p className="truncate text-center text-[9px] font-medium uppercase tracking-wide text-subtle">
-        {t(RELEASE_TIMING_LABEL_KEYS[entry.timing])}
-      </p>
+      <div className="mt-1">
+        {title && (
+          <p className="truncate text-center text-[7px] font-bold uppercase tracking-wider text-accent-secondary/90">
+            {title}
+          </p>
+        )}
+        <p className="truncate text-center text-[10px] font-bold uppercase tracking-wide text-foreground">
+          {mainName}
+        </p>
+        <p className="truncate text-center text-[9px] font-medium uppercase tracking-wide text-subtle">
+          {t(RELEASE_TIMING_LABEL_KEYS[entry.timing])}
+        </p>
+      </div>
     </Link>
   );
 }
@@ -170,9 +174,6 @@ export function HeroSection() {
   const { characters } = useCharacters();
   const { entries: intelEntries } = useCharacterIntel();
   const reducedMotion = useReducedMotion();
-  const [pointerFine] = useState(hasFinePointer);
-  const parallaxEnabled = !reducedMotion && pointerFine;
-  const { ref: parallaxRef, offset: parallaxOffset } = usePointerParallax<HTMLElement>(parallaxEnabled);
 
   function reveal(delayMs: number, animationClass = 'animate-rise-in'): { className: string; style?: CSSProperties } {
     if (reducedMotion) return { className: '' };
@@ -206,7 +207,6 @@ export function HeroSection() {
 
   return (
     <section
-      ref={parallaxRef}
       className="relative flex overflow-hidden lg:min-h-[calc(100vh-93px)] lg:items-center"
     >
       <div
@@ -291,11 +291,11 @@ export function HeroSection() {
             </div>
 
             <div className={`flex flex-wrap items-center gap-3 ${reveal(140).className}`} style={reveal(140).style}>
-              <Link to="/characters" className="comic-pill h-12 px-7 text-sm sm:h-14 sm:px-8 sm:text-base">
+              <Link to="/characters" className="comic-pill comic-pill--active h-12 px-7 text-sm sm:h-14 sm:px-8 sm:text-base">
                 {t('home.hero.exploreCharacters')}
               </Link>
-              <Link to="/release-schedule" className="comic-pill comic-pill--active h-12 px-7 text-sm sm:h-14 sm:px-8 sm:text-base">
-                {t('home.hero.viewSchedule')}
+              <Link to="/tier-list" className="comic-pill h-12 px-7 text-sm sm:h-14 sm:px-8 sm:text-base">
+                {t('home.hero.viewTierList')}
               </Link>
             </div>
 
@@ -333,14 +333,7 @@ export function HeroSection() {
               </span>
             </div>
 
-            <div
-              className="relative flex flex-col gap-2"
-              style={
-                parallaxEnabled
-                  ? { transform: `translate3d(${parallaxOffset.x * 10}px, ${parallaxOffset.y * 8}px, 0)` }
-                  : undefined
-              }
-            >
+            <div className={`relative flex flex-col gap-2 ${reducedMotion ? '' : 'animate-float-slow'}`}>
               {cnSpotlight.length > 0 && (
                 <div className="flex flex-col gap-2">
                   <span

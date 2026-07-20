@@ -135,9 +135,12 @@ function CharacterPickerCard({
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-canvas via-canvas/60 to-transparent"
       />
-      <h4 className="relative mt-auto line-clamp-2 px-2 py-2 text-left text-xs font-extrabold italic uppercase leading-tight tracking-wide text-foreground">
-        {character.name}
-      </h4>
+      {/* line-clamp only truncates on a plain block, not a flex item directly — see CharacterCard */}
+      <div className="relative mt-auto px-2 py-2">
+        <h4 className="line-clamp-2 text-left text-xs font-extrabold italic uppercase leading-tight tracking-wide text-foreground">
+          {character.name}
+        </h4>
+      </div>
       {isSelected && (
         <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-canvas">
           <CheckIcon className="h-3 w-3" />

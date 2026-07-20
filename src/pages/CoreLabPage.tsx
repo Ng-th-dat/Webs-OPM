@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/common/Badge';
 import { AtomIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSeo } from '@/hooks/useSeo';
 import type { TranslationKey } from '@/i18n';
 
 const GUIDE_SECTION_KEYS: { titleKey: TranslationKey; descriptionKey: TranslationKey }[] = [
@@ -21,6 +22,7 @@ const GUIDE_SECTION_KEYS: { titleKey: TranslationKey; descriptionKey: Translatio
 
 export function CoreLabPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('coreLab.title'), description: t('coreLab.description') });
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">

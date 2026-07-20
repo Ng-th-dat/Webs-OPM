@@ -10,6 +10,7 @@ import { INTEL_STATUS_LABEL_KEYS, INTEL_STATUS_STYLES } from '@/utils/characterI
 import type { IntelStatus } from '@/types/characterIntel';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSeo } from '@/hooks/useSeo';
 
 const STATUSES: IntelStatus[] = ['rumored', 'confirmed'];
 const STAGGER_STEP_MS = 60;
@@ -17,6 +18,7 @@ const STAGGER_CAP_MS = 300;
 
 export function IntelPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('intel.title'), description: t('intel.description') });
   const { entries, loading, error } = useCharacterIntel();
   const [activeStatus, setActiveStatus] = useState<IntelStatus | null>(null);
   const reducedMotion = useReducedMotion();

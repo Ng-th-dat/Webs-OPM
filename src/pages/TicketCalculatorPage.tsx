@@ -5,6 +5,7 @@ import { useTicketTypeImages } from '@/hooks/useTicketTypeImages';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSeo } from '@/hooks/useSeo';
 import { TICKET_SOURCES, type TicketSource } from '@/data/ticketSources';
 import { calculateProjectedTickets, buildTicketTimeline, isPurchaseWindowClosed, type TicketTimelineRow } from '@/utils/ticketCalculator';
 import {
@@ -331,6 +332,7 @@ function SourceTable({
 
 export function TicketCalculatorPage() {
   const { t, language } = useTranslation();
+  useSeo({ title: t('ticketCalculator.title'), description: t('ticketCalculator.description') });
   const { characters, loading, error } = useCharacters();
   const { images: typeImages } = useTicketTypeImages();
   const reducedMotion = useReducedMotion();

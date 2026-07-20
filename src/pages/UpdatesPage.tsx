@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { BurstIcon } from '@/components/common/icons';
 import { UPDATE_CATEGORY_LABEL_KEYS, UPDATE_CATEGORY_STYLES } from '@/utils/gameUpdates';
 import type { UpdateCategory } from '@/types/gameUpdate';
+import { useSeo } from '@/hooks/useSeo';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const PAGE_SIZE = 6;
@@ -14,6 +15,7 @@ const CATEGORIES: UpdateCategory[] = ['Update', 'Event', 'CnNews', 'Maintenance'
 
 export function UpdatesPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('updates.title'), description: t('updates.description') });
   const { updates, loading, error } = useGameUpdates();
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [activeCategory, setActiveCategory] = useState<UpdateCategory | null>(null);

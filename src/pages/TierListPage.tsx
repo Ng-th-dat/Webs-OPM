@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCharacters } from '@/hooks/useCharacters';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSeo } from '@/hooks/useSeo';
 import { CharacterPortrait } from '@/components/character/CharacterPortrait';
 import { PageHeader } from '@/components/common/PageHeader';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -115,6 +116,7 @@ function UnrankedRow({ characters }: { characters: Character[] }) {
 
 export function TierListPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('tierList.title'), description: t('tierList.description') });
   const { characters, loading, error } = useCharacters();
   const reducedMotion = useReducedMotion();
 

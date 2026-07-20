@@ -97,7 +97,11 @@ function IntelPreviewCard({ form, hintCount }: { form: FormState; hintCount: num
             ))}
         </div>
 
-        {form.summary && <p className="line-clamp-3 text-sm leading-relaxed text-muted">{form.summary}</p>}
+        {form.summary && (
+          <div>
+            <p className="line-clamp-3 text-sm leading-relaxed text-muted">{form.summary}</p>
+          </div>
+        )}
 
         <span className="w-fit rounded-full border border-border px-2 py-1 text-[10px] font-semibold text-muted">
           {hintCount} hint{hintCount === 1 ? '' : 's'} logged

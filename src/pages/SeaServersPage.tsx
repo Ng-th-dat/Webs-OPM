@@ -4,6 +4,7 @@ import { useSeaServers } from '@/hooks/useSeaServers';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useCountUp } from '@/hooks/useCountUp';
+import { useSeo } from '@/hooks/useSeo';
 import { PageHeader } from '@/components/common/PageHeader';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -179,6 +180,7 @@ function ManifestRow({
 
 export function SeaServersPage() {
   const { t, language } = useTranslation();
+  useSeo({ title: t('seaServers.title'), description: t('seaServers.description') });
   const { servers, loading, error } = useSeaServers();
   const reducedMotion = useReducedMotion();
 

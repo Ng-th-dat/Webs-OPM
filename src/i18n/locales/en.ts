@@ -45,7 +45,7 @@ export const en = {
       eyebrow: 'Character Wiki & Tools',
       headline: 'Master One Punch Man, one calculation at a time.',
       exploreCharacters: 'Explore Characters',
-      viewSchedule: 'View Release Schedule',
+      viewTierList: 'View Tier List',
       upcomingLabel: '{month} on CN & SEA',
       intelAlert: 'New intel:',
       stats: {
@@ -123,6 +123,7 @@ export const en = {
       core: 'Core',
     },
     glossary: 'Effect Glossary',
+    seoFallbackDescription: '{name} is a {rarity} {type} character in One Punch Man: The Strongest — full skill breakdown, awakening tiers, and build tips.',
     recommendedUsage: 'Recommended Usage',
     strengths: 'Strengths',
     weaknesses: 'Weaknesses',

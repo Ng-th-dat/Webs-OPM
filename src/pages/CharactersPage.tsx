@@ -10,6 +10,7 @@ import { BurstIcon } from '@/components/common/icons';
 import { FilterBar, type FilterGroup } from '@/components/data-table/FilterBar';
 import { RarityFilterChips } from '@/components/data-table/RarityFilterChips';
 import { useFilters } from '@/hooks/useFilters';
+import { useSeo } from '@/hooks/useSeo';
 import { useTranslation } from '@/hooks/useTranslation';
 import { filterCharacters, getUniqueSortedValues, searchCharacters, sortCharactersByDebutDesc } from '@/utils/characters';
 import type { CharacterFilterValues } from '@/types/character';
@@ -23,6 +24,7 @@ const INITIAL_FILTERS: CharacterFilterValues = {
 
 export function CharactersPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('characters.title'), description: t('characters.description') });
   const { characters, loading, error } = useCharacters();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(() => searchParams.get('q') ?? '');

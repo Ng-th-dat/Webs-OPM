@@ -1,5 +1,7 @@
 import { Badge } from './Badge';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSeo } from '@/hooks/useSeo';
+import { truncateDescription } from '@/utils/seo';
 
 interface LegalSection {
   title: string;
@@ -17,6 +19,7 @@ interface LegalPageProps {
 
 export function LegalPage({ eyebrow, title, updated, intro, sections, contactLabel }: LegalPageProps) {
   const { t } = useTranslation();
+  useSeo({ title, description: truncateDescription(intro) });
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-16 sm:px-8 sm:py-20">

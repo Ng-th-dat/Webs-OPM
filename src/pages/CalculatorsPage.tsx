@@ -1,6 +1,7 @@
 import { FeatureCard } from '@/components/home/FeatureCard';
 import { CalculatorIcon, CoinIcon, GaugeIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSeo } from '@/hooks/useSeo';
 import type { TranslationKey } from '@/i18n';
 
 const CALCULATORS: {
@@ -31,6 +32,7 @@ const CALCULATORS: {
 
 export function CalculatorsPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('calculators.title'), description: t('calculators.description') });
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">

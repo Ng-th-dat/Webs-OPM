@@ -81,7 +81,10 @@ function UpdateCard({
       </div>
 
       <div className="flex flex-1 flex-col gap-1 p-3">
-        <p className="line-clamp-2 text-sm font-bold leading-snug text-foreground">{entry.title}</p>
+        {/* line-clamp only truncates on a plain block, not a flex item directly */}
+        <div>
+          <p className="line-clamp-2 text-sm font-bold leading-snug text-foreground">{entry.title}</p>
+        </div>
         <p className="text-[11px] text-subtle">{entry.date}</p>
       </div>
     </div>

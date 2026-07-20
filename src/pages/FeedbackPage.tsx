@@ -14,6 +14,7 @@ import {
 } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSeo } from '@/hooks/useSeo';
 import type { TranslationKey } from '@/i18n';
 
 const fieldClasses =
@@ -107,6 +108,7 @@ function DebriefPanel({ className = '', style }: { className?: string; style?: C
 
 export function FeedbackPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('feedback.title'), description: t('feedback.description') });
   const reducedMotion = useReducedMotion();
   const [message, setMessage] = useState('');
   const [contact, setContact] = useState('');

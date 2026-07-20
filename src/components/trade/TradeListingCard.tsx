@@ -44,9 +44,12 @@ export function TradeListingCard({ listing }: TradeListingCardProps) {
           </span>
         </div>
 
-        <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors duration-200 group-hover:text-accent-info">
-          {listing.title}
-        </h3>
+        {/* line-clamp only truncates on a plain block, not a flex item directly — see CharacterCard */}
+        <div>
+          <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors duration-200 group-hover:text-accent-info">
+            {listing.title}
+          </h3>
+        </div>
 
         <p className="mt-auto text-sm font-semibold text-accent-secondary">{listing.priceText}</p>
       </div>

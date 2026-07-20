@@ -29,3 +29,8 @@ supabase/.branches
 *.sw?
 .vercel
 .env*
+
+# Generated at build time by scripts/generate-seo-files.mjs (npm's "prebuild" hook) — always
+# regenerated fresh, so a stale/placeholder-domain copy shouldn't sit in git.
+/public/sitemap.xml
+/public/robots.txt

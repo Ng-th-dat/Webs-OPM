@@ -102,7 +102,11 @@ function UpdatePreviewCard({ form }: { form: FormState }) {
         </div>
 
         <p className="text-base font-extrabold leading-snug text-foreground">{form.title || 'Untitled update'}</p>
-        {form.description && <p className="line-clamp-3 text-sm leading-relaxed text-muted">{form.description}</p>}
+        {form.description && (
+          <div>
+            <p className="line-clamp-3 text-sm leading-relaxed text-muted">{form.description}</p>
+          </div>
+        )}
       </div>
     </aside>
   );

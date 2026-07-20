@@ -47,7 +47,7 @@ export const vi: Translations = {
       eyebrow: 'Wiki & Công cụ nhân vật',
       headline: 'Chinh phục One Punch Man, tính toán chính xác từng bước.',
       exploreCharacters: 'Khám Phá Nhân Vật',
-      viewSchedule: 'Xem Lịch Ra Mắt',
+      viewTierList: 'Xem Bảng Xếp Hạng',
       upcomingLabel: 'Lịch {month} Tại CN & SEA',
       intelAlert: 'Rò rỉ mới:',
       stats: {
@@ -124,6 +124,7 @@ export const vi: Translations = {
       core: 'Lõi',
     },
     glossary: 'Chú Giải Hiệu Ứng',
+    seoFallbackDescription: '{name} là nhân vật {type} hệ {rarity} trong One Punch Man: The Strongest — đầy đủ kỹ năng, awaken và gợi ý build.',
     recommendedUsage: 'Cách Dùng Đề Xuất',
     strengths: 'Điểm mạnh',
     weaknesses: 'Điểm yếu',

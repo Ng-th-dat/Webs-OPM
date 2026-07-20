@@ -14,7 +14,9 @@ import {
   getEventStatus,
 } from '@/utils/gameUpdates';
 import { SERVER_LABEL_KEYS, SERVER_STYLES } from '@/utils/releaseSchedule';
+import { useSeo } from '@/hooks/useSeo';
 import { useTranslation } from '@/hooks/useTranslation';
+import { buildBreadcrumbJsonLd, truncateDescription } from '@/utils/seo';
 import { NotFoundPage } from './NotFoundPage';
 
 export function UpdateDetailPage() {
@@ -22,6 +24,20 @@ export function UpdateDetailPage() {
   const { t, language } = useTranslation();
   const { update: entry, loading, error } = useGameUpdate(slug);
   const [imageError, setImageError] = useState(false);
+
+  useSeo({
+    title: entry ? entry.title : t('updates.title'),
+    description: entry ? truncateDescription(entry.description) : t('updates.description'),
+    image: entry?.image,
+    noindex: !loading && (Boolean(error) || !entry),
+    jsonLd: entry
+      ? buildBreadcrumbJsonLd([
+          { name: t('common.home'), path: '/' },
+          { name: t('updates.title'), path: '/updates' },
+          { name: entry.title, path: `/updates/${entry.slug}` },
+        ])
+      : undefined,
+  });
 
   if (loading) {
     return (

@@ -2,6 +2,17 @@ import type { Character, CharacterFilterValues, SkillType } from '@/types/charac
 import type { Language, TranslationKey } from '@/i18n';
 import { timingToDate } from '@/utils/releaseSchedule';
 
+const NAME_TITLE_PATTERN = /^\[(.+?)\]\s*(.+)$/;
+
+/** Splits a "[Title] Name" character name (an admin-entered convention for alt-costume/team
+    variants, e.g. "[Heavy Vanguard] Atomic Samurai") into its title and main-name parts for
+    display — names with no bracketed prefix (e.g. "Terrible Tornado") just get `title: null`. */
+export function parseCharacterName(name: string): { title: string | null; mainName: string } {
+  const match = name.match(NAME_TITLE_PATTERN);
+  if (!match) return { title: null, mainName: name };
+  return { title: match[1], mainName: match[2] };
+}
+
 export function searchCharacters(characters: Character[], query: string): Character[] {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return characters;

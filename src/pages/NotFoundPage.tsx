@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSeo } from '@/hooks/useSeo';
 
 export function NotFoundPage() {
   const { t } = useTranslation();
+  useSeo({ title: t('notFound.title'), description: t('notFound.description'), noindex: true });
 
   return (
     <section className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center gap-5 px-4 py-24 text-center sm:px-8">

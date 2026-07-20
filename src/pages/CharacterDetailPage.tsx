@@ -5,13 +5,34 @@ import { BackLink } from '@/components/common/BackLink';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { BurstIcon } from '@/components/common/icons';
+import { useSeo } from '@/hooks/useSeo';
 import { useTranslation } from '@/hooks/useTranslation';
+import { buildBreadcrumbJsonLd, truncateDescription } from '@/utils/seo';
 import { NotFoundPage } from './NotFoundPage';
 
 export function CharacterDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t } = useTranslation();
   const { character, loading, error } = useCharacter(slug);
+
+  useSeo({
+    title: character ? character.name : t('characters.title'),
+    description: character
+      ? truncateDescription(
+          character.recommendedUsage ||
+            t('characterDetail.seoFallbackDescription', { name: character.name, rarity: character.rarity, type: character.type })
+        )
+      : t('characters.description'),
+    image: character?.image,
+    noindex: !loading && (Boolean(error) || !character),
+    jsonLd: character
+      ? buildBreadcrumbJsonLd([
+          { name: t('common.home'), path: '/' },
+          { name: t('characters.title'), path: '/characters' },
+          { name: character.name, path: `/characters/${character.slug}` },
+        ])
+      : undefined,
+  });
 
   if (loading) {
     return (
