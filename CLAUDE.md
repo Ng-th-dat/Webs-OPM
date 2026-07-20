@@ -528,7 +528,7 @@ src/
   components/
     layout/          # AppLayout, Header, Navigation, Footer, LanguageSwitcher, MobileDrawer, QuickActionsWidget, DonateWidget, TopupModal, MarqueeBanner, AccountMenu (unmounted — see "Temporarily unmounted" in section 5)
     common/           # Badge, RarityTag, EmptyState, LoadingState, PageHeader, SearchInput, ImageLightbox, BackLink, ConfirmDialog, ScrollToTop, HudCorners, icons.tsx
-    character/        # CharacterCard, CharacterGrid, CharacterDetail, CharacterPortrait, CharacterAvatar, CharacterGallery, SkillCard, SkillShowcase, TierGroup, HudFrame, HighlightedText
+    character/        # CharacterCard, CharacterGrid, CharacterDetail, CharacterPortrait, CharacterAvatar, CharacterGallery, SkillCard, SkillShowcase, TierGroup, HighlightedText
     updates/          # UpdateCard
     intel/            # IntelCard, IntelCoverPlaceholder, IntelStatusStamp
     gameCodes/        # CodeCard
@@ -775,8 +775,7 @@ Key reusable components:
 | `PageHeader` | Eyebrow (optional) + large title + description block for data pages (used by `/characters`, `/intel`, `/updates`) |
 | `CharacterCard` | Compact character preview (portrait, name, rarity, type/faction/role, tags, recommended usage, View Details); rarity-tinted hover glow via `--card-glow` |
 | `CharacterGrid` | Grid layout of `CharacterCard` |
-| `CharacterDetail` | Full character detail layout: glow-bordered overview card wrapped in corner HUD brackets, `HudFrame` rings behind the portrait, Role/Type/Faction stat tags, a data-driven Power Tier bar (segments = `RARITY_ORDER.length - tierIndex`), section cards for skills/passive/awakening/strengths/weaknesses |
-| `HudFrame` | Decorative SVG rings behind `CharacterDetail`'s portrait — concentric circles with `animate-spin-slow`/`animate-spin-slow-reverse`, colored via `RARITY_STYLES` + `currentColor` |
+| `CharacterDetail` | Full character detail layout: a `comic-panel-torn` hero banner (rarity-colored `border-4`, hard offset shadow — the same signature shape as `HeroSection`'s spotlight cards and `SeaServersPage`'s Next-Launch card) with rotated rarity stamp, Role/Type/Faction/Rank tags, a glow-filled data-driven Power Tier bar (segments = `RARITY_ORDER.length - tierIndex`), staggered `animate-rise-in` section reveals, and section cards for skills/passive/awakening/strengths/weaknesses |
 | `CharacterPortrait` | Renders `Character.image` (GIF/PNG/WEBP/JPG) with lazy loading; falls back to `CharacterAvatar` on missing/broken image |
 | `CharacterAvatar` | Initials-on-rarity-color placeholder, used directly when there's no image and as `CharacterPortrait`'s fallback |
 | `IntelCard` | Compact dossier preview for `/intel`: reveal-filtered cover image (blur/grayscale intensity from `getIntelRevealLevel()`), status badge, confidence-tagged hint count |

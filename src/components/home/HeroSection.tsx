@@ -7,10 +7,13 @@ import {
   RELEASE_TIMING_LABEL_KEYS,
   RELEASE_TYPE_LABEL_KEYS,
   RELEASE_TYPE_STYLES,
+  SERVER_LABEL_KEYS,
   SERVER_STYLES,
+  type SpotlightEntry,
 } from '@/utils/releaseSchedule';
 import { RARITY_ORDER, RARITY_STYLES } from '@/utils/rarity';
 import { CharacterPortrait } from '@/components/character/CharacterPortrait';
+import { VortexRing } from './VortexRing';
 import { AlertTriangleIcon, ArrowRightIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCharacters } from '@/hooks/useCharacters';
@@ -18,6 +21,7 @@ import { useCharacterIntel } from '@/hooks/useCharacterIntel';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { usePointerParallax } from '@/hooks/usePointerParallax';
+import type { TranslationKey } from '@/i18n';
 
 const HEADLINE_ACCENT = 'One Punch Man';
 
@@ -39,7 +43,7 @@ function hasFinePointer(): boolean {
   return window.matchMedia('(pointer: fine)').matches;
 }
 
-function HeroHeadline({ text }: { text: string }) {
+function HeroHeadline({ text, reducedMotion }: { text: string; reducedMotion: boolean }) {
   const splitAt = text.indexOf(HEADLINE_ACCENT);
   if (splitAt === -1) return <>{text}</>;
 
@@ -47,7 +51,11 @@ function HeroHeadline({ text }: { text: string }) {
     <>
       {text.slice(0, splitAt)}
       <span
-        className="bg-clip-text text-transparent [background-image:linear-gradient(90deg,var(--color-accent-secondary),var(--color-accent))]"
+        className={`bg-clip-text text-transparent bg-[length:250%_100%] ${reducedMotion ? '' : 'animate-shimmer'}`}
+        style={{
+          backgroundImage:
+            'linear-gradient(100deg, var(--color-accent-secondary) 20%, var(--color-accent) 38%, #fff3d6 50%, var(--color-accent) 62%, var(--color-accent-secondary) 80%)',
+        }}
       >
         {HEADLINE_ACCENT}
       </span>
@@ -56,19 +64,104 @@ function HeroHeadline({ text }: { text: string }) {
   );
 }
 
-function StatBurst({ value, label, rotate }: { value: number; label: string; rotate: string }) {
+function StatBurst({
+  value,
+  label,
+  rotate,
+  reducedMotion,
+  floatDelayMs,
+}: {
+  value: number;
+  label: string;
+  rotate: string;
+  reducedMotion: boolean;
+  floatDelayMs: number;
+}) {
   const count = useCountUp(value);
 
   return (
     <div
-      className="flex h-[76px] w-[76px] shrink-0 flex-col items-center justify-center rounded-full border-[3px] border-canvas bg-accent-secondary text-canvas shadow-[0_4px_0_rgba(0,0,0,0.35)]"
-      style={{ transform: `rotate(${rotate})` }}
+      className={reducedMotion ? '' : 'animate-float'}
+      style={reducedMotion ? undefined : { animationDelay: `${floatDelayMs}ms` }}
     >
-      <span className="font-mono text-xl font-extrabold leading-none">{count}</span>
-      <span className="mt-0.5 max-w-[58px] text-center text-[8px] font-bold uppercase leading-tight tracking-wide">
-        {label}
-      </span>
+      <div
+        className="flex h-[76px] w-[76px] shrink-0 flex-col items-center justify-center rounded-full border-[3px] border-canvas bg-accent-secondary text-canvas shadow-[0_4px_0_rgba(0,0,0,0.35)]"
+        style={{ transform: `rotate(${rotate})` }}
+      >
+        <span className="font-mono text-xl font-extrabold leading-none">{count}</span>
+        <span className="mt-0.5 max-w-[58px] text-center text-[8px] font-bold uppercase leading-tight tracking-wide">
+          {label}
+        </span>
+      </div>
     </div>
+  );
+}
+
+function SpotlightCard({
+  entry,
+  index,
+  reducedMotion,
+  reveal,
+  t,
+}: {
+  entry: SpotlightEntry;
+  index: number;
+  reducedMotion: boolean;
+  reveal: (delayMs: number, animationClass?: string) => { className: string; style?: CSSProperties };
+  t: (key: TranslationKey, vars?: Record<string, string | number>) => string;
+}) {
+  const rotateDeg = PANEL_ROTATIONS[index % PANEL_ROTATIONS.length];
+  const panelReveal = reveal(360 + index * 120, 'animate-panel-slam');
+
+  return (
+    <Link
+      to={`/characters/${entry.characterSlug}`}
+      className={`group comic-panel-torn relative block border-4 bg-surface p-1 shadow-[6px_6px_0_rgba(0,0,0,0.35)] ${RARITY_STYLES[entry.rarity]} ${panelReveal.className}`}
+      style={
+        {
+          ...panelReveal.style,
+          '--slam-rotate': rotateDeg,
+          ...(reducedMotion ? { transform: `rotate(${rotateDeg})` } : {}),
+        } as CSSProperties
+      }
+    >
+      <div className="absolute left-1.5 top-1.5 z-10 flex gap-1">
+        <span
+          className={`rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide shadow-[2px_2px_0_rgba(0,0,0,0.35)] ${SERVER_STYLES[entry.server]}`}
+        >
+          {entry.server}
+        </span>
+        <span
+          className={`rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide shadow-[2px_2px_0_rgba(0,0,0,0.35)] ${RELEASE_TYPE_STYLES[entry.releaseType].badge}`}
+        >
+          {t(RELEASE_TYPE_LABEL_KEYS[entry.releaseType])}
+        </span>
+      </div>
+      <div className="relative overflow-hidden transition-transform duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+        <CharacterPortrait
+          name={entry.characterName}
+          rarity={entry.rarity}
+          image={entry.image}
+          fit="cover"
+          className="aspect-[3/4] w-full text-lg"
+        />
+        {!reducedMotion && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-10 -translate-x-full skew-x-[-20deg] group-hover:animate-shine-sweep"
+            style={{
+              background: 'linear-gradient(75deg, transparent 42%, rgba(255,255,255,0.55) 50%, transparent 58%)',
+            }}
+          />
+        )}
+      </div>
+      <p className="mt-1 truncate text-center text-[10px] font-bold uppercase tracking-wide text-foreground">
+        {entry.characterName}
+      </p>
+      <p className="truncate text-center text-[9px] font-medium uppercase tracking-wide text-subtle">
+        {t(RELEASE_TIMING_LABEL_KEYS[entry.timing])}
+      </p>
+    </Link>
   );
 }
 
@@ -91,6 +184,16 @@ export function HeroSection() {
     [characters]
   );
 
+  // Same list, split by server so CN and SEA render as two distinct clusters instead of an
+  // interleaved grid — each entry keeps its position in the combined list as its stagger/tilt
+  // index, so the two clusters don't animate in lockstep with identical rotations.
+  const cnSpotlight = spotlightEntries
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.server === 'CN');
+  const seaSpotlight = spotlightEntries
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.server === 'SEA');
+
   // Only "rumored" dossiers are worth interrupting the homepage for — a "confirmed" one is
   // superseded by the real character page, so it no longer needs an urgent signal here.
   const latestRumor = useMemo(() => intelEntries.find((entry) => entry.status === 'rumored') ?? null, [intelEntries]);
@@ -104,7 +207,7 @@ export function HeroSection() {
   return (
     <section
       ref={parallaxRef}
-      className="relative flex overflow-hidden lg:min-h-[calc(100vh-65px)] lg:items-center"
+      className="relative flex overflow-hidden lg:min-h-[calc(100vh-93px)] lg:items-center"
     >
       <div
         aria-hidden="true"
@@ -117,7 +220,7 @@ export function HeroSection() {
       <div aria-hidden="true" className="comic-dots pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 -top-32 -z-10 h-[520px] w-[520px] rounded-full opacity-[0.08]"
+        className={`pointer-events-none absolute -left-32 -top-32 -z-10 h-[520px] w-[520px] rounded-full opacity-[0.08] ${reducedMotion ? '' : 'animate-spin-slow'}`}
         style={{
           background: 'repeating-conic-gradient(var(--color-accent-secondary) 0deg 4deg, transparent 4deg 12deg)',
         }}
@@ -139,11 +242,11 @@ export function HeroSection() {
         ))}
       </div>
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 py-20 sm:px-8 sm:py-28 lg:py-20">
+      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 py-14 sm:px-8 sm:py-16 lg:py-6">
         {latestRumor && (
           <Link
             to={`/intel/${latestRumor.slug}`}
-            className={`group relative mb-8 inline-flex w-fit max-w-full overflow-hidden rounded-md border-2 border-accent bg-canvas/90 shadow-[0_4px_0_rgba(0,0,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_0_rgba(0,0,0,0.4)] ${reveal(0).className}`}
+            className={`group relative mb-5 inline-flex w-fit max-w-full overflow-hidden rounded-md border-2 border-accent bg-canvas/90 shadow-[0_4px_0_rgba(0,0,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_0_rgba(0,0,0,0.4)] ${reveal(0).className}`}
             style={reveal(0).style}
           >
             <span
@@ -172,108 +275,101 @@ export function HeroSection() {
           </Link>
         )}
 
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
-          <div className="flex flex-col items-start gap-6 text-left">
-            <div className={`flex flex-col items-start gap-6 ${reveal(0).className}`} style={reveal(0).style}>
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
+          <div className="flex flex-col items-start gap-5 text-left">
+            <div className={`flex flex-col items-start gap-4 ${reveal(0).className}`} style={reveal(0).style}>
               <span className="comic-pill h-8 px-4 text-[11px]">{t('home.hero.eyebrow')}</span>
 
               <h1
-                className="-rotate-1 text-4xl font-extrabold uppercase leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+                className="-rotate-1 text-4xl font-extrabold uppercase leading-[1.05] tracking-tight text-foreground sm:text-5xl"
                 style={{ textShadow: '2px 2px 0 var(--color-canvas), 4px 4px 0 rgba(0,0,0,0.35)' }}
               >
-                <HeroHeadline text={t('home.hero.headline')} />
+                <HeroHeadline text={t('home.hero.headline')} reducedMotion={reducedMotion} />
               </h1>
 
               <p className="max-w-xl text-base leading-relaxed text-muted sm:text-lg">{t('home.tagline')}</p>
             </div>
 
             <div className={`flex flex-wrap items-center gap-3 ${reveal(140).className}`} style={reveal(140).style}>
-              <Link to="/characters" className="comic-pill h-14 px-8 text-sm sm:text-base">
+              <Link to="/characters" className="comic-pill h-12 px-7 text-sm sm:h-14 sm:px-8 sm:text-base">
                 {t('home.hero.exploreCharacters')}
               </Link>
-              <Link to="/release-schedule" className="comic-pill comic-pill--active h-14 px-8 text-sm sm:text-base">
+              <Link to="/release-schedule" className="comic-pill comic-pill--active h-12 px-7 text-sm sm:h-14 sm:px-8 sm:text-base">
                 {t('home.hero.viewSchedule')}
               </Link>
             </div>
 
             <div
-              className={`mt-2 flex flex-wrap items-center gap-4 ${reveal(240).className}`}
+              className={`flex flex-wrap items-center gap-4 ${reveal(240).className}`}
               style={reveal(240).style}
             >
               {stats.map((stat, index) => (
-                <StatBurst key={stat.key} value={stat.value} label={stat.label} rotate={BADGE_ROTATIONS[index]} />
+                <StatBurst
+                  key={stat.key}
+                  value={stat.value}
+                  label={stat.label}
+                  rotate={BADGE_ROTATIONS[index]}
+                  reducedMotion={reducedMotion}
+                  floatDelayMs={index * 300}
+                />
               ))}
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xs lg:max-w-sm">
+          <div className="relative mx-auto w-full max-w-xs lg:max-w-[330px]">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-full blur-[90px]"
+              className="pointer-events-none absolute inset-0 rounded-full blur-[90px] lg:hidden"
               style={{ background: 'var(--color-glow-blue)' }}
             />
+            <VortexRing
+              reducedMotion={reducedMotion}
+              className="absolute left-1/2 top-1/2 hidden h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 lg:block"
+            />
 
-            <div className={`mb-4 flex justify-center lg:justify-start ${reveal(180).className}`} style={reveal(180).style}>
-              <span className="comic-pill h-8 px-4 text-[11px]">
+            <div className={`mb-2 flex justify-center lg:justify-start ${reveal(180).className}`} style={reveal(180).style}>
+              <span className="comic-pill h-7 px-4 text-[11px]">
                 {t('home.hero.upcomingLabel', { month: t(MONTH_LABEL_KEYS[new Date().getMonth()]) })}
               </span>
             </div>
 
             <div
-              className="relative grid grid-cols-2 items-start gap-3 sm:gap-4"
+              className="relative flex flex-col gap-2"
               style={
                 parallaxEnabled
                   ? { transform: `translate3d(${parallaxOffset.x * 10}px, ${parallaxOffset.y * 8}px, 0)` }
                   : undefined
               }
             >
-              {spotlightEntries.map((entry, index) => {
-                const rotateDeg = PANEL_ROTATIONS[index % PANEL_ROTATIONS.length];
-                const panelReveal = reveal(360 + index * 120, 'animate-panel-slam');
-
-                return (
-                  <Link
-                    key={entry.key}
-                    to={`/characters/${entry.characterSlug}`}
-                    className={`group comic-panel-torn relative block border-4 bg-surface p-1 shadow-[6px_6px_0_rgba(0,0,0,0.35)] ${RARITY_STYLES[entry.rarity]} ${panelReveal.className}`}
-                    style={
-                      {
-                        ...panelReveal.style,
-                        '--slam-rotate': rotateDeg,
-                        ...(reducedMotion ? { transform: `rotate(${rotateDeg})` } : {}),
-                      } as CSSProperties
-                    }
+              {cnSpotlight.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span
+                    className={`h-6 w-fit rounded px-2.5 text-[10px] font-bold uppercase tracking-wide leading-6 shadow-[2px_2px_0_rgba(0,0,0,0.35)] ${SERVER_STYLES.CN}`}
                   >
-                    <div className="absolute left-1.5 top-1.5 z-10 flex gap-1">
-                      <span
-                        className={`rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide shadow-[2px_2px_0_rgba(0,0,0,0.35)] ${SERVER_STYLES[entry.server]}`}
-                      >
-                        {entry.server}
-                      </span>
-                      <span
-                        className={`rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide shadow-[2px_2px_0_rgba(0,0,0,0.35)] ${RELEASE_TYPE_STYLES[entry.releaseType].badge}`}
-                      >
-                        {t(RELEASE_TYPE_LABEL_KEYS[entry.releaseType])}
-                      </span>
-                    </div>
-                    <div className="overflow-hidden transition-transform duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-105">
-                      <CharacterPortrait
-                        name={entry.characterName}
-                        rarity={entry.rarity}
-                        image={entry.image}
-                        fit="cover"
-                        className="aspect-[3/4] w-full text-lg"
-                      />
-                    </div>
-                    <p className="mt-1 truncate text-center text-[10px] font-bold uppercase tracking-wide text-foreground">
-                      {entry.characterName}
-                    </p>
-                    <p className="truncate text-center text-[9px] font-medium uppercase tracking-wide text-subtle">
-                      {t(RELEASE_TIMING_LABEL_KEYS[entry.timing])}
-                    </p>
-                  </Link>
-                );
-              })}
+                    {t(SERVER_LABEL_KEYS.CN)}
+                  </span>
+                  <div className="grid grid-cols-2 items-start gap-2.5 sm:gap-3">
+                    {cnSpotlight.map(({ entry, index }) => (
+                      <SpotlightCard key={entry.key} entry={entry} index={index} reducedMotion={reducedMotion} reveal={reveal} t={t} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {seaSpotlight.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span
+                    className={`h-6 w-fit rounded px-2.5 text-[10px] font-bold uppercase tracking-wide leading-6 shadow-[2px_2px_0_rgba(0,0,0,0.35)] ${SERVER_STYLES.SEA}`}
+                  >
+                    {t(SERVER_LABEL_KEYS.SEA)}
+                  </span>
+                  <div className="grid grid-cols-2 items-start gap-2.5 sm:gap-3">
+                    {seaSpotlight.map(({ entry, index }) => (
+                      <SpotlightCard key={entry.key} entry={entry} index={index} reducedMotion={reducedMotion} reveal={reveal} t={t} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

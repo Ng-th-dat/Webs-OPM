@@ -1,4 +1,4 @@
-const TOKEN_SPLIT = /(\[[^\]]+\]|\d+(?:\.\d+)?%?)/g;
+const TOKEN_SPLIT = /(\[[^\]]+\]|\d+(?:\.\d+)?%?|\*)/g;
 const NUMBER_PATTERN = /^\d+(?:\.\d+)?%?$/;
 /** Authors use a run of dashes ("———") in admin to mark "what follows explains a bracketed mechanic" — render it on its own line instead of running into the paragraph. */
 const SEPARATOR_SPLIT = /(—{2,}|–{2,}|-{3,})/g;
@@ -32,6 +32,9 @@ export function HighlightedText({ text, previousText }: HighlightedTextProps) {
     : [];
 
   let numberIndex = -1;
+  /** Once a line starts with a bare "*" (an author-written footnote, e.g. "*Provisional translation"),
+      every line from there on is rendered as a small disclaimer instead of body text. */
+  let footnoteStarted = false;
 
   return (
     <>
@@ -58,14 +61,43 @@ export function HighlightedText({ text, previousText }: HighlightedTextProps) {
             return <span key={`${segmentIndex}-${lineIndex}`} aria-hidden="true" className="block h-2.5" />;
           }
 
+          const key = `${segmentIndex}-${lineIndex}`;
+          const startsFootnote = trimmedLine.startsWith('*');
+          const isFirstFootnoteLine = startsFootnote && !footnoteStarted;
+          if (startsFootnote) footnoteStarted = true;
+
+          if (footnoteStarted) {
+            return (
+              <span
+                key={key}
+                className={`flex items-start gap-1.5 text-xs italic leading-relaxed text-subtle/80 ${
+                  isFirstFootnoteLine ? 'mt-2 border-t border-border/60 pt-2' : 'mt-0.5'
+                }`}
+              >
+                <span aria-hidden="true" className="not-italic text-accent-secondary">
+                  *
+                </span>
+                {trimmedLine.replace(/^\*+\s*/, '')}
+              </span>
+            );
+          }
+
           const tokens = line.trim().split(TOKEN_SPLIT).filter((part) => part !== '');
 
           return tokens.map((token, tokenIndex) => {
-            const key = `${segmentIndex}-${lineIndex}-${tokenIndex}`;
+            const tokenKey = `${key}-${tokenIndex}`;
+
+            if (token === '*') {
+              return (
+                <sup key={tokenKey} aria-hidden="true" className="mx-0.5 text-[0.7em] font-bold text-accent-secondary">
+                  *
+                </sup>
+              );
+            }
 
             if (isBracket(token)) {
               return (
-                <span key={key} className="font-semibold text-foreground">
+                <span key={tokenKey} className="font-semibold text-foreground">
                   {token}
                 </span>
               );
@@ -77,7 +109,7 @@ export function HighlightedText({ text, previousText }: HighlightedTextProps) {
 
               return (
                 <span
-                  key={key}
+                  key={tokenKey}
                   className={
                     changed
                       ? 'font-black text-accent-secondary drop-shadow-[0_0_5px_rgba(255,176,32,0.7)]'
@@ -89,7 +121,7 @@ export function HighlightedText({ text, previousText }: HighlightedTextProps) {
               );
             }
 
-            return <span key={key}>{token}</span>;
+            return <span key={tokenKey}>{token}</span>;
           });
         });
       })}

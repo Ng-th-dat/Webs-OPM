@@ -1,7 +1,9 @@
 import type { CSSProperties } from 'react';
 import type { Character } from '@/types/character';
 import { useTranslation } from '@/hooks/useTranslation';
-import { RARITY_CSS_VAR, RARITY_GLOW, RARITY_ORDER, RARITY_STYLES } from '@/utils/rarity';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { RARITY_CSS_VAR, RARITY_GLOW, RARITY_STYLES } from '@/utils/rarity';
+import { META_TIER_CSS_VAR, META_TIER_ORDER, META_TIER_STYLES } from '@/utils/metaTier';
 import {
   FACTION_BADGE_ICONS,
   FACTION_LABEL_KEYS,
@@ -19,16 +21,23 @@ interface CharacterDetailProps {
 
 export function CharacterDetail({ character }: CharacterDetailProps) {
   const { t } = useTranslation();
+  const reducedMotion = useReducedMotion();
   const glowStyle = { '--card-glow': RARITY_GLOW[character.rarity] } as CSSProperties;
   const rarityColor = RARITY_CSS_VAR[character.rarity];
-  const tierIndex = RARITY_ORDER.indexOf(character.rarity);
-  const filledSegments = RARITY_ORDER.length - tierIndex;
+  const metaTierIndex = character.metaTier ? META_TIER_ORDER.indexOf(character.metaTier) : -1;
+  const metaTierColor = character.metaTier ? META_TIER_CSS_VAR[character.metaTier] : undefined;
+  const filledMetaSegments = metaTierIndex + 1;
+
+  function reveal(delayMs: number): { className: string; style?: CSSProperties } {
+    if (reducedMotion) return { className: '' };
+    return { className: 'animate-rise-in', style: { animationDelay: `${delayMs}ms` } };
+  }
 
   return (
     <article className="flex flex-col gap-12">
       <header
-        style={glowStyle}
-        className="relative flex min-h-[520px] items-end overflow-hidden rounded-2xl border border-border bg-surface"
+        style={{ ...glowStyle, borderColor: rarityColor }}
+        className={`comic-panel-torn relative flex min-h-[520px] items-end overflow-hidden border-4 bg-surface shadow-[6px_6px_0_rgba(0,0,0,0.35)] ${reveal(0).className}`}
       >
         {character.image && (
           <div
@@ -73,7 +82,7 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
 
         <div className="relative flex w-full max-w-2xl flex-col gap-4 p-6 sm:p-10">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="comic-pill h-8 px-3.5 text-[11px]">{character.type}</span>
+            <span className="comic-pill h-8 border border-white/15 px-3.5 text-[11px]">{character.type}</span>
             <span
               className={`-rotate-6 rounded-sm border bg-canvas/90 px-2 py-1 text-[11px] font-extrabold uppercase tracking-wide shadow-[0_2px_0_rgba(0,0,0,0.35)] ${RARITY_STYLES[character.rarity]}`}
             >
@@ -90,7 +99,7 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
 
           <div className="flex flex-wrap gap-2">
             {character.tags.map((tag) => (
-              <span key={tag} className="comic-pill h-7 bg-elevated px-3 text-[10px] text-foreground/90">
+              <span key={tag} className="comic-pill h-7 border border-white/10 bg-elevated px-3 text-[10px] text-foreground/90">
                 {tag}
               </span>
             ))}
@@ -126,25 +135,50 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-subtle">
               {t('characterDetail.power')}
             </span>
-            <div className="flex items-center gap-1">
-              {RARITY_ORDER.map((_, index) => (
+            {character.metaTier ? (
+              <>
                 <span
-                  key={index}
-                  className="h-2.5 w-4 rounded-[2px] border border-border"
-                  style={
-                    index < filledSegments ? { backgroundColor: rarityColor, borderColor: rarityColor } : undefined
-                  }
-                />
-              ))}
-            </div>
+                  className={`-rotate-3 rounded-sm border bg-canvas/90 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide shadow-[0_2px_0_rgba(0,0,0,0.35)] ${META_TIER_STYLES[character.metaTier]}`}
+                >
+                  {character.metaTier}
+                </span>
+                <div className="flex items-center gap-1">
+                  {META_TIER_ORDER.map((_, index) => {
+                    const isFilled = index < filledMetaSegments;
+                    const segReveal = reveal(180 + index * 30);
+                    return (
+                      <span
+                        key={index}
+                        className={`h-2.5 w-4 rounded-[2px] border border-border ${segReveal.className}`}
+                        style={{
+                          ...segReveal.style,
+                          ...(isFilled
+                            ? { backgroundColor: metaTierColor, borderColor: metaTierColor, boxShadow: `0 0 7px ${metaTierColor}` }
+                            : undefined),
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <span className="text-[10px] font-bold uppercase tracking-wide text-subtle">
+                {t('tierList.unrankedTitle')}
+              </span>
+            )}
           </div>
         </div>
       </header>
 
-      <SkillShowcase character={character} />
+      <div className={reveal(140).className} style={reveal(140).style}>
+        <SkillShowcase character={character} />
+      </div>
 
       {(character.strengths.length > 0 || character.weaknesses.length > 0) && (
-        <section className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <section
+          className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${reveal(220).className}`}
+          style={reveal(220).style}
+        >
           {character.strengths.length > 0 && (
             <div className="comic-caption border-l-rarity-r">
               <h2 className="mb-3 text-sm font-extrabold uppercase tracking-[0.2em] text-rarity-r">
@@ -180,7 +214,9 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
       )}
 
       {character.image && (
-        <CharacterGallery characterName={character.name} images={[character.image]} rarity={character.rarity} />
+        <div className={reveal(280).className} style={reveal(280).style}>
+          <CharacterGallery characterName={character.name} images={[character.image]} rarity={character.rarity} />
+        </div>
       )}
     </article>
   );
@@ -189,7 +225,7 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
 function InfoTag({ label, value, icon }: { label: string; value: string; icon?: string }) {
   return (
     <span
-      className="comic-pill h-8 gap-1.5 bg-elevated px-3 text-[10px] normal-case tracking-normal text-foreground"
+      className="comic-pill h-8 gap-1.5 border border-white/10 bg-elevated px-3 text-[10px] normal-case tracking-normal text-foreground"
       title={`${label}: ${value}`}
     >
       {icon && <img src={icon} alt="" className="h-4 w-4 object-contain" />}

@@ -4,6 +4,8 @@ import { hasAwakeningTier } from '@/utils/rarity';
 import { SKILL_TYPE_LABEL_KEYS, pickLocalizedText } from '@/utils/characters';
 import { SkillCard, SkillIcon, type TierAccent } from './SkillCard';
 import { TierGroup } from './TierGroup';
+import { SkillReportModal } from './SkillReportModal';
+import { AlertTriangleIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface SkillShowcaseProps {
@@ -28,6 +30,7 @@ const CORE_ROLE = 'Core';
 export function SkillShowcase({ character }: SkillShowcaseProps) {
   const { t, language } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const tabs = useMemo<HubTab[]>(() => {
     const basicSkills = character.skills.filter((skill) => skill.skillType !== 'Ultimate');
@@ -225,6 +228,22 @@ export function SkillShowcase({ character }: SkillShowcaseProps) {
         )}
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setReportOpen(true)}
+        className="inline-flex w-fit items-center gap-1.5 self-end text-xs font-semibold text-subtle transition-colors duration-200 hover:text-accent-secondary"
+      >
+        <AlertTriangleIcon className="h-3.5 w-3.5" />
+        {t('characterDetail.report.trigger')}
+      </button>
+
+      <SkillReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        characterName={character.name}
+        skillLabel={active.label}
+      />
     </section>
   );
 }

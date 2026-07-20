@@ -131,6 +131,15 @@ export const vi: Translations = {
     gallery: 'Hình ảnh',
     previousImage: 'Ảnh trước',
     nextImage: 'Ảnh tiếp theo',
+    report: {
+      trigger: 'Báo lỗi bản dịch',
+      title: 'Báo Lỗi Kỹ Năng Này',
+      description: 'Bản dịch kỹ năng chưa hoàn toàn chuẩn — phát hiện dịch sai hoặc khó hiểu? Báo cho mình để chỉnh lại nhé.',
+      about: 'Về',
+      messageLabel: 'Nên sửa thành gì?',
+      messagePlaceholder: 'Chỗ nào sai, hoặc nên dịch lại thế nào?',
+      submit: 'Gửi báo cáo',
+    },
   },
   releaseSchedule: {
     chinaServer: 'Máy chủ Trung Quốc',

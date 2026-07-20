@@ -130,6 +130,15 @@ export const en = {
     gallery: 'Gallery',
     previousImage: 'Previous image',
     nextImage: 'Next image',
+    report: {
+      trigger: 'Report a translation issue',
+      title: 'Report This Skill',
+      description: "Skill translations aren't 100% polished yet — found a mistranslation or confusing wording? Let me know and I'll fix it.",
+      about: 'About',
+      messageLabel: 'What should change?',
+      messagePlaceholder: "What's wrong, or how should it read instead?",
+      submit: 'Send report',
+    },
   },
   releaseSchedule: {
     chinaServer: 'China Server',
