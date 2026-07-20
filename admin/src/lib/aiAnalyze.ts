@@ -6,7 +6,7 @@ export interface AnalyzedUpdateInfo {
   category: 'Update' | 'Event' | 'CnNews' | 'Maintenance';
   server: 'SEA' | 'CN' | 'Global' | 'Unknown';
   date: string;
-  events: { dateRange: string; title: string; note: string }[];
+  events: { title: string; note: string; startDate: string; endDate: string }[];
 }
 
 /**

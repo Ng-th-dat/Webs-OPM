@@ -11,6 +11,7 @@ import {
   UPDATE_CATEGORY_STYLES,
   formatEventDateRange,
   formatUpdateDate,
+  getEventStatus,
 } from '@/utils/gameUpdates';
 import { SERVER_LABEL_KEYS, SERVER_STYLES } from '@/utils/releaseSchedule';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -98,23 +99,58 @@ export function UpdateDetailPage() {
           <h2 className="comic-pill h-7 w-fit px-3 text-[11px]">{t('updates.eventSchedule')}</h2>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {entry.events.map((subEvent, index) => (
-              <div
-                key={`${subEvent.dateRange}-${index}`}
-                className="relative flex flex-col gap-1.5 overflow-hidden rounded-lg border border-border bg-surface px-4 py-3.5"
-              >
-                <div aria-hidden="true" className="comic-dots pointer-events-none absolute inset-0 opacity-[0.04]" />
-                <span className="comic-pill relative h-6 w-fit bg-elevated px-2 text-[10px] text-accent-info">
-                  {formatEventDateRange(subEvent.dateRange)}
-                </span>
-                <div className="relative flex min-w-0 flex-wrap items-baseline gap-x-2">
-                  <span className="text-sm font-semibold text-foreground">{subEvent.title}</span>
-                  {subEvent.note && (
-                    <span className="text-xs text-subtle">({subEvent.note})</span>
-                  )}
+            {entry.events.map((subEvent, index) => {
+              const status = getEventStatus(subEvent);
+              const hasDates = Boolean(subEvent.startDate && subEvent.endDate);
+              return (
+                <div
+                  key={`${subEvent.title}-${index}`}
+                  className={`relative flex flex-col gap-1.5 overflow-hidden rounded-lg border px-4 py-3.5 transition-colors duration-200 ${
+                    status === 'ongoing'
+                      ? 'border-accent-info/50 bg-accent-info/5'
+                      : status === 'expired'
+                        ? 'border-border bg-surface opacity-60'
+                        : 'border-border bg-surface'
+                  }`}
+                >
+                  <div aria-hidden="true" className="comic-dots pointer-events-none absolute inset-0 opacity-[0.04]" />
+                  <div className="relative flex flex-wrap items-center gap-1.5">
+                    {hasDates && (
+                      <span className="comic-pill h-6 w-fit bg-elevated px-2 text-[10px] text-accent-info">
+                        {formatEventDateRange(subEvent.startDate!, subEvent.endDate!)}
+                      </span>
+                    )}
+                    {status === 'ongoing' && (
+                      <span className="comic-pill h-6 w-fit bg-accent-info/15 px-2 text-[10px] font-bold uppercase tracking-wide text-accent-info">
+                        {t('updates.eventStatus.ongoing')}
+                      </span>
+                    )}
+                    {status === 'upcoming' && (
+                      <span className="comic-pill h-6 w-fit bg-accent-secondary/15 px-2 text-[10px] font-bold uppercase tracking-wide text-accent-secondary">
+                        {t('common.comingSoon')}
+                      </span>
+                    )}
+                    {status === 'expired' && (
+                      <span className="text-[10px] font-bold uppercase tracking-wide text-accent/70">
+                        {t('updates.eventStatus.expired')}
+                      </span>
+                    )}
+                  </div>
+                  <div className="relative flex min-w-0 flex-wrap items-baseline gap-x-2">
+                    <span
+                      className={`text-sm font-semibold ${
+                        status === 'expired' ? 'text-muted line-through decoration-accent/40' : 'text-foreground'
+                      }`}
+                    >
+                      {subEvent.title}
+                    </span>
+                    {subEvent.note && (
+                      <span className="text-xs text-subtle">({subEvent.note})</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -61,11 +61,20 @@ const EXTRACT_UPDATE_INFO_TOOL: Anthropic.Tool = {
         items: {
           type: 'object',
           properties: {
-            dateRange: { type: 'string', description: 'The date range text exactly as shown, e.g. "1/7 - 4/7".' },
             title: { type: 'string', description: "The sub-event's title." },
             note: { type: 'string', description: 'Any extra detail/reward text shown alongside it. Empty string if none.' },
+            startDate: {
+              type: 'string',
+              description:
+                'The sub-event\'s start date resolved to YYYY-MM-DD (use the banner\'s reference year if no year is shown). Empty string if it cannot be determined.',
+            },
+            endDate: {
+              type: 'string',
+              description:
+                'The sub-event\'s end date resolved to YYYY-MM-DD. If the banner shows only a single day for this event, repeat that same date here. Empty string if it cannot be determined.',
+            },
           },
-          required: ['dateRange', 'title', 'note'],
+          required: ['title', 'note', 'startDate', 'endDate'],
           additionalProperties: false,
         },
       },

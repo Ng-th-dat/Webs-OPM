@@ -23,8 +23,12 @@ export const FACTION_OPTIONS: BadgeOption[] = [
 ];
 
 export const RANK_OPTIONS: BadgeOption[] = [
-  { value: 'S-1', icon: '/badges/badge_s_01.webp' },
-  { value: 'S-2', icon: '/badges/badge_s_02.webp' },
+  // Filenames are swapped from what they actually depict — badge_s_01.webp is the S-2
+  // insignia and vice versa. Mapped explicitly here rather than renamed on disk, which
+  // would also require updating every existing character row that already references
+  // the old filenames as its badge.
+  { value: 'S-1', icon: '/badges/badge_s_02.webp' },
+  { value: 'S-2', icon: '/badges/badge_s_01.webp' },
   { value: 'A', icon: '/badges/badge_a.webp' },
   { value: 'Demon', icon: '/badges/badge_demon.webp' },
   { value: 'Dragon', icon: '/badges/badge_dragon.webp' },

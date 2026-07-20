@@ -7,27 +7,78 @@ import { PencilIcon, PlusIcon, TrashIcon, ImageIcon } from '@/components/icons';
 import { BadgeSelect } from '@/components/BadgeSelect';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 const STATUS_COLOR = Object.fromEntries(INTEL_STATUS_OPTIONS.map((o) => [o.value, o.color]));
 
-function IntelThumb({ entry }: { entry: CharacterIntelEntry }) {
+/** Trading-card treatment mirroring the public IntelCard — cover art + status stamp — but
+    shown at full clarity (no blur/reveal gimmick) with admin edit/delete actions. */
+function IntelCard({
+  entry,
+  deletingId,
+  onDelete,
+}: {
+  entry: CharacterIntelEntry;
+  deletingId: string | null;
+  onDelete: (entry: CharacterIntelEntry) => void;
+}) {
   const [hasError, setHasError] = useState(false);
-
-  if (!entry.coverImage || hasError) {
-    return (
-      <span className="flex h-10 w-14 shrink-0 items-center justify-center rounded-xl bg-elevated text-subtle">
-        <ImageIcon className="h-4 w-4" />
-      </span>
-    );
-  }
+  const showImage = Boolean(entry.coverImage) && !hasError;
+  const color = STATUS_COLOR[entry.status];
 
   return (
-    <img
-      src={entry.coverImage}
-      alt=""
-      onError={() => setHasError(true)}
-      className="h-10 w-14 shrink-0 rounded-xl object-cover shadow-sm ring-1 ring-black/5"
-    />
+    <div
+      className="ops-bracket flex flex-col overflow-hidden rounded-card border bg-surface shadow-elevated transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-lg"
+      style={{ borderColor: `${color}55` }}
+    >
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-elevated">
+        {showImage ? (
+          <img src={entry.coverImage} alt="" onError={() => setHasError(true)} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-subtle">
+            <ImageIcon className="h-8 w-8" />
+          </div>
+        )}
+
+        <span
+          className="absolute left-2 top-2 rounded-md px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-canvas shadow-elevated"
+          style={{ backgroundColor: color }}
+        >
+          {entry.status}
+        </span>
+
+        <div className="absolute right-2 top-2 flex items-center gap-1">
+          <Link
+            to={`/intel/${entry.id}/edit`}
+            title="Edit dossier"
+            aria-label={`Edit ${entry.characterName}`}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-canvas/70 text-foreground backdrop-blur-sm transition-colors hover:text-accent"
+          >
+            <PencilIcon className="h-3.5 w-3.5" />
+          </Link>
+          <button
+            type="button"
+            onClick={() => onDelete(entry)}
+            disabled={deletingId === entry.id}
+            title="Delete dossier"
+            aria-label={`Delete ${entry.characterName}`}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-canvas/70 text-foreground backdrop-blur-sm transition-colors hover:text-danger disabled:opacity-50"
+          >
+            <TrashIcon className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-2 p-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-bold text-foreground">{entry.characterName}</p>
+          <p className="truncate text-[11px] text-subtle">{entry.slug}</p>
+        </div>
+        <span className="w-fit rounded-full border border-border bg-elevated px-2 py-0.5 text-[10px] font-semibold text-muted">
+          {entry.hints.length} hint{entry.hints.length === 1 ? '' : 's'}
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -98,70 +149,17 @@ export function IntelListPage() {
           <p className="mt-1 text-sm text-muted">Open a case once CN starts teasing the next character.</p>
           <Link
             to="/intel/new"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98]"
+            className={`mt-4 inline-flex items-center gap-1.5 ${buttonClasses('primary', 'sm')}`}
           >
             <PlusIcon className="h-4 w-4" />
             Add Dossier
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-elevated">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border text-xs uppercase tracking-wide text-subtle">
-              <tr>
-                <th className="px-5 pb-3 pt-5 font-semibold">Dossier</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Status</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Hints</th>
-                <th className="px-5 pb-3 pt-5 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredEntries.map((entry) => (
-                <tr key={entry.id} className="transition-colors duration-150 hover:bg-elevated/70">
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-3">
-                      <IntelThumb entry={entry} />
-                      <div>
-                        <p className="font-semibold text-foreground">{entry.characterName}</p>
-                        <p className="text-xs text-subtle">{entry.slug}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3">
-                    <span
-                      className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
-                      style={{ backgroundColor: STATUS_COLOR[entry.status] }}
-                    >
-                      {entry.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-muted">{entry.hints.length}</td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <Link
-                        to={`/intel/${entry.id}/edit`}
-                        title="Edit dossier"
-                        aria-label={`Edit ${entry.characterName}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-accent/10 hover:text-accent"
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(entry)}
-                        disabled={deletingId === entry.id}
-                        title="Delete dossier"
-                        aria-label={`Delete ${entry.characterName}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-danger/10 hover:text-danger disabled:opacity-50 disabled:hover:translate-y-0"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {filteredEntries.map((entry) => (
+            <IntelCard key={entry.id} entry={entry} deletingId={deletingId} onDelete={handleDelete} />
+          ))}
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import type { CharacterIntelEntry } from '@/types/characterIntel';
 import { RARITY_STYLES } from '@/utils/rarity';
 import { formatUpdateDate } from '@/utils/gameUpdates';
+import { getIntelRevealImage, getIntelRevealLevel, INTEL_REVEAL_FILTER, INTEL_REVEAL_LABEL_KEYS } from '@/utils/characterIntel';
 import { IntelStatusStamp } from './IntelStatusStamp';
 import { IntelCoverPlaceholder } from './IntelCoverPlaceholder';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -17,7 +18,10 @@ interface IntelCardProps {
 export function IntelCard({ entry, className = '', style }: IntelCardProps) {
   const { t, language } = useTranslation();
   const [imageError, setImageError] = useState(false);
-  const showImage = Boolean(entry.coverImage) && !imageError;
+  const revealImage = getIntelRevealImage(entry);
+  const showImage = Boolean(revealImage) && !imageError;
+  const revealLevel = getIntelRevealLevel(entry);
+  const revealLabelKey = INTEL_REVEAL_LABEL_KEYS[revealLevel];
 
   return (
     <Link
@@ -28,11 +32,11 @@ export function IntelCard({ entry, className = '', style }: IntelCardProps) {
       <div className="comic-dots relative aspect-video w-full overflow-hidden bg-elevated">
         {showImage ? (
           <img
-            src={entry.coverImage}
+            src={revealImage}
             alt=""
             loading="lazy"
             onError={() => setImageError(true)}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className={`h-full w-full object-cover transition-all duration-300 group-hover:scale-105 ${INTEL_REVEAL_FILTER[revealLevel]}`}
           />
         ) : (
           <IntelCoverPlaceholder />
@@ -45,6 +49,12 @@ export function IntelCard({ entry, className = '', style }: IntelCardProps) {
             className={`absolute right-1.5 top-1.5 -rotate-6 rounded-sm border bg-canvas/90 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow-[0_2px_0_rgba(0,0,0,0.35)] ${RARITY_STYLES[entry.rarityGuess]}`}
           >
             {entry.rarityGuess}?
+          </span>
+        )}
+
+        {showImage && revealLabelKey && (
+          <span className="absolute bottom-2 left-2 rounded-full border border-white/10 bg-canvas/80 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-subtle backdrop-blur-sm">
+            {t(revealLabelKey)}
           </span>
         )}
       </div>

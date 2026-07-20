@@ -223,6 +223,19 @@ export function TicketIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function GiftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
+      <rect x="3.5" y="11" width="17" height="9.5" rx="1.25" />
+      <path d="M3.5 14.5h17" />
+      <path d="M12 11v9.5" />
+      <circle cx="9.5" cy="7.5" r="2" />
+      <circle cx="14.5" cy="7.5" r="2" />
+      <path d="M12 11c0-2-1-3.5-2.5-3.5M12 11c0-2 1-3.5 2.5-3.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function TrashIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
@@ -233,6 +246,18 @@ export function TrashIcon(props: SVGProps<SVGSVGElement>) {
         strokeLinejoin="round"
       />
       <path d="M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function BeaconIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} {...props}>
+      <path d="M12 3v7" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+      <path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7" strokeLinecap="round" />
+      <path d="M5.5 5.5a9 9 0 0 0 0 13M18.5 5.5a9 9 0 0 1 0 13" strokeLinecap="round" />
+      <path d="M8 21h8M12 17v4" strokeLinecap="round" />
     </svg>
   );
 }

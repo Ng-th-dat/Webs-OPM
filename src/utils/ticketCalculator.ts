@@ -2,11 +2,16 @@ import { TICKET_SOURCES, type TicketSource } from '@/data/ticketSources';
 import { timingToDate, type SpotlightEntry } from './releaseSchedule';
 import type { TicketCalculatorInput, TicketCalculatorResult } from '@/types/calculator';
 
+/** True once a source's monthly purchase/claim window has closed and it's too late to get it this month. */
+export function isPurchaseWindowClosed(source: TicketSource, now: Date = new Date()): boolean {
+  return source.purchaseWindowEndDay !== undefined && now.getDate() > source.purchaseWindowEndDay;
+}
+
 /**
  * Walks month-by-month from today through the target date. For the current month, a
- * source only counts if it hasn't already been claimed; every later month counts in full
- * (assumes the player claims everything going forward — the realistic default for a
- * forward projection).
+ * source only counts if it hasn't already been claimed and its purchase window (if any)
+ * hasn't closed yet; every later month counts in full (assumes the player claims
+ * everything going forward — the realistic default for a forward projection).
  */
 export function calculateProjectedTickets(input: TicketCalculatorInput): TicketCalculatorResult {
   const now = new Date();
@@ -26,6 +31,8 @@ export function calculateProjectedTickets(input: TicketCalculatorInput): TicketC
       const date = timingToDate(month, year, source.timing);
       if (date > target) continue;
       if (isCurrentMonth && input.claimedSourceIds.includes(source.id)) continue;
+      // A source whose purchase window has already closed this month is gone, not "still coming."
+      if (isCurrentMonth && isPurchaseWindowClosed(source, now)) continue;
 
       if (source.ticketType === 'black') {
         blackTicketsGained += source.amount;

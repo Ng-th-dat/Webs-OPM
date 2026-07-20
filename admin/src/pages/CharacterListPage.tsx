@@ -22,40 +22,123 @@ function getInitials(name: string): string {
   return (words[0].slice(0, 1) + words[1].slice(0, 1)).toUpperCase();
 }
 
-function CharacterThumb({ character }: { character: AdminCharacter }) {
+/** Trading-card treatment for the roster grid — the same rarity-glow identity as the public
+    CharacterCard, so browsing the catalog here feels like the game it's managing. */
+function CharacterCard({
+  character,
+  tieringId,
+  togglingId,
+  onTierChange,
+  onToggleVisibility,
+}: {
+  character: AdminCharacter;
+  tieringId: string | null;
+  togglingId: string | null;
+  onTierChange: (character: AdminCharacter, tier: MetaTier | null) => void;
+  onToggleVisibility: (character: AdminCharacter) => void;
+}) {
   const [hasError, setHasError] = useState(false);
   const color = RARITY_SWATCH[character.rarity];
-
-  if (!character.image || hasError) {
-    return (
-      <span
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xs font-bold"
-        style={{ backgroundColor: `${color}1a`, color, boxShadow: `inset 0 0 0 1px ${color}33` }}
-      >
-        {getInitials(character.name)}
-      </span>
-    );
-  }
+  const showImage = Boolean(character.image) && !hasError;
 
   return (
-    <img
-      src={character.image}
-      alt=""
-      onError={() => setHasError(true)}
-      className="h-12 w-12 shrink-0 rounded-xl object-cover shadow-sm ring-1 ring-black/5"
-    />
-  );
-}
-
-function RarityBadge({ rarity }: { rarity: AdminCharacter['rarity'] }) {
-  const color = RARITY_SWATCH[rarity];
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold"
-      style={{ backgroundColor: `${color}1a`, color }}
+    <div
+      className={`ops-bracket flex flex-col overflow-hidden rounded-card border bg-surface shadow-elevated transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-lg ${
+        character.isVisible ? '' : 'opacity-50'
+      }`}
+      style={{ borderColor: `${color}55` }}
     >
-      {rarity}
-    </span>
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-elevated">
+        {showImage ? (
+          <img
+            src={character.image}
+            alt=""
+            onError={() => setHasError(true)}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center" style={{ backgroundColor: `${color}1a` }}>
+            <span className="text-3xl font-black" style={{ color }}>
+              {getInitials(character.name)}
+            </span>
+          </div>
+        )}
+
+        <span
+          className="absolute left-2 top-2 rounded-md px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-canvas shadow-elevated"
+          style={{ backgroundColor: color }}
+        >
+          {character.rarity}
+        </span>
+
+        <div className="absolute right-2 top-2 flex items-center gap-1">
+          <Link
+            to={`/characters/${character.id}/edit`}
+            title="Edit character"
+            aria-label={`Edit ${character.name}`}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-canvas/70 text-foreground backdrop-blur-sm transition-colors hover:text-accent"
+          >
+            <PencilIcon className="h-3.5 w-3.5" />
+          </Link>
+          <button
+            type="button"
+            onClick={() => onToggleVisibility(character)}
+            disabled={togglingId === character.id}
+            title={character.isVisible ? 'Hide from public site' : 'Show on public site'}
+            aria-label={character.isVisible ? `Hide ${character.name}` : `Show ${character.name}`}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-canvas/70 text-foreground backdrop-blur-sm transition-colors hover:text-danger disabled:opacity-50"
+          >
+            {character.isVisible ? <EyeIcon className="h-3.5 w-3.5" /> : <EyeOffIcon className="h-3.5 w-3.5" />}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-2 p-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-bold text-foreground">{character.name}</p>
+          <p className="truncate text-[11px] text-subtle">/{character.slug}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-1">
+          {[character.type, character.faction, character.role].filter(Boolean).map((chip) => (
+            <span
+              key={chip}
+              className="truncate rounded border border-border bg-elevated px-1.5 py-0.5 text-[10px] font-semibold text-muted"
+            >
+              {chip}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_BADGE[character.releaseStatus]}`}
+          >
+            {character.releaseStatus}
+          </span>
+          {!character.isVisible && (
+            <span className="inline-flex items-center rounded-full bg-danger/10 px-2 py-0.5 text-[10px] font-semibold text-danger">
+              Hidden
+            </span>
+          )}
+        </div>
+
+        <select
+          value={character.metaTier ?? ''}
+          onChange={(event) => onTierChange(character, (event.target.value || null) as MetaTier | null)}
+          disabled={tieringId === character.id}
+          aria-label={`Set tier for ${character.name}`}
+          className="mt-auto h-8 w-full rounded-lg border border-border bg-elevated px-2 text-xs font-semibold text-foreground transition-colors focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/15 disabled:opacity-50"
+        >
+          <option value="">Unranked</option>
+          {TIER_OPTIONS.map((tier) => (
+            <option key={tier} value={tier}>
+              {tier}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   );
 }
 
@@ -171,110 +254,36 @@ export function CharacterListPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-elevated">
-        {loading ? (
-          <p className="p-6 text-sm text-muted">Loading…</p>
-        ) : error ? (
-          <p className="p-6 text-sm text-danger">{error}</p>
-        ) : characters.length === 0 ? (
-          <p className="p-6 text-sm text-muted">No characters yet. Add one to get started.</p>
-        ) : visibleCharacters.length === 0 ? (
-          <p className="p-6 text-sm text-muted">No characters match "{query}".</p>
-        ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border text-xs uppercase tracking-wide text-subtle">
-              <tr>
-                <th className="px-5 pb-3 pt-5 font-semibold">Character</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Rarity</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Tier</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Type</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Faction</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Role</th>
-                <th className="px-5 pb-3 pt-5 font-semibold">Status</th>
-                <th className="px-5 pb-3 pt-5 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {visibleCharacters.map((character) => (
-                <tr
-                  key={character.id}
-                  className={`transition-colors duration-150 hover:bg-elevated/70 ${character.isVisible ? '' : 'opacity-50'}`}
-                >
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-3">
-                      <CharacterThumb character={character} />
-                      <div>
-                        <p className="font-semibold text-foreground">{character.name}</p>
-                        <p className="text-xs text-subtle">/{character.slug}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3">
-                    <RarityBadge rarity={character.rarity} />
-                  </td>
-                  <td className="px-5 py-3">
-                    <select
-                      value={character.metaTier ?? ''}
-                      onChange={(event) =>
-                        handleTierChange(character, (event.target.value || null) as MetaTier | null)
-                      }
-                      disabled={tieringId === character.id}
-                      aria-label={`Set tier for ${character.name}`}
-                      className="h-8 rounded-lg border border-border bg-elevated px-2 text-xs font-semibold text-foreground transition-colors focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/15 disabled:opacity-50"
-                    >
-                      <option value="">Unranked</option>
-                      {TIER_OPTIONS.map((tier) => (
-                        <option key={tier} value={tier}>
-                          {tier}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-5 py-3 text-muted">{character.type}</td>
-                  <td className="px-5 py-3 text-muted">{character.faction}</td>
-                  <td className="px-5 py-3 text-muted">{character.role}</td>
-                  <td className="px-5 py-3">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_BADGE[character.releaseStatus]}`}
-                      >
-                        {character.releaseStatus}
-                      </span>
-                      {!character.isVisible && (
-                        <span className="inline-flex items-center rounded-full bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger">
-                          Hidden
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <Link
-                        to={`/characters/${character.id}/edit`}
-                        title="Edit character"
-                        aria-label={`Edit ${character.name}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-accent/10 hover:text-accent"
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleVisibility(character)}
-                        disabled={togglingId === character.id}
-                        title={character.isVisible ? 'Hide from public site' : 'Show on public site'}
-                        aria-label={character.isVisible ? `Hide ${character.name}` : `Show ${character.name}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-danger/10 hover:text-danger disabled:opacity-50 disabled:hover:translate-y-0"
-                      >
-                        {character.isVisible ? <EyeIcon className="h-4 w-4" /> : <EyeOffIcon className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {loading ? (
+        <div className="rounded-card border border-border bg-surface p-6 shadow-elevated">
+          <p className="text-sm text-muted">Loading…</p>
+        </div>
+      ) : error ? (
+        <div className="rounded-card border border-border bg-surface p-6 shadow-elevated">
+          <p className="text-sm text-danger">{error}</p>
+        </div>
+      ) : characters.length === 0 ? (
+        <div className="rounded-card border border-border bg-surface p-6 shadow-elevated">
+          <p className="text-sm text-muted">No characters yet. Add one to get started.</p>
+        </div>
+      ) : visibleCharacters.length === 0 ? (
+        <div className="rounded-card border border-border bg-surface p-6 shadow-elevated">
+          <p className="text-sm text-muted">No characters match "{query}".</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {visibleCharacters.map((character) => (
+            <CharacterCard
+              key={character.id}
+              character={character}
+              tieringId={tieringId}
+              togglingId={togglingId}
+              onTierChange={handleTierChange}
+              onToggleVisibility={handleToggleVisibility}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

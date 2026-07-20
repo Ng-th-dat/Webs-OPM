@@ -20,6 +20,7 @@ import {
 import { BadgeSelect } from '@/components/BadgeSelect';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 /** Debut/Comeback are now derived automatically from each character's Release Timing (CN) fields — not selectable here anymore. */
 const SELECTABLE_RELEASE_TYPE_OPTIONS = RELEASE_TYPE_OPTIONS.filter(
@@ -61,6 +62,61 @@ interface FormState {
   releaseType: ReleaseType | '';
   timing: ReleaseTiming | '';
   status: ReleaseStatus | '';
+}
+
+/** Live mirror of a public ReleaseCard's calendar slot — fills the wide layout with the same
+    at-a-glance summary an officer would otherwise have to reconstruct from the form above. */
+function SchedulePreviewCard({
+  form,
+  characterName,
+}: {
+  form: FormState;
+  characterName: string | null;
+}) {
+  const releaseTypeOption = RELEASE_TYPE_OPTIONS.find((option) => option.value === form.releaseType);
+  const serverOption = SERVER_OPTIONS.find((option) => option.value === form.server);
+  const statusOption = RELEASE_STATUS_OPTIONS.find((option) => option.value === form.status);
+
+  return (
+    <aside className="xl:sticky xl:top-6 xl:self-start">
+      <div className="ops-bracket flex flex-col gap-3 rounded-card border border-border bg-surface p-5 shadow-elevated">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-accent">Live Preview</p>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {serverOption && (
+            <span
+              className="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-canvas"
+              style={{ backgroundColor: serverOption.color }}
+            >
+              {serverOption.value}
+            </span>
+          )}
+          {releaseTypeOption && (
+            <span
+              className="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-canvas"
+              style={{ backgroundColor: releaseTypeOption.color }}
+            >
+              {releaseTypeOption.value}
+            </span>
+          )}
+        </div>
+
+        <p className="truncate text-base font-extrabold text-foreground">{characterName ?? 'No character selected'}</p>
+        <p className="text-xs text-subtle">
+          {form.monthAbbr || '—'} {form.year} · {form.timing || 'timing —'}
+        </p>
+
+        {statusOption && (
+          <span
+            className="w-fit rounded-full border px-2 py-1 text-[10px] font-semibold"
+            style={{ borderColor: statusOption.color, color: statusOption.color }}
+          >
+            {statusOption.value}
+          </span>
+        )}
+      </div>
+    </aside>
+  );
 }
 
 const currentYear = new Date().getFullYear();
@@ -197,14 +253,17 @@ export function ScheduleFormPage() {
     return <p className="text-sm text-danger">{loadError}</p>;
   }
 
+  const selectedCharacterName = characters.find((c) => c.id === form.characterId)?.name ?? null;
+
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-6xl">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_320px]">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Panel
           title="Schedule Entry"
           description="For Limited/Core/Event slots only — Debut and Comeback are now handled automatically via each character's Release Timing (CN) fields."
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Field label="Month" required>
               <BadgeSelect value={form.monthAbbr} onChange={(value) => updateField('monthAbbr', value)} options={MONTH_OPTIONS} />
             </Field>
@@ -217,11 +276,10 @@ export function ScheduleFormPage() {
                 className={inputClasses}
               />
             </Field>
+            <Field label="Server" required>
+              <BadgeSelect value={form.server} onChange={(value) => updateField('server', value as Server)} options={SERVER_OPTIONS} />
+            </Field>
           </div>
-
-          <Field label="Server" required>
-            <BadgeSelect value={form.server} onChange={(value) => updateField('server', value as Server)} options={SERVER_OPTIONS} />
-          </Field>
 
           <Field label="Character" required>
             <select
@@ -263,19 +321,22 @@ export function ScheduleFormPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="self-start rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            className={`self-start ${buttonClasses('primary', 'lg')}`}
           >
             {submitting ? 'Saving…' : isEditMode ? 'Save changes' : 'Save entry'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/schedule')}
-            className="self-start rounded-full px-4 py-3 text-sm font-semibold text-muted transition-colors hover:text-foreground"
+            className={`self-start ${buttonClasses('ghost', 'lg')}`}
           >
             Cancel
           </button>
         </div>
       </form>
+
+      <SchedulePreviewCard form={form} characterName={selectedCharacterName} />
+      </div>
     </div>
   );
 }

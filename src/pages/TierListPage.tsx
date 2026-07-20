@@ -4,6 +4,7 @@ import { useCharacters } from '@/hooks/useCharacters';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { CharacterPortrait } from '@/components/character/CharacterPortrait';
+import { PageHeader } from '@/components/common/PageHeader';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { AlertTriangleIcon, StarIcon } from '@/components/common/icons';
@@ -137,11 +138,12 @@ export function TierListPage() {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-      <div className="mb-10 flex flex-col gap-3">
-        <span className="comic-pill h-7 w-fit px-3 text-[11px]">{t('tierList.eyebrow')}</span>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{t('tierList.title')}</h1>
-        <p className="max-w-2xl text-base leading-relaxed text-muted">{t('tierList.description')}</p>
-      </div>
+      <PageHeader
+        eyebrow={t('tierList.eyebrow')}
+        title={t('tierList.title')}
+        description={t('tierList.description')}
+        className="mb-10"
+      />
 
       {loading ? (
         <LoadingState label={t('common.loading')} />

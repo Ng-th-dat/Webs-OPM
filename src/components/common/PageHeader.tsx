@@ -8,12 +8,7 @@ interface PageHeaderProps {
 export function PageHeader({ eyebrow, title, description, className = '' }: PageHeaderProps) {
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
-      {eyebrow && (
-        <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent-info">
-          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-accent-info" />
-          {eyebrow}
-        </span>
-      )}
+      {eyebrow && <span className="comic-pill h-7 w-fit px-3 text-[11px]">{eyebrow}</span>}
       <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
         {title}
       </h1>

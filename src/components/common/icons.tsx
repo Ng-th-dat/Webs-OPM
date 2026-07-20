@@ -250,6 +250,18 @@ export function AlertTriangleIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function BeaconIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 3v7" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+      <path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7" />
+      <path d="M5.5 5.5a9 9 0 0 0 0 13M18.5 5.5a9 9 0 0 1 0 13" />
+      <path d="M8 21h8M12 17v4" />
+    </IconBase>
+  );
+}
+
 export function ImageIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <IconBase {...props}>

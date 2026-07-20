@@ -3,9 +3,11 @@ import type { Server } from './releaseSchedule';
 export type UpdateCategory = 'Update' | 'Event' | 'CnNews' | 'Maintenance';
 
 export interface UpdateSubEvent {
-  dateRange: string;
   title: string;
   note?: string;
+  /** ISO (YYYY-MM-DD) start/end of this sub-event — drives both the displayed date range and its live status. Optional since older JSONB rows may still lack them. */
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface GameUpdateEntry {

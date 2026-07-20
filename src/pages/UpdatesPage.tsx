@@ -32,7 +32,7 @@ export function UpdatesPage() {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-      <PageHeader title={t('updates.title')} description={t('updates.description')} />
+      <PageHeader eyebrow={t('updates.eyebrow')} title={t('updates.title')} description={t('updates.description')} />
 
       {!loading && !error && updates.length > 0 && (
         <div className="mt-8 flex flex-wrap items-center gap-2" role="group" aria-label={t('common.filter')}>

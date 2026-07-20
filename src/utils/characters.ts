@@ -1,5 +1,6 @@
 import type { Character, CharacterFilterValues, SkillType } from '@/types/character';
 import type { Language, TranslationKey } from '@/i18n';
+import { timingToDate } from '@/utils/releaseSchedule';
 
 export function searchCharacters(characters: Character[], query: string): Character[] {
   const normalized = query.trim().toLowerCase();
@@ -24,6 +25,16 @@ export function filterCharacters(
     if (filters.role && character.role !== filters.role) return false;
     return true;
   });
+}
+
+/** Newest CN debut first; characters with no debut month/year set sink to the end. */
+export function sortCharactersByDebutDesc(characters: Character[]): Character[] {
+  function debutTimestamp(character: Character): number {
+    if (!character.debutMonth || !character.debutYear) return -Infinity;
+    return timingToDate(character.debutMonth, character.debutYear, character.debutTiming ?? 'Start of Month').getTime();
+  }
+
+  return [...characters].sort((a, b) => debutTimestamp(b) - debutTimestamp(a));
 }
 
 export function getUniqueSortedValues(

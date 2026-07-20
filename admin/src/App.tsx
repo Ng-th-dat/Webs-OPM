@@ -11,6 +11,10 @@ import { UpdatesListPage } from './pages/UpdatesListPage';
 import { UpdateFormPage } from './pages/UpdateFormPage';
 import { IntelListPage } from './pages/IntelListPage';
 import { IntelFormPage } from './pages/IntelFormPage';
+import { SeaServersPage } from './pages/SeaServersPage';
+import { SeaServerFormPage } from './pages/SeaServerFormPage';
+import { GameCodesPage } from './pages/GameCodesPage';
+import { GameCodeFormPage } from './pages/GameCodeFormPage';
 import { MasteryMaterialsPage } from './pages/MasteryMaterialsPage';
 import { TicketTypeImagesPage } from './pages/TicketTypeImagesPage';
 import { TradeListingsPage } from './pages/TradeListingsPage';
@@ -38,6 +42,12 @@ export function App() {
           <Route path="intel" element={<IntelListPage />} />
           <Route path="intel/new" element={<IntelFormPage />} />
           <Route path="intel/:id/edit" element={<IntelFormPage />} />
+          <Route path="sea-servers" element={<SeaServersPage />} />
+          <Route path="sea-servers/new" element={<SeaServerFormPage />} />
+          <Route path="sea-servers/:id/edit" element={<SeaServerFormPage />} />
+          <Route path="game-codes" element={<GameCodesPage />} />
+          <Route path="game-codes/new" element={<GameCodeFormPage />} />
+          <Route path="game-codes/:id/edit" element={<GameCodeFormPage />} />
           <Route path="mastery-materials" element={<MasteryMaterialsPage />} />
           <Route path="ticket-images" element={<TicketTypeImagesPage />} />
           <Route path="trade-listings" element={<TradeListingsPage />} />

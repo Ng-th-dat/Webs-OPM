@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Navigation } from './Navigation';
+import { Link, NavLink as RouterNavLink } from 'react-router-dom';
+import { NavDropdown } from './NavDropdown';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { MobileDrawer } from './MobileDrawer';
 import { LogoMark } from './LogoMark';
 import { MenuIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
+import { HEADER_NAV_ENTRIES } from '@/routes/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -38,10 +39,22 @@ export function Header() {
           </span>
         </Link>
 
-        <Navigation
-          className="hidden items-center gap-2 lg:flex"
-          linkClassName="h-10 px-3.5 text-sm"
-        />
+        <nav className="hidden items-center gap-2 lg:flex" aria-label={t('common.mainNavigation')}>
+          {HEADER_NAV_ENTRIES.map((entry) =>
+            entry.group ? (
+              <NavDropdown key={entry.group.labelKey} group={entry.group} triggerClassName="h-10 text-sm" />
+            ) : (
+              <RouterNavLink
+                key={entry.link.path}
+                to={entry.link.path}
+                end={entry.link.path === '/'}
+                className={({ isActive }) => `comic-pill h-10 px-3.5 text-sm ${isActive ? 'comic-pill--active' : ''}`}
+              >
+                {t(entry.link.labelKey)}
+              </RouterNavLink>
+            )
+          )}
+        </nav>
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">

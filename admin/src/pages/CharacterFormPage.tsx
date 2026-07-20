@@ -3,7 +3,7 @@ import type { FormEvent, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes 
 import { useNavigate, useParams } from 'react-router-dom';
 import type { Rarity, CharacterFaction, CharacterRank, ReleaseStatus, ReleaseTiming, SkillType } from '@main/types/character';
 import { createCharacter, fetchCharacterById, updateCharacter } from '@/lib/characters';
-import { AWAKENING_ELIGIBLE_RARITIES } from '@/lib/rarity';
+import { AWAKENING_ELIGIBLE_RARITIES, RARITY_SWATCH } from '@/lib/rarity';
 import {
   FACTION_OPTIONS,
   MONTH_ABBREVIATIONS,
@@ -21,6 +21,7 @@ import { ImageUpload } from '@/components/ImageUpload';
 import { BadgeSelect } from '@/components/BadgeSelect';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/ConfirmDialog';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 const CORE_ROLE = 'Core';
 
@@ -205,6 +206,82 @@ function RemovableRow({ onRemove, children }: { onRemove: () => void; children: 
       </button>
       <div className="flex flex-col gap-3 pr-8">{children}</div>
     </div>
+  );
+}
+
+/** Live mirror of CharacterCard's rarity-glow identity, so an officer can see what they're
+    building instead of guessing from a wall of form fields — also what fills the wide
+    layout meaningfully instead of just stretching inputs to uncomfortable widths. */
+function CharacterPreviewCard({ form, slugPreview }: { form: FormState; slugPreview: string }) {
+  const rarityColor = form.rarity ? RARITY_SWATCH[form.rarity] : undefined;
+  const chips = [form.type, form.faction, form.rank, form.role].filter(Boolean);
+  const tags = form.tags
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+
+  return (
+    <aside className="xl:sticky xl:top-6 xl:self-start">
+      <div
+        className="ops-bracket flex flex-col gap-4 overflow-hidden rounded-card border bg-surface p-5 shadow-elevated transition-colors duration-300"
+        style={{ borderColor: rarityColor ? `${rarityColor}66` : undefined }}
+      >
+        <p className="text-[10px] font-bold uppercase tracking-widest text-accent">Live Preview</p>
+
+        <div
+          className="relative flex aspect-[3/4] w-full items-center justify-center overflow-hidden rounded-xl bg-elevated transition-shadow duration-300"
+          style={rarityColor ? { boxShadow: `0 0 0 2px ${rarityColor}55, 0 20px 36px -18px ${rarityColor}` } : undefined}
+        >
+          {form.image ? (
+            <img src={form.image} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="text-5xl font-black text-subtle">{(form.name || '?').slice(0, 1).toUpperCase()}</span>
+          )}
+          {form.rarity && (
+            <span
+              className="absolute left-2 top-2 rounded-md px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-canvas shadow-elevated"
+              style={{ backgroundColor: rarityColor }}
+            >
+              {form.rarity}
+            </span>
+          )}
+        </div>
+
+        <div className="min-w-0">
+          <p className="truncate text-base font-extrabold text-foreground">{form.name || 'Unnamed character'}</p>
+          <p className="truncate text-xs text-subtle">/{slugPreview || 'slug'}</p>
+        </div>
+
+        {chips.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {chips.map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full border border-border bg-elevated px-2 py-1 text-[10px] font-semibold text-muted"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {tags.map((tag) => (
+              <span key={tag} className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-medium text-accent">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {form.releaseStatus && (
+          <span className="w-fit rounded-full border border-border px-2 py-1 text-[10px] font-semibold text-muted">
+            {form.releaseStatus} · v{form.releaseVersion || '?'}
+          </span>
+        )}
+      </div>
+    </aside>
   );
 }
 
@@ -435,8 +512,8 @@ export function CharacterFormPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <p className="mb-6 max-w-2xl text-sm text-muted">
+    <div className="mx-auto max-w-[1600px]">
+      <p className="mb-6 max-w-3xl text-sm text-muted">
         {isEditMode ? (
           <>
             Editing <span className="font-semibold text-foreground">{form.name}</span>. Changes write directly to
@@ -451,6 +528,7 @@ export function CharacterFormPage() {
         )}
       </p>
 
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_320px]">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Panel title="Basic Info">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -612,7 +690,7 @@ export function CharacterFormPage() {
           <button
             type="button"
             onClick={() => setSkills((current) => [...current, { ...EMPTY_SKILL }])}
-            className="self-start rounded-full border border-dashed border-border px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
+            className={`self-start ${buttonClasses('dashed', 'sm')}`}
           >
             + Add skill
           </button>
@@ -678,7 +756,7 @@ export function CharacterFormPage() {
               <button
                 type="button"
                 onClick={() => setAwakenings((current) => [...current, { ...EMPTY_AWAKENING, tier: String(current.length + 1) }])}
-                className="self-start rounded-full border border-dashed border-border px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
+                className={`self-start ${buttonClasses('dashed', 'sm')}`}
               >
                 + Add awakening tier
               </button>
@@ -722,7 +800,7 @@ export function CharacterFormPage() {
             <button
               type="button"
               onClick={() => setCores((current) => [...current, { ...EMPTY_CORE, tier: String(current.length + 1) }])}
-              className="self-start rounded-full border border-dashed border-border px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
+              className={`self-start ${buttonClasses('dashed', 'sm')}`}
             >
               + Add core tier
             </button>
@@ -753,7 +831,7 @@ export function CharacterFormPage() {
           <button
             type="submit"
             disabled={status.kind === 'submitting'}
-            className="self-start rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            className={`self-start ${buttonClasses('primary', 'lg')}`}
           >
             {status.kind === 'submitting' ? 'Saving…' : isEditMode ? 'Save changes' : 'Save character'}
           </button>
@@ -761,13 +839,16 @@ export function CharacterFormPage() {
             <button
               type="button"
               onClick={() => navigate('/characters')}
-              className="self-start rounded-full px-4 py-3 text-sm font-semibold text-muted transition-colors hover:text-foreground"
+              className={`self-start ${buttonClasses('ghost', 'lg')}`}
             >
               Cancel
             </button>
           )}
         </div>
       </form>
+
+      <CharacterPreviewCard form={form} slugPreview={slugPreview} />
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { TICKET_SOURCES, type TicketSource } from '@/data/ticketSources';
-import { calculateProjectedTickets, buildTicketTimeline, type TicketTimelineRow } from '@/utils/ticketCalculator';
+import { calculateProjectedTickets, buildTicketTimeline, isPurchaseWindowClosed, type TicketTimelineRow } from '@/utils/ticketCalculator';
 import {
   getNextUpcomingRelease,
   getSpotlightEntriesInRange,
@@ -14,9 +14,11 @@ import {
   RELEASE_TIMING_LABEL_KEYS,
   RELEASE_TYPE_LABEL_KEYS,
   RELEASE_TYPE_STYLES,
+  TIMING_DAY,
 } from '@/utils/releaseSchedule';
 import type { Server } from '@/types/releaseSchedule';
 import { CharacterPortrait } from '@/components/character/CharacterPortrait';
+import { PageHeader } from '@/components/common/PageHeader';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { AlertTriangleIcon, CheckIcon, ImageIcon } from '@/components/common/icons';
@@ -203,12 +205,14 @@ function ClaimedChecklist({
   groups,
   claimedIds,
   onToggle,
+  lockedSourceIds,
 }: {
   accentLabel: string;
   accentClassName: string;
   groups: [TicketSource['timing'], TicketSource[]][];
   claimedIds: Set<string>;
   onToggle: (id: string) => void;
+  lockedSourceIds: Set<string>;
 }) {
   const { t } = useTranslation();
 
@@ -222,10 +226,13 @@ function ClaimedChecklist({
           </span>
           {sources.map((source) => {
             const isClaimed = claimedIds.has(source.id);
+            const isLocked = lockedSourceIds.has(source.id);
             return (
               <label
                 key={source.id}
-                className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-2.5 py-2 text-sm transition-colors duration-150 ${
+                className={`group relative flex items-center gap-2.5 rounded-lg border px-2.5 py-2 text-sm transition-colors duration-150 ${
+                  isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                } ${
                   isClaimed
                     ? 'border-accent-secondary/40 bg-accent-secondary/10 text-foreground'
                     : 'border-transparent text-muted hover:bg-elevated'
@@ -234,6 +241,7 @@ function ClaimedChecklist({
                 <input
                   type="checkbox"
                   checked={isClaimed}
+                  disabled={isLocked}
                   onChange={() => onToggle(source.id)}
                   className="peer sr-only"
                 />
@@ -244,9 +252,20 @@ function ClaimedChecklist({
                 >
                   {isClaimed && <CheckIcon className="h-3 w-3 text-canvas" />}
                 </span>
-                <span className={`min-w-0 flex-1 truncate ${isClaimed ? 'text-foreground/80 line-through decoration-accent-secondary/50' : ''}`}>
+                <span
+                  className={`min-w-0 flex-1 truncate ${isClaimed ? 'text-foreground/80 line-through decoration-accent-secondary/50' : ''}`}
+                >
                   {t(source.labelKey)}
                 </span>
+                <span className="pointer-events-none absolute left-2 top-full z-20 mt-1.5 hidden w-max max-w-[260px] rounded-lg border border-border bg-elevated px-2.5 py-1.5 text-xs font-normal normal-case leading-snug text-foreground shadow-xl shadow-black/40 group-hover:block">
+                  {t(source.labelKey)}
+                  {isLocked && <span className="mt-1 block text-subtle">{t('ticketCalculator.form.claimedLocked')}</span>}
+                </span>
+                {isLocked && (
+                  <span className="shrink-0 rounded-md border border-border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-subtle">
+                    {t('ticketCalculator.form.claimedPassedBadge')}
+                  </span>
+                )}
                 <span className="shrink-0 text-xs font-semibold text-subtle">+{source.amount}</span>
               </label>
             );
@@ -335,11 +354,19 @@ export function TicketCalculatorPage() {
       list.push(source);
       groups.set(source.timing, list);
     }
-    return Array.from(groups.entries());
+    return Array.from(groups.entries()).sort(([a], [b]) => TIMING_DAY[a] - TIMING_DAY[b]);
   }
 
   const groupedBlackSources = useMemo(() => groupByTiming(blackSources), [blackSources]);
   const groupedStkSources = useMemo(() => groupByTiming(stkSources), [stkSources]);
+
+  const lockedSourceIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const source of TICKET_SOURCES) {
+      if (isPurchaseWindowClosed(source)) set.add(source.id);
+    }
+    return set;
+  }, []);
 
   const nextRelease = useMemo(
     () => (characters.length > 0 ? getNextUpcomingRelease(characters, [targetServer]) : null),
@@ -390,13 +417,12 @@ export function TicketCalculatorPage() {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-      <div className="mb-10 flex flex-col gap-3">
-        <span className="comic-pill h-7 w-fit px-3 text-[11px]">{t('ticketCalculator.eyebrow')}</span>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          {t('ticketCalculator.title')}
-        </h1>
-        <p className="max-w-2xl text-base leading-relaxed text-muted">{t('ticketCalculator.description')}</p>
-      </div>
+      <PageHeader
+        eyebrow={t('ticketCalculator.eyebrow')}
+        title={t('ticketCalculator.title')}
+        description={t('ticketCalculator.description')}
+        className="mb-10"
+      />
 
       {loading ? (
         <LoadingState label={t('common.loading')} />
@@ -446,6 +472,7 @@ export function TicketCalculatorPage() {
                   groups={groupedBlackSources}
                   claimedIds={claimedIds}
                   onToggle={toggleClaimed}
+                  lockedSourceIds={lockedSourceIds}
                 />
                 <ClaimedChecklist
                   accentLabel={t('ticketCalculator.form.currentStkTickets')}
@@ -453,6 +480,7 @@ export function TicketCalculatorPage() {
                   groups={groupedStkSources}
                   claimedIds={claimedIds}
                   onToggle={toggleClaimed}
+                  lockedSourceIds={lockedSourceIds}
                 />
               </div>
             </div>

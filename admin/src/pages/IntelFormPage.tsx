@@ -10,6 +10,7 @@ import { IntelImageUpload } from '@/components/IntelImageUpload';
 import { XIcon } from '@/components/icons';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: ReactNode }) {
   return (
@@ -52,6 +53,57 @@ function RemovableRow({ onRemove, children }: { onRemove: () => void; children: 
       </button>
       <div className="flex flex-col gap-3 pr-8">{children}</div>
     </div>
+  );
+}
+
+/** Live mirror of the public IntelCard — deliberately shown at full clarity, not the public
+    site's blur/reveal gimmick, since the officer editing it needs to see the real asset. */
+function IntelPreviewCard({ form, hintCount }: { form: FormState; hintCount: number }) {
+  const statusOption = INTEL_STATUS_OPTIONS.find((option) => option.value === form.status);
+
+  return (
+    <aside className="xl:sticky xl:top-6 xl:self-start">
+      <div className="ops-bracket flex flex-col gap-3 overflow-hidden rounded-card border border-border bg-surface p-5 shadow-elevated">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-accent">Live Preview</p>
+
+        <div className="relative flex aspect-[3/4] w-full items-center justify-center overflow-hidden rounded-xl bg-elevated">
+          {form.coverImage ? (
+            <img src={form.coverImage} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="text-xs font-semibold uppercase tracking-wide text-subtle">No cover yet</span>
+          )}
+          {statusOption && (
+            <span
+              className="absolute left-2 top-2 rounded-md px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-canvas shadow-elevated"
+              style={{ backgroundColor: statusOption.color }}
+            >
+              {statusOption.value}
+            </span>
+          )}
+        </div>
+
+        <p className="truncate text-base font-extrabold text-foreground">{form.characterName || 'Unnamed dossier'}</p>
+
+        <div className="flex flex-wrap gap-1.5">
+          {[form.rarityGuess !== 'None' ? form.rarityGuess : null, form.typeGuess, form.factionGuess, form.roleGuess]
+            .filter(Boolean)
+            .map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full border border-border bg-elevated px-2 py-1 text-[10px] font-semibold text-muted"
+              >
+                {chip}?
+              </span>
+            ))}
+        </div>
+
+        {form.summary && <p className="line-clamp-3 text-sm leading-relaxed text-muted">{form.summary}</p>}
+
+        <span className="w-fit rounded-full border border-border px-2 py-1 text-[10px] font-semibold text-muted">
+          {hintCount} hint{hintCount === 1 ? '' : 's'} logged
+        </span>
+      </div>
+    </aside>
   );
 }
 
@@ -229,7 +281,8 @@ export function IntelFormPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-6xl">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_320px]">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Panel title="Cover image" description="A teased splash art crop or hint image, if one exists yet.">
           <Field label="Cover">
@@ -279,7 +332,7 @@ export function IntelFormPage() {
             </Field>
           )}
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Rarity guess">
               <BadgeSelect
                 value={form.rarityGuess}
@@ -333,7 +386,7 @@ export function IntelFormPage() {
           <button
             type="button"
             onClick={() => setHints((current) => [...current, EMPTY_HINT])}
-            className="self-start rounded-full border border-dashed border-border px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
+            className={`self-start ${buttonClasses('dashed', 'sm')}`}
           >
             + Add hint
           </button>
@@ -347,19 +400,22 @@ export function IntelFormPage() {
           <button
             type="submit"
             disabled={status.kind === 'submitting'}
-            className="self-start rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            className={`self-start ${buttonClasses('primary', 'lg')}`}
           >
             {status.kind === 'submitting' ? 'Saving…' : isEditMode ? 'Save changes' : 'Publish dossier'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/intel')}
-            className="self-start rounded-full px-4 py-3 text-sm font-semibold text-muted transition-colors hover:text-foreground"
+            className={`self-start ${buttonClasses('ghost', 'lg')}`}
           >
             Cancel
           </button>
         </div>
       </form>
+
+      <IntelPreviewCard form={form} hintCount={hints.length} />
+      </div>
     </div>
   );
 }

@@ -18,6 +18,6 @@ export interface MasteryTier {
   statGain: StatBonus[];
   /** Cumulative materials needed to reach this tier, from "Not started". */
   materials: MaterialCost[];
-  /** Prerequisites to unlock this tier, as free-text condition lines — the set of conditions varies per branch (e.g. Level Mastery references roster-wide counts that don't fit a fixed field shape). Optional — not every branch's data has been transcribed yet. */
+  /** Prerequisites to unlock this tier, as free-text condition lines — the set of conditions varies per branch (e.g. Level Mastery references roster-wide counts that don't fit a fixed field shape). */
   requirements?: string[];
 }

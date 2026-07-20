@@ -36,7 +36,7 @@ export function IntelPage() {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-      <PageHeader title={t('intel.title')} description={t('intel.description')} />
+      <PageHeader eyebrow={t('intel.eyebrow')} title={t('intel.title')} description={t('intel.description')} />
 
       {!loading && !error && entries.length > 0 && (
         <div className="mt-8 flex flex-wrap items-center gap-2" role="group" aria-label={t('common.filter')}>

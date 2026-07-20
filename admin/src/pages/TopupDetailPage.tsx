@@ -5,6 +5,7 @@ import { approveTopup, fetchTopupById, rejectTopup } from '@/lib/wallet';
 import { TOPUP_PROVENANCE_OPTIONS, TOPUP_STATUS_OPTIONS } from '@/lib/badges';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 const STATUS_COLOR = Object.fromEntries(TOPUP_STATUS_OPTIONS.map((o) => [o.value, o.color]));
 const PROVENANCE_COLOR = Object.fromEntries(TOPUP_PROVENANCE_OPTIONS.map((o) => [o.value, o.color]));
@@ -88,113 +89,127 @@ export function TopupDetailPage() {
   if (!topup) return null;
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4">
-      <section className="rounded-card border border-border bg-surface p-6 shadow-elevated">
-        <div className="flex items-center gap-2">
-          <span
-            className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-            style={{ backgroundColor: STATUS_COLOR[topup.status] }}
-          >
-            {topup.status}
-          </span>
-          {topup.status === 'approved' && (
+    <div className="mx-auto max-w-6xl">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_320px]">
+        <section className="ops-bracket rounded-card border border-border bg-surface p-6 shadow-elevated">
+          <div className="flex items-center gap-2">
             <span
               className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-              style={{ backgroundColor: topup.autoMatched ? PROVENANCE_COLOR.Auto : PROVENANCE_COLOR.Manual }}
+              style={{ backgroundColor: STATUS_COLOR[topup.status] }}
             >
-              {topup.autoMatched ? 'Auto' : 'Manual'}
+              {topup.status}
             </span>
-          )}
-        </div>
-
-        <h1 className="mt-3 text-xl font-bold text-foreground">
-          {topup.phieuAmount} phiếu — {formatVnd(topup.amountVnd)}
-        </h1>
-        <p className="mt-1 text-sm text-subtle">{new Date(topup.createdAt).toLocaleString('en-US')}</p>
-        <p className="mt-1 text-xs text-muted">
-          Transfer code: <span className="font-mono">{topup.transferCode}</span>
-          {topup.sepayTransactionId && (
-            <>
-              {' '}
-              · SePay txn: <span className="font-mono">{topup.sepayTransactionId}</span>
-            </>
-          )}
-        </p>
-
-        {topup.paymentProofUrl ? (
-          <a href={topup.paymentProofUrl} target="_blank" rel="noreferrer" className="mt-5 inline-block overflow-hidden rounded-xl border border-border">
-            <img src={topup.paymentProofUrl} alt="" className="h-64 w-auto object-cover" />
-          </a>
-        ) : (
-          <p className="mt-5 text-sm text-subtle">No payment screenshot submitted for this top-up.</p>
-        )}
-
-        {topup.rejectionReason && (
-          <div className="mt-4 rounded-xl border border-danger/30 bg-danger/5 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-danger">Previous rejection reason</p>
-            <p className="mt-1 text-sm text-foreground">{topup.rejectionReason}</p>
+            {topup.status === 'approved' && (
+              <span
+                className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
+                style={{ backgroundColor: topup.autoMatched ? PROVENANCE_COLOR.Auto : PROVENANCE_COLOR.Manual }}
+              >
+                {topup.autoMatched ? 'Auto' : 'Manual'}
+              </span>
+            )}
           </div>
-        )}
-      </section>
 
-      {topup.status === 'pending' && (
-        <section className="rounded-card border border-border bg-surface p-6 shadow-elevated">
-          <h2 className="text-sm font-bold text-foreground">Moderation</h2>
+          <h1 className="mt-3 font-mono text-2xl font-extrabold text-foreground">
+            {topup.phieuAmount} phiếu — {formatVnd(topup.amountVnd)}
+          </h1>
+          <p className="mt-1 text-sm text-subtle">{new Date(topup.createdAt).toLocaleString('en-US')}</p>
+          <p className="mt-1 text-xs text-muted">
+            Transfer code: <span className="font-mono">{topup.transferCode}</span>
+            {topup.sepayTransactionId && (
+              <>
+                {' '}
+                · SePay txn: <span className="font-mono">{topup.sepayTransactionId}</span>
+              </>
+            )}
+          </p>
 
-          {!showRejectForm ? (
-            <div className="mt-4 flex items-center gap-3">
-              <button
-                type="button"
-                onClick={handleApprove}
-                disabled={submitting}
-                className="rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover disabled:opacity-50"
-              >
-                Approve
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowRejectForm(true)}
-                disabled={submitting}
-                className="rounded-full border border-danger/30 px-5 py-2.5 text-sm font-semibold text-danger transition-colors hover:bg-danger/10 disabled:opacity-50"
-              >
-                Reject
-              </button>
-            </div>
+          {topup.paymentProofUrl ? (
+            <a
+              href={topup.paymentProofUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-block max-w-md overflow-hidden rounded-xl border border-border transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-elevated"
+            >
+              <img src={topup.paymentProofUrl} alt="" className="h-80 w-auto object-cover" />
+            </a>
           ) : (
-            <div className="mt-4 flex flex-col gap-3">
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wide text-muted">Rejection reason</span>
-                <textarea
-                  value={rejectReason}
-                  onChange={(event) => setRejectReason(event.target.value)}
-                  placeholder="Explain why this top-up is being rejected — e.g. amount mismatch, no transfer found."
-                  className="min-h-[5rem] w-full rounded-xl border border-border bg-elevated px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/15"
-                />
-              </label>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={handleReject}
-                  disabled={submitting || !rejectReason.trim()}
-                  className="rounded-full bg-danger px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-danger-hover disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Confirm rejection
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowRejectForm(false);
-                    setRejectReason('');
-                  }}
-                  className="rounded-full px-4 py-2.5 text-sm font-semibold text-muted transition-colors hover:text-foreground"
-                >
-                  Cancel
-                </button>
-              </div>
+            <p className="mt-5 text-sm text-subtle">No payment screenshot submitted for this top-up.</p>
+          )}
+
+          {topup.rejectionReason && (
+            <div className="mt-4 max-w-md rounded-xl border border-danger/30 bg-danger/5 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-danger">Previous rejection reason</p>
+              <p className="mt-1 text-sm text-foreground">{topup.rejectionReason}</p>
             </div>
           )}
         </section>
-      )}
+
+        <aside className="xl:sticky xl:top-6 xl:self-start">
+          {topup.status === 'pending' ? (
+            <section className="rounded-card border border-border bg-surface p-5 shadow-elevated">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-accent">Moderation</p>
+
+              {!showRejectForm ? (
+                <div className="mt-4 flex flex-col gap-2.5">
+                  <button
+                    type="button"
+                    onClick={handleApprove}
+                    disabled={submitting}
+                    className={buttonClasses('primary', 'md')}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowRejectForm(true)}
+                    disabled={submitting}
+                    className={buttonClasses('ghost-danger', 'md')}
+                  >
+                    Reject
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-4 flex flex-col gap-3">
+                  <label className="flex flex-col gap-1.5">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-muted">Rejection reason</span>
+                    <textarea
+                      value={rejectReason}
+                      onChange={(event) => setRejectReason(event.target.value)}
+                      placeholder="Explain why this top-up is being rejected — e.g. amount mismatch, no transfer found."
+                      className="min-h-[5rem] w-full rounded-xl border border-border bg-elevated px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/15"
+                    />
+                  </label>
+                  <div className="flex flex-col gap-2.5">
+                    <button
+                      type="button"
+                      onClick={handleReject}
+                      disabled={submitting || !rejectReason.trim()}
+                      className={buttonClasses('danger', 'md')}
+                    >
+                      Confirm rejection
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowRejectForm(false);
+                        setRejectReason('');
+                      }}
+                      className={buttonClasses('ghost', 'md')}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
+          ) : (
+            <section className="rounded-card border border-border bg-surface p-5 shadow-elevated">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-subtle">Moderation</p>
+              <p className="mt-2 text-sm text-muted">This top-up has already been {topup.status}.</p>
+            </section>
+          )}
+        </aside>
+      </div>
     </div>
   );
 }

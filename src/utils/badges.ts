@@ -23,9 +23,11 @@ export const FACTION_LABEL_KEYS: Record<CharacterFaction, TranslationKey> = {
   'Third-party': 'characters.faction.thirdParty',
 };
 
+// Filenames are swapped from what they actually depict — badge_s_01.webp is the S-2
+// insignia and vice versa (mirrors the same fix in admin/src/lib/badges.ts).
 export const RANK_BADGE_ICONS: Record<CharacterRank, string> = {
-  'S-1': `${BADGE_PATH}/badge_s_01.webp`,
-  'S-2': `${BADGE_PATH}/badge_s_02.webp`,
+  'S-1': `${BADGE_PATH}/badge_s_02.webp`,
+  'S-2': `${BADGE_PATH}/badge_s_01.webp`,
   A: `${BADGE_PATH}/badge_a.webp`,
   Demon: `${BADGE_PATH}/badge_demon.webp`,
   Dragon: `${BADGE_PATH}/badge_dragon.webp`,

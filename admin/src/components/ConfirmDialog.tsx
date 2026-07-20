@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 interface ConfirmOptions {
   title: string;
@@ -52,27 +53,24 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
             aria-modal="true"
             aria-labelledby="confirm-dialog-title"
             onClick={(event) => event.stopPropagation()}
-            className="animate-modal-in w-full max-w-sm rounded-card border border-border bg-surface p-6 shadow-elevated-lg"
+            className="animate-modal-in relative w-full max-w-sm overflow-hidden rounded-card border border-border bg-surface p-6 shadow-elevated-lg"
           >
+            <div
+              className={`absolute inset-x-0 top-0 h-1 ${options.variant === 'danger' ? 'bg-danger' : 'bg-accent'}`}
+            />
             <h2 id="confirm-dialog-title" className="text-lg font-bold text-foreground">
               {options.title}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted">{options.message}</p>
             <div className="mt-6 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => settle(false)}
-                className="rounded-full px-4 py-2 text-sm font-semibold text-muted transition-colors hover:bg-elevated hover:text-foreground"
-              >
+              <button type="button" onClick={() => settle(false)} className={buttonClasses('ghost', 'sm')}>
                 {options.cancelLabel ?? 'Cancel'}
               </button>
               <button
                 type="button"
                 autoFocus
                 onClick={() => settle(true)}
-                className={`rounded-full px-5 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
-                  options.variant === 'danger' ? 'bg-danger hover:bg-danger-hover' : 'bg-accent hover:bg-accent-hover'
-                }`}
+                className={buttonClasses(options.variant === 'danger' ? 'danger' : 'primary', 'sm')}
               >
                 {options.confirmLabel ?? 'Confirm'}
               </button>

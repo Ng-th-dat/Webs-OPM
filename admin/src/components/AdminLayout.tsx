@@ -5,11 +5,15 @@ import { fetchAllTradeListings } from '@/lib/tradeListings';
 import { fetchAllTopups } from '@/lib/wallet';
 import {
   AtomIcon,
+  BeaconIcon,
   BellIcon,
   CalendarIcon,
+  ClockIcon,
   CoinIcon,
   ExternalLinkIcon,
   EyeIcon,
+  EyeOffIcon,
+  GiftIcon,
   GridIcon,
   HelpCircleIcon,
   LockIcon,
@@ -21,6 +25,7 @@ import {
   TicketIcon,
   UsersIcon,
 } from './icons';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 interface NavItem {
   to: string;
@@ -28,8 +33,13 @@ interface NavItem {
   icon: typeof GridIcon;
   end: boolean;
   pendingKey?: 'trade-listings' | 'topups';
+  /** False for a page that's fully built and manageable here, but whose *public* route on
+      the main site is currently unmounted — still real work, just not live yet. Undefined/
+      true means the public route exists right now. */
+  live?: boolean;
 }
 
+/** Content an officer curates directly — each of these has a live public route right now. */
 const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: 'Overview',
@@ -39,23 +49,32 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     label: 'Content',
     items: [
       { to: '/characters', label: 'Characters', icon: UsersIcon, end: false },
-      { to: '/schedule', label: 'Schedule', icon: CalendarIcon, end: false },
       { to: '/updates', label: 'Updates', icon: MegaphoneIcon, end: false },
       { to: '/intel', label: 'Intel', icon: EyeIcon, end: false },
-      { to: '/mastery-materials', label: 'Mastery', icon: SparklesIcon, end: false },
-      { to: '/ticket-images', label: 'Tickets', icon: TicketIcon, end: false },
+      { to: '/sea-servers', label: 'New Servers', icon: BeaconIcon, end: false },
+      { to: '/game-codes', label: 'Game Codes', icon: GiftIcon, end: false },
     ],
   },
   {
     label: 'Operations',
     items: [
-      { to: '/trade-listings', label: 'Trade', icon: TagIcon, end: false, pendingKey: 'trade-listings' },
-      { to: '/topups', label: 'Top-ups', icon: CoinIcon, end: false, pendingKey: 'topups' },
+      { to: '/ticket-images', label: 'Tickets', icon: TicketIcon, end: false },
       { to: '/feedback', label: 'Feedback', icon: HelpCircleIcon, end: false },
     ],
   },
 ];
 
+/** Fully built and manageable — the tables, RLS, and this exact admin page all work — but
+    their *public* route is currently unmounted from AppRoutes.tsx (see CLAUDE.md section 5,
+    "Temporarily unmounted"), so nothing an officer does here shows up on the live site yet. */
+const IN_PROGRESS_ITEMS: NavItem[] = [
+  { to: '/schedule', label: 'Schedule', icon: CalendarIcon, end: false, live: false },
+  { to: '/mastery-materials', label: 'Mastery', icon: SparklesIcon, end: false, live: false },
+  { to: '/trade-listings', label: 'Trade', icon: TagIcon, end: false, pendingKey: 'trade-listings', live: false },
+  { to: '/topups', label: 'Top-ups', icon: CoinIcon, end: false, pendingKey: 'topups', live: false },
+];
+
+/** No admin page exists yet at all — nothing to click through to. */
 const SOON_ITEMS = [{ label: 'Core-Lab', icon: AtomIcon }];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -68,6 +87,10 @@ const PAGE_TITLES: Record<string, string> = {
   '/updates/new': 'Add Update',
   '/intel': 'Intel',
   '/intel/new': 'Add Dossier',
+  '/sea-servers': 'New Servers',
+  '/sea-servers/new': 'Add Server',
+  '/game-codes': 'Game Codes',
+  '/game-codes/new': 'Add Code',
   '/mastery-materials': 'Mastery Materials',
   '/ticket-images': 'Ticket Icons',
   '/trade-listings': 'Trade Listings',
@@ -79,6 +102,8 @@ function editTitleFor(pathname: string): string {
   if (pathname.startsWith('/schedule')) return 'Edit Schedule Entry';
   if (pathname.startsWith('/updates')) return 'Edit Update';
   if (pathname.startsWith('/intel')) return 'Edit Dossier';
+  if (pathname.startsWith('/sea-servers')) return 'Server Entry';
+  if (pathname.startsWith('/game-codes')) return 'Code Entry';
   if (pathname.startsWith('/trade-listings')) return 'Trade Listing';
   if (pathname.startsWith('/topups')) return 'Top-up';
   return 'Edit Character';
@@ -127,27 +152,33 @@ export function AdminLayout() {
         ? { label: 'Add Update', to: '/updates/new' }
         : pathname.startsWith('/intel')
           ? { label: 'Add Dossier', to: '/intel/new' }
-          : pathname.startsWith('/trade-listings') || pathname.startsWith('/feedback') || pathname.startsWith('/topups')
-            ? null
-            : { label: 'Add Character', to: '/characters/new' };
+          : pathname.startsWith('/sea-servers')
+            ? { label: 'Add Server', to: '/sea-servers/new' }
+            : pathname.startsWith('/game-codes')
+              ? { label: 'Add Code', to: '/game-codes/new' }
+              : pathname.startsWith('/trade-listings') || pathname.startsWith('/feedback') || pathname.startsWith('/topups')
+                ? null
+                : { label: 'Add Character', to: '/characters/new' };
 
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-surface">
-        <div className="flex items-center gap-3 px-6 py-6">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-base font-bold text-white">
-            S
-          </div>
-          <div>
-            <p className="text-sm font-bold leading-tight text-foreground">S-Class Codex</p>
-            <p className="text-xs leading-tight text-subtle">Admin Dashboard</p>
+        <div className="ops-dots relative overflow-hidden border-b border-border bg-elevated px-5 py-5">
+          <div className="relative flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-accent text-base font-black text-canvas ops-clip">
+              S
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-extrabold uppercase tracking-wide text-foreground">S-Class Codex</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-accent">Ops Deck</p>
+            </div>
           </div>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-4 pb-4">
+        <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 pb-4 pt-4">
           {NAV_GROUPS.map((group) => (
             <div key={group.label}>
-              <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-subtle">{group.label}</p>
+              <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-subtle">{group.label}</p>
               <div className="flex flex-col gap-0.5">
                 {group.items.map((item) => {
                   const pendingCount = item.pendingKey ? pendingCounts[item.pendingKey] : 0;
@@ -157,17 +188,23 @@ export function AdminLayout() {
                       to={item.to}
                       end={item.end}
                       className={({ isActive }) =>
-                        `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors duration-150 ${
-                          isActive ? 'bg-accent text-white' : 'text-muted hover:bg-elevated hover:text-foreground'
+                        `group relative flex items-center gap-2.5 rounded-md border-l-2 py-2 pl-3 pr-2.5 text-sm font-semibold transition-colors duration-150 ${
+                          isActive
+                            ? 'border-l-accent bg-accent/10 text-foreground'
+                            : 'border-l-transparent text-muted hover:border-l-border hover:bg-elevated hover:text-foreground'
                         }`
                       }
                     >
-                      <item.icon className="h-4.5 w-4.5 shrink-0" />
-                      <span className="flex-1">{item.label}</span>
-                      {pendingCount > 0 && (
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1.5 text-[11px] font-bold text-white">
-                          {pendingCount}
-                        </span>
+                      {({ isActive }) => (
+                        <>
+                          <item.icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? 'text-accent' : ''}`} />
+                          <span className="flex-1 truncate">{item.label}</span>
+                          {pendingCount > 0 && (
+                            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1.5 text-[11px] font-bold text-canvas">
+                              {pendingCount}
+                            </span>
+                          )}
+                        </>
                       )}
                     </NavLink>
                   );
@@ -177,12 +214,47 @@ export function AdminLayout() {
           ))}
 
           <div>
-            <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-subtle">Coming soon</p>
+            <p className="mb-1.5 flex items-center gap-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-subtle">
+              <ClockIcon className="h-3 w-3" />
+              Đang phát triển
+            </p>
             <div className="flex flex-col gap-0.5">
+              {IN_PROGRESS_ITEMS.map((item) => {
+                const pendingCount = item.pendingKey ? pendingCounts[item.pendingKey] : 0;
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.end}
+                    title="Đã build xong, nhưng route công khai trên main site đang tắt"
+                    className={({ isActive }) =>
+                      `group relative flex items-center gap-2.5 rounded-md border-l-2 py-2 pl-3 pr-2.5 text-sm font-semibold transition-colors duration-150 ${
+                        isActive
+                          ? 'border-l-accent bg-accent/10 text-foreground'
+                          : 'border-l-transparent text-subtle hover:border-l-border hover:bg-elevated hover:text-muted'
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <item.icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? 'text-accent' : ''}`} />
+                        <span className="flex-1 truncate">{item.label}</span>
+                        <EyeOffIcon className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                        {pendingCount > 0 && (
+                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1.5 text-[11px] font-bold text-canvas">
+                            {pendingCount}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </NavLink>
+                );
+              })}
               {SOON_ITEMS.map((item) => (
                 <span
                   key={item.label}
-                  className="relative flex cursor-not-allowed items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-subtle/70"
+                  title="Chưa có trang quản trị cho mục này"
+                  className="relative flex cursor-not-allowed items-center gap-2.5 rounded-md border-l-2 border-l-transparent py-2 pl-3 pr-2.5 text-sm font-medium text-subtle/50"
                 >
                   <item.icon className="h-4.5 w-4.5 shrink-0" />
                   <span className="flex-1">{item.label}</span>
@@ -195,19 +267,19 @@ export function AdminLayout() {
 
         <div className="border-t border-border p-4">
           <div className="flex items-center gap-2.5 px-2">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-elevated text-sm font-bold text-accent ring-1 ring-accent/40">
               {getInitial(email)}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-foreground">{email ?? 'Admin'}</p>
-              <p className="text-xs text-subtle">Administrator</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-subtle">Officer Access</p>
             </div>
           </div>
           <a
             href="http://localhost:5173"
             target="_blank"
             rel="noreferrer"
-            className="mt-3 flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-muted transition-colors duration-150 hover:bg-elevated hover:text-foreground"
+            className="mt-3 flex items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-muted transition-colors duration-150 hover:bg-elevated hover:text-foreground"
           >
             <ExternalLinkIcon className="h-4 w-4" />
             View public site
@@ -215,7 +287,7 @@ export function AdminLayout() {
           <button
             type="button"
             onClick={() => signOut()}
-            className="flex w-full items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger"
+            className="flex w-full items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-muted transition-colors duration-150 hover:bg-danger/10 hover:text-danger"
           >
             <LogOutIcon className="h-4 w-4" />
             Sign out
@@ -225,13 +297,13 @@ export function AdminLayout() {
 
       <div className="flex flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-border bg-surface px-6 py-4">
-          <h1 className="text-xl font-bold text-foreground">{title}</h1>
+          <h1 className="text-lg font-extrabold uppercase tracking-wide text-foreground">{title}</h1>
 
           <div className="flex items-center gap-3">
             {topbarAction && (
               <NavLink
                 to={topbarAction.to}
-                className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 hover:bg-accent-hover"
+                className={buttonClasses('primary', 'sm')}
               >
                 <PlusIcon className="h-4 w-4" />
                 {topbarAction.label}
@@ -240,10 +312,10 @@ export function AdminLayout() {
             <span className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted">
               <BellIcon className="h-5 w-5" />
               {totalPending > 0 && (
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-danger" />
+                <span className="animate-pulse-glow absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-danger" />
               )}
             </span>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-elevated text-sm font-bold text-accent ring-1 ring-accent/40">
               {getInitial(email)}
             </div>
           </div>

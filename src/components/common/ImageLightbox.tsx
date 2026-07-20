@@ -5,10 +5,13 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface ImageLightboxProps {
   src: string | null;
   alt?: string;
+  /** Extra classes merged onto the <img> — e.g. to keep an intentionally-obscured thumbnail
+   * (like an unconfirmed Intel leak) equally obscured at full size, not "leak" a clear view. */
+  imgClassName?: string;
   onClose: () => void;
 }
 
-export function ImageLightbox({ src, alt = '', onClose }: ImageLightboxProps) {
+export function ImageLightbox({ src, alt = '', imgClassName = '', onClose }: ImageLightboxProps) {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -51,7 +54,7 @@ export function ImageLightbox({ src, alt = '', onClose }: ImageLightboxProps) {
         src={src}
         alt={alt}
         onClick={(event) => event.stopPropagation()}
-        className="animate-modal-in max-h-[85vh] max-w-full rounded-lg border border-border object-contain shadow-2xl shadow-black/50"
+        className={`animate-modal-in max-h-[85vh] max-w-full rounded-lg border border-border object-contain shadow-2xl shadow-black/50 ${imgClassName}`}
       />
     </div>
   );

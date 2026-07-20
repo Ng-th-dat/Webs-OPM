@@ -11,7 +11,7 @@ import { FilterBar, type FilterGroup } from '@/components/data-table/FilterBar';
 import { RarityFilterChips } from '@/components/data-table/RarityFilterChips';
 import { useFilters } from '@/hooks/useFilters';
 import { useTranslation } from '@/hooks/useTranslation';
-import { filterCharacters, getUniqueSortedValues, searchCharacters } from '@/utils/characters';
+import { filterCharacters, getUniqueSortedValues, searchCharacters, sortCharactersByDebutDesc } from '@/utils/characters';
 import type { CharacterFilterValues } from '@/types/character';
 
 const INITIAL_FILTERS: CharacterFilterValues = {
@@ -60,13 +60,13 @@ export function CharactersPage() {
 
   const visibleCharacters = useMemo(() => {
     const searched = searchCharacters(characters, query);
-    return filterCharacters(searched, filters);
+    return sortCharactersByDebutDesc(filterCharacters(searched, filters));
   }, [characters, query, filters]);
 
   return (
     <>
       <div className="mx-auto max-w-6xl px-4 pt-10 sm:px-8 sm:pt-14">
-        <PageHeader title={t('characters.title')} description={t('characters.description')} />
+        <PageHeader eyebrow={t('characters.eyebrow')} title={t('characters.title')} description={t('characters.description')} />
       </div>
 
       <div className="sticky top-16 z-30 border-b border-border bg-canvas py-4">

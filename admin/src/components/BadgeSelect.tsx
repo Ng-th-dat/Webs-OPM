@@ -23,18 +23,20 @@ export function BadgeSelect({ value, onChange, options }: BadgeSelectProps) {
               aria-pressed={isActive}
               className={`group relative flex w-20 flex-col items-center gap-2 rounded-2xl border p-3 text-center transition-all duration-200 ${
                 isActive
-                  ? 'border-accent/40 bg-accent/5 shadow-sm'
+                  ? 'border-accent/50 bg-accent/10 shadow-elevated'
                   : 'border-border bg-elevated hover:-translate-y-0.5 hover:border-accent/30 hover:bg-surface hover:shadow-elevated'
               }`}
             >
               {isActive && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white shadow-sm ring-2 ring-surface">
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-canvas shadow-elevated ring-2 ring-surface">
                   <CheckIcon className="h-3 w-3" strokeWidth={3} />
                 </span>
               )}
+              {/* Badge art is drawn assuming a light backdrop — an intentional light "insignia
+                  plate" behind it, not a leftover light-theme default. */}
               <span
-                className={`flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 ${
-                  isActive ? 'scale-105 bg-white shadow-sm' : 'bg-surface group-hover:scale-105 group-hover:bg-white'
+                className={`flex h-11 w-11 items-center justify-center rounded-xl bg-white/95 ring-1 ring-black/5 transition-all duration-200 ${
+                  isActive ? 'scale-105 shadow-elevated' : 'group-hover:scale-105'
                 }`}
               >
                 {option.icon ? (

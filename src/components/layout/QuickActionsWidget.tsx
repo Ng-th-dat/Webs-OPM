@@ -5,7 +5,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useTicketTypeImages } from '@/hooks/useTicketTypeImages';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { CoinIcon, SparklesIcon, TicketIcon, XIcon } from '@/components/common/icons';
-import { FeatureInProgressModal } from '@/components/common/FeatureInProgressModal';
+import { TopupModal } from './TopupModal';
 
 const BUTTON_SIZE_PX = 56;
 const BOTTOM_MARGIN_PX = 20;
@@ -33,7 +33,7 @@ export function QuickActionsWidget() {
   const [dragging, setDragging] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
-  const [topupInProgressOpen, setTopupInProgressOpen] = useState(false);
+  const [topupOpen, setTopupOpen] = useState(false);
   const [sloganVisible, setSloganVisible] = useState(false);
   const dragRef = useRef<{ startY: number; startTop: number; moved: boolean } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -163,7 +163,7 @@ export function QuickActionsWidget() {
                 aria-label={t('quickActions.topupLabel')}
                 onClick={() => {
                   setExpanded(false);
-                  setTopupInProgressOpen(true);
+                  setTopupOpen(true);
                 }}
                 className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-[3px] border-canvas bg-surface shadow-[0_3px_0_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105"
               >
@@ -226,12 +226,7 @@ export function QuickActionsWidget() {
         </div>
       </div>
 
-      <FeatureInProgressModal
-        isOpen={topupInProgressOpen}
-        title={t('topupWidget.modalTitle')}
-        description={t('topupWidget.inProgressDescription')}
-        onClose={() => setTopupInProgressOpen(false)}
-      />
+      <TopupModal isOpen={topupOpen} onClose={() => setTopupOpen(false)} />
     </>
   );
 }

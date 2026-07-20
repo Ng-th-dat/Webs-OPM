@@ -9,6 +9,7 @@ import { PencilIcon, PlusIcon, TrashIcon } from '@/components/icons';
 import { BadgeSelect } from '@/components/BadgeSelect';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 const STATUS_BADGE: Record<ReleaseStatus, string> = {
   Released: 'bg-success/10 text-success',
@@ -34,28 +35,89 @@ function getInitials(name: string): string {
   return (words[0].slice(0, 1) + words[1].slice(0, 1)).toUpperCase();
 }
 
-function CharacterThumb({ entry }: { entry: AdminReleaseEntry }) {
+/** Compact card-chip, not a full portrait card — these live nested inside a month group
+    alongside a completeness check, so density matters more than trading-card theatrics. */
+function ScheduleEntryCard({
+  entry,
+  deletingId,
+  onDelete,
+}: {
+  entry: AdminReleaseEntry;
+  deletingId: string | null;
+  onDelete: (entry: AdminReleaseEntry) => void;
+}) {
   const [hasError, setHasError] = useState(false);
   const color = RARITY_SWATCH[entry.rarity];
-
-  if (!entry.image || hasError) {
-    return (
-      <span
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-bold"
-        style={{ backgroundColor: `${color}1a`, color }}
-      >
-        {getInitials(entry.characterName)}
-      </span>
-    );
-  }
+  const showImage = Boolean(entry.image) && !hasError;
 
   return (
-    <img
-      src={entry.image}
-      alt=""
-      onError={() => setHasError(true)}
-      className="h-10 w-10 shrink-0 rounded-xl object-cover shadow-sm ring-1 ring-black/5"
-    />
+    <div
+      className={`flex items-center gap-3 rounded-xl border bg-elevated/40 p-3 transition-colors duration-150 hover:bg-elevated ${
+        entry.characterIsVisible ? '' : 'opacity-50'
+      }`}
+      style={{ borderColor: `${color}40` }}
+    >
+      {showImage ? (
+        <img
+          src={entry.image}
+          alt=""
+          onError={() => setHasError(true)}
+          className="h-11 w-11 shrink-0 rounded-lg object-cover shadow-sm"
+          style={{ boxShadow: `inset 0 0 0 1px ${color}55` }}
+        />
+      ) : (
+        <span
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xs font-bold"
+          style={{ backgroundColor: `${color}1a`, color }}
+        >
+          {getInitials(entry.characterName)}
+        </span>
+      )}
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-bold text-foreground">{entry.characterName}</p>
+        {!entry.characterIsVisible && <p className="text-[10px] font-semibold text-danger">Character hidden</p>}
+        <div className="mt-1 flex flex-wrap items-center gap-1">
+          <span
+            className="rounded px-1.5 py-0.5 text-[10px] font-bold text-canvas"
+            style={{ backgroundColor: SERVER_COLOR[entry.server] }}
+          >
+            {entry.server}
+          </span>
+          <span
+            className="rounded px-1.5 py-0.5 text-[10px] font-bold text-canvas"
+            style={{ backgroundColor: RELEASE_TYPE_COLOR[entry.releaseType] }}
+          >
+            {entry.releaseType}
+          </span>
+          <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${STATUS_BADGE[entry.status]}`}>
+            {entry.status}
+          </span>
+        </div>
+        <p className="mt-0.5 text-[10px] text-subtle">{entry.timing}</p>
+      </div>
+
+      <div className="flex shrink-0 flex-col items-center gap-1">
+        <Link
+          to={`/schedule/${entry.id}/edit`}
+          title="Edit entry"
+          aria-label={`Edit ${entry.characterName} ${entry.releaseType} entry`}
+          className="flex h-7 w-7 items-center justify-center rounded-full text-muted transition-colors hover:bg-accent/10 hover:text-accent"
+        >
+          <PencilIcon className="h-3.5 w-3.5" />
+        </Link>
+        <button
+          type="button"
+          onClick={() => onDelete(entry)}
+          disabled={deletingId === entry.id}
+          title="Delete entry"
+          aria-label={`Delete ${entry.characterName} ${entry.releaseType} entry`}
+          className="flex h-7 w-7 items-center justify-center rounded-full text-muted transition-colors hover:bg-danger/10 hover:text-danger disabled:opacity-50"
+        >
+          <TrashIcon className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -181,81 +243,10 @@ export function SchedulePage() {
               </div>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-border">
-              <table className="w-full text-left text-sm">
-                <thead className="border-b border-border text-xs uppercase tracking-wide text-subtle">
-                  <tr>
-                    <th className="px-5 pb-3 pt-5 font-semibold">Character</th>
-                    <th className="px-5 pb-3 pt-5 font-semibold">Server</th>
-                    <th className="px-5 pb-3 pt-5 font-semibold">Release Type</th>
-                    <th className="px-5 pb-3 pt-5 font-semibold">Timing</th>
-                    <th className="px-5 pb-3 pt-5 font-semibold">Status</th>
-                    <th className="px-5 pb-3 pt-5 font-semibold text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {group.entries.map((entry) => (
-                    <tr
-                      key={entry.id}
-                      className={`transition-colors duration-150 hover:bg-elevated/70 ${entry.characterIsVisible ? '' : 'opacity-50'}`}
-                    >
-                      <td className="px-5 py-3">
-                        <div className="flex items-center gap-3">
-                          <CharacterThumb entry={entry} />
-                          <div>
-                            <p className="font-semibold text-foreground">{entry.characterName}</p>
-                            {!entry.characterIsVisible && <p className="text-xs text-danger">Character hidden</p>}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3">
-                        <span
-                          className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
-                          style={{ backgroundColor: SERVER_COLOR[entry.server] }}
-                        >
-                          {entry.server}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <span
-                          className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold text-white"
-                          style={{ backgroundColor: RELEASE_TYPE_COLOR[entry.releaseType] }}
-                        >
-                          {entry.releaseType}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3 text-muted">{entry.timing}</td>
-                      <td className="px-5 py-3">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_BADGE[entry.status]}`}>
-                          {entry.status}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Link
-                            to={`/schedule/${entry.id}/edit`}
-                            title="Edit entry"
-                            aria-label={`Edit ${entry.characterName} ${entry.releaseType} entry`}
-                            className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-accent/10 hover:text-accent"
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </Link>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(entry)}
-                            disabled={deletingId === entry.id}
-                            title="Delete entry"
-                            aria-label={`Delete ${entry.characterName} ${entry.releaseType} entry`}
-                            className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-all duration-150 hover:-translate-y-px hover:bg-danger/10 hover:text-danger disabled:opacity-50 disabled:hover:translate-y-0"
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+              {group.entries.map((entry) => (
+                <ScheduleEntryCard key={entry.id} entry={entry} deletingId={deletingId} onDelete={handleDelete} />
+              ))}
             </div>
           </div>
         ))
@@ -267,7 +258,7 @@ export function SchedulePage() {
           <p className="mt-1 text-sm text-muted">Add the first Debut or Comeback slot to get started.</p>
           <Link
             to="/schedule/new"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98]"
+            className={`mt-4 inline-flex items-center gap-1.5 ${buttonClasses('primary', 'sm')}`}
           >
             <PlusIcon className="h-4 w-4" />
             Add Schedule Entry

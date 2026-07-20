@@ -11,6 +11,7 @@ import { UpdateImageUpload } from '@/components/UpdateImageUpload';
 import { SparklesIcon, XIcon } from '@/components/icons';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useToast } from '@/components/Toast';
+import { buttonClasses } from '@/lib/buttonStyles';
 
 // AI drafting is temporarily paused (Anthropic billing not set up yet) — flip back to
 // true once the analyze-update-image Edge Function has credit again. Manual entry of
@@ -61,10 +62,57 @@ function RemovableRow({ onRemove, children }: { onRemove: () => void; children: 
   );
 }
 
+/** Live mirror of the public site's UpdateCard — fills the wide layout with something useful
+    instead of stretched inputs, and lets an officer see the banner crop/badges before publishing. */
+function UpdatePreviewCard({ form }: { form: FormState }) {
+  const categoryOption = UPDATE_CATEGORY_OPTIONS.find((option) => option.value === form.category);
+  const serverOption = SERVER_OPTIONS.find((option) => option.value === form.server);
+
+  return (
+    <aside className="xl:sticky xl:top-6 xl:self-start">
+      <div className="ops-bracket flex flex-col gap-3 overflow-hidden rounded-card border border-border bg-surface p-5 shadow-elevated">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-accent">Live Preview</p>
+
+        <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl bg-elevated">
+          {form.image ? (
+            <img src={form.image} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="text-xs font-semibold uppercase tracking-wide text-subtle">No banner yet</span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {categoryOption && (
+            <span
+              className="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-canvas"
+              style={{ backgroundColor: categoryOption.color }}
+            >
+              {categoryOption.value}
+            </span>
+          )}
+          {serverOption && form.server !== 'None' && (
+            <span
+              className="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-canvas"
+              style={{ backgroundColor: serverOption.color }}
+            >
+              {serverOption.value}
+            </span>
+          )}
+          {form.date && <span className="text-[10px] font-medium text-subtle">{form.date}</span>}
+        </div>
+
+        <p className="text-base font-extrabold leading-snug text-foreground">{form.title || 'Untitled update'}</p>
+        {form.description && <p className="line-clamp-3 text-sm leading-relaxed text-muted">{form.description}</p>}
+      </div>
+    </aside>
+  );
+}
+
 interface SubEventFormValue {
-  dateRange: string;
   title: string;
   note: string;
+  startDate: string;
+  endDate: string;
 }
 
 interface FormState {
@@ -134,7 +182,14 @@ export function UpdateFormPage() {
           description: entry.description,
         });
         setSlugTouched(true);
-        setEvents((entry.events ?? []).map((e) => ({ dateRange: e.dateRange, title: e.title, note: e.note ?? '' })));
+        setEvents(
+          (entry.events ?? []).map((e) => ({
+            title: e.title,
+            note: e.note ?? '',
+            startDate: e.startDate ?? '',
+            endDate: e.endDate ?? '',
+          }))
+        );
       })
       .catch((err: unknown) => setLoadError(err instanceof Error ? err.message : 'Failed to load update'))
       .finally(() => setLoading(false));
@@ -165,7 +220,14 @@ export function UpdateFormPage() {
         date: result.date || current.date,
       }));
       if (!slugTouched) updateField('slug', slugify(result.title));
-      setEvents(result.events.map((e) => ({ dateRange: e.dateRange, title: e.title, note: e.note })));
+      setEvents(
+        result.events.map((e) => ({
+          title: e.title,
+          note: e.note,
+          startDate: e.startDate,
+          endDate: e.endDate,
+        }))
+      );
       showToast('AI draft ready — review the fields before saving', 'success');
     } catch (err) {
       setAnalyzeError(err instanceof Error ? err.message : 'AI analysis failed');
@@ -200,8 +262,13 @@ export function UpdateFormPage() {
       description: form.description.trim(),
       image: form.image,
       events: events
-        .map((e) => ({ dateRange: e.dateRange.trim(), title: e.title.trim(), note: e.note.trim() || undefined }))
-        .filter((e) => e.dateRange && e.title),
+        .map((e) => ({
+          title: e.title.trim(),
+          note: e.note.trim() || undefined,
+          startDate: e.startDate || undefined,
+          endDate: e.endDate || undefined,
+        }))
+        .filter((e) => e.startDate && e.endDate && e.title),
     };
 
     const confirmed = await confirm(
@@ -235,7 +302,8 @@ export function UpdateFormPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-6xl">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_320px]">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Panel
           title="Banner image"
@@ -267,7 +335,7 @@ export function UpdateFormPage() {
         </Panel>
 
         <Panel title="Update Info" description="Fill in the details for this update.">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Title" required>
               <input
                 value={form.title}
@@ -329,28 +397,36 @@ export function UpdateFormPage() {
         <Panel title="Sub-events" description="Optional — a date-range schedule shown on the update's detail page.">
           {events.map((subEvent, index) => (
             <RemovableRow key={index} onRemove={() => setEvents((current) => current.filter((_, i) => i !== index))}>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-[10rem_1fr]">
-                <Field label="Date range" required>
-                  <input
-                    value={subEvent.dateRange}
-                    onChange={(e) => updateEvent(index, { dateRange: e.target.value })}
-                    className={inputClasses}
-                    placeholder="e.g. 1/7 – 4/7"
-                  />
-                </Field>
-                <Field label="Title" required>
-                  <input value={subEvent.title} onChange={(e) => updateEvent(index, { title: e.target.value })} className={inputClasses} />
-                </Field>
-              </div>
+              <Field label="Title" required>
+                <input value={subEvent.title} onChange={(e) => updateEvent(index, { title: e.target.value })} className={inputClasses} />
+              </Field>
               <Field label="Note">
                 <input value={subEvent.note} onChange={(e) => updateEvent(index, { note: e.target.value })} className={inputClasses} />
               </Field>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field label="Start date" required hint="Drives the displayed date range and the ongoing/upcoming/expired status.">
+                  <input
+                    type="date"
+                    value={subEvent.startDate}
+                    onChange={(e) => updateEvent(index, { startDate: e.target.value })}
+                    className={inputClasses}
+                  />
+                </Field>
+                <Field label="End date" required>
+                  <input
+                    type="date"
+                    value={subEvent.endDate}
+                    onChange={(e) => updateEvent(index, { endDate: e.target.value })}
+                    className={inputClasses}
+                  />
+                </Field>
+              </div>
             </RemovableRow>
           ))}
           <button
             type="button"
-            onClick={() => setEvents((current) => [...current, { dateRange: '', title: '', note: '' }])}
-            className="self-start rounded-full border border-dashed border-border px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
+            onClick={() => setEvents((current) => [...current, { title: '', note: '', startDate: '', endDate: '' }])}
+            className={`self-start ${buttonClasses('dashed', 'sm')}`}
           >
             + Add sub-event
           </button>
@@ -364,19 +440,22 @@ export function UpdateFormPage() {
           <button
             type="submit"
             disabled={status.kind === 'submitting'}
-            className="self-start rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-elevated-lg active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            className={`self-start ${buttonClasses('primary', 'lg')}`}
           >
             {status.kind === 'submitting' ? 'Saving…' : isEditMode ? 'Save changes' : 'Publish update'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/updates')}
-            className="self-start rounded-full px-4 py-3 text-sm font-semibold text-muted transition-colors hover:text-foreground"
+            className={`self-start ${buttonClasses('ghost', 'lg')}`}
           >
             Cancel
           </button>
         </div>
       </form>
+
+      <UpdatePreviewCard form={form} />
+      </div>
     </div>
   );
 }

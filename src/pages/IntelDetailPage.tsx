@@ -9,7 +9,15 @@ import { IntelStatusStamp } from '@/components/intel/IntelStatusStamp';
 import { IntelCoverPlaceholder } from '@/components/intel/IntelCoverPlaceholder';
 import { ImageLightbox } from '@/components/common/ImageLightbox';
 import { SearchIcon, ArrowRightIcon } from '@/components/common/icons';
-import { INTEL_CONFIDENCE_LABEL_KEYS, INTEL_CONFIDENCE_STYLES } from '@/utils/characterIntel';
+import {
+  getIntelRevealImage,
+  getIntelRevealLevel,
+  INTEL_CONFIDENCE_LABEL_KEYS,
+  INTEL_CONFIDENCE_REVEAL,
+  INTEL_CONFIDENCE_STYLES,
+  INTEL_REVEAL_FILTER,
+  INTEL_REVEAL_LABEL_KEYS,
+} from '@/utils/characterIntel';
 import { formatUpdateDate } from '@/utils/gameUpdates';
 import { RARITY_STYLES } from '@/utils/rarity';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -24,7 +32,7 @@ export function IntelDetailPage() {
   const { t, language } = useTranslation();
   const { entry, loading, error } = useCharacterIntelEntry(slug);
   const [imageError, setImageError] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<{ src: string; filterClass: string } | null>(null);
   const reducedMotion = useReducedMotion();
 
   function reveal(delayMs: number, animationClass = 'animate-rise-in'): { className: string; style?: CSSProperties } {
@@ -58,7 +66,10 @@ export function IntelDetailPage() {
     return <NotFoundPage />;
   }
 
-  const showImage = Boolean(entry.coverImage) && !imageError;
+  const revealImage = getIntelRevealImage(entry);
+  const showImage = Boolean(revealImage) && !imageError;
+  const revealLevel = getIntelRevealLevel(entry);
+  const revealLabelKey = INTEL_REVEAL_LABEL_KEYS[revealLevel];
   const secondaryGuesses = [entry.roleGuess, entry.typeGuess, entry.factionGuess].filter(
     (value): value is string => Boolean(value)
   );
@@ -77,10 +88,10 @@ export function IntelDetailPage() {
       >
         {showImage ? (
           <img
-            src={entry.coverImage}
+            src={revealImage}
             alt=""
             onError={() => setImageError(true)}
-            className="h-full w-full object-cover"
+            className={`h-full w-full object-cover transition-[filter] duration-700 ${INTEL_REVEAL_FILTER[revealLevel]}`}
           />
         ) : (
           <IntelCoverPlaceholder size="lg" />
@@ -90,6 +101,11 @@ export function IntelDetailPage() {
           className={`absolute right-4 top-4 text-sm ${stampReveal.className}`}
           style={{ ...stampReveal.style, '--slam-rotate': '-6deg' } as CSSProperties}
         />
+        {showImage && revealLabelKey && (
+          <span className="absolute bottom-4 left-4 rounded-full border border-white/10 bg-canvas/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-subtle backdrop-blur-sm">
+            {t(revealLabelKey)}
+          </span>
+        )}
       </div>
 
       <div className={`mt-6 flex max-w-3xl flex-col gap-3 ${reveal(80).className}`} style={reveal(80).style}>
@@ -160,7 +176,9 @@ export function IntelDetailPage() {
                     {hint.image && (
                       <button
                         type="button"
-                        onClick={() => setLightboxImage(hint.image ?? null)}
+                        onClick={() =>
+                          setLightbox({ src: hint.image ?? '', filterClass: INTEL_REVEAL_FILTER[INTEL_CONFIDENCE_REVEAL[hint.confidence]] })
+                        }
                         aria-label={t('common.viewImage')}
                         className="group/image relative mt-2.5 block w-fit cursor-zoom-in overflow-hidden rounded-lg border border-border"
                       >
@@ -168,7 +186,7 @@ export function IntelDetailPage() {
                           src={hint.image}
                           alt=""
                           loading="lazy"
-                          className="max-h-64 w-auto max-w-full object-cover transition-transform duration-300 group-hover/image:scale-105"
+                          className={`max-h-64 w-auto max-w-full object-cover transition-transform duration-300 group-hover/image:scale-105 ${INTEL_REVEAL_FILTER[INTEL_CONFIDENCE_REVEAL[hint.confidence]]}`}
                         />
                         <span
                           aria-hidden="true"
@@ -186,7 +204,11 @@ export function IntelDetailPage() {
         )}
       </div>
 
-      <ImageLightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
+      <ImageLightbox
+        src={lightbox?.src ?? null}
+        imgClassName={lightbox?.filterClass}
+        onClose={() => setLightbox(null)}
+      />
     </section>
   );
 }

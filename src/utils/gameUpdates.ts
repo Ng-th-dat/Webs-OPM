@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react';
-import type { UpdateCategory } from '@/types/gameUpdate';
+import type { UpdateCategory, UpdateSubEvent } from '@/types/gameUpdate';
 import type { TranslationKey } from '@/i18n';
 import { BurstIcon, GaugeIcon, ShieldIcon, SparklesIcon } from '@/components/common/icons';
 
@@ -32,10 +32,27 @@ export function formatUpdateDate(isoDate: string, locale: string): string {
   });
 }
 
-const BARE_DATE_RANGE_PATTERN = /^(\d{2}\/\d{2}\/\d{4})\s+(\d{2}\/\d{2}\/\d{4})$/;
+function formatShortDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-');
+  return `${day}/${month}/${year}`;
+}
 
-/** Normalizes a "DD/MM/YYYY DD/MM/YYYY" sub-event range (space-separated, as some entries were entered) into "DD/MM/YYYY - DD/MM/YYYY" — leaves single dates or already-dashed ranges untouched. */
-export function formatEventDateRange(dateRange: string): string {
-  const match = dateRange.match(BARE_DATE_RANGE_PATTERN);
-  return match ? `${match[1]} - ${match[2]}` : dateRange;
+/** Renders a sub-event's `startDate`/`endDate` as "DD/MM/YYYY - DD/MM/YYYY", or a single date when they match. */
+export function formatEventDateRange(startDate: string, endDate: string): string {
+  const start = formatShortDate(startDate);
+  const end = formatShortDate(endDate);
+  return start === end ? start : `${start} - ${end}`;
+}
+
+export type EventStatus = 'expired' | 'ongoing' | 'upcoming';
+
+/** Returns undefined for sub-events that don't have both `startDate` and `endDate` set. */
+export function getEventStatus(event: UpdateSubEvent, now: Date = new Date()): EventStatus | undefined {
+  if (!event.startDate || !event.endDate) return undefined;
+  const start = new Date(`${event.startDate}T00:00:00`);
+  const end = new Date(`${event.endDate}T23:59:59`);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return undefined;
+  if (now > end) return 'expired';
+  if (now < start) return 'upcoming';
+  return 'ongoing';
 }

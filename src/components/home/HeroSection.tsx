@@ -11,7 +11,7 @@ import {
 } from '@/utils/releaseSchedule';
 import { RARITY_ORDER, RARITY_STYLES } from '@/utils/rarity';
 import { CharacterPortrait } from '@/components/character/CharacterPortrait';
-import { ArrowRightIcon } from '@/components/common/icons';
+import { AlertTriangleIcon, ArrowRightIcon } from '@/components/common/icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCharacters } from '@/hooks/useCharacters';
 import { useCharacterIntel } from '@/hooks/useCharacterIntel';
@@ -143,18 +143,32 @@ export function HeroSection() {
         {latestRumor && (
           <Link
             to={`/intel/${latestRumor.slug}`}
-            className={`group mb-8 inline-flex w-fit max-w-full flex-wrap items-center gap-2.5 rounded-2xl border border-accent/30 bg-accent/10 py-2 pl-2.5 pr-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/15 ${reveal(0).className}`}
+            className={`group relative mb-8 inline-flex w-fit max-w-full overflow-hidden rounded-md border-2 border-accent bg-canvas/90 shadow-[0_4px_0_rgba(0,0,0,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_0_rgba(0,0,0,0.4)] ${reveal(0).className}`}
             style={reveal(0).style}
           >
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+            <span
+              aria-hidden="true"
+              className={`absolute inset-x-0 top-0 h-1.5 ${reducedMotion ? '' : 'animate-hazard-scroll'}`}
+              style={{
+                backgroundImage: 'repeating-linear-gradient(-45deg, var(--color-accent) 0 7px, var(--color-canvas) 7px 14px)',
+              }}
+            />
+            <span
+              aria-hidden="true"
+              className={`absolute inset-x-0 bottom-0 h-1.5 ${reducedMotion ? '' : 'animate-hazard-scroll'}`}
+              style={{
+                backgroundImage: 'repeating-linear-gradient(-45deg, var(--color-accent) 0 7px, var(--color-canvas) 7px 14px)',
+              }}
+            />
+
+            <span className="flex flex-wrap items-center gap-2.5 py-3.5 pl-3 pr-4">
+              <AlertTriangleIcon className="h-4 w-4 shrink-0 animate-pulse text-accent" />
+              <span className="comic-pill h-6 shrink-0 bg-accent px-2 text-[9px] text-canvas">{t('common.intel')}</span>
+              <span className="text-xs font-bold text-foreground sm:text-sm">
+                {t('home.hero.intelAlert')} <span className="text-accent">{latestRumor.characterName}</span>
+              </span>
+              <ArrowRightIcon className="h-3.5 w-3.5 shrink-0 text-accent transition-transform duration-200 group-hover:translate-x-1" />
             </span>
-            <span className="comic-pill h-6 shrink-0 bg-accent px-2 text-[9px] text-canvas">{t('common.intel')}</span>
-            <span className="text-xs font-semibold text-foreground sm:text-sm">
-              {t('home.hero.intelAlert')} <span className="text-accent">{latestRumor.characterName}</span>
-            </span>
-            <ArrowRightIcon className="h-3.5 w-3.5 shrink-0 text-accent transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         )}
 
