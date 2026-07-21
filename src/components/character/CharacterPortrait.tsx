@@ -9,6 +9,12 @@ interface CharacterPortraitProps {
   image?: string;
   className?: string;
   fit?: 'contain' | 'cover';
+  /** Fades the image's edges into whatever sits behind it (an inset, canvas-colored shadow) so
+      art reads as integrated into the card rather than a pasted rectangle — every source image
+      has its own background color/contrast, so this keeps the crop consistent regardless. Opt-in
+      since the character-detail hero/gallery already have their own edge treatment (full-bleed
+      background, framed gallery panel) that a vignette would fight with. */
+  vignette?: boolean;
 }
 
 export function CharacterPortrait({
@@ -17,6 +23,7 @@ export function CharacterPortrait({
   image,
   className = '',
   fit = 'contain',
+  vignette = false,
 }: CharacterPortraitProps) {
   const [hasError, setHasError] = useState(false);
 
@@ -27,6 +34,7 @@ export function CharacterPortrait({
   return (
     <div
       className={`flex shrink-0 items-center justify-center overflow-hidden border-2 bg-elevated transition-shadow duration-300 ${RARITY_STYLES[rarity]} ${className}`}
+      style={vignette ? { boxShadow: 'inset 0 0 2.5rem 1rem var(--color-canvas)' } : undefined}
     >
       <img
         src={image}

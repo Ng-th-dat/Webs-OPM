@@ -11,7 +11,7 @@ import {
   SERVER_STYLES,
   type SpotlightEntry,
 } from '@/utils/releaseSchedule';
-import { RARITY_ORDER, RARITY_STYLES } from '@/utils/rarity';
+import { RARITY_GLOW, RARITY_ORDER, RARITY_STYLES } from '@/utils/rarity';
 import { parseCharacterName } from '@/utils/characters';
 import { CharacterPortrait } from '@/components/character/CharacterPortrait';
 import { VortexRing } from './VortexRing';
@@ -36,7 +36,10 @@ const EMBERS = [
 
 /** Saitama's only current art asset is a 21.8MB animated GIF — far too heavy to sit above the fold. Excluded until a lighter asset exists. */
 const HERO_EXCLUDED_SLUGS = new Set(['saitama']);
-const PANEL_ROTATIONS = ['-6deg', '4deg', '-3deg', '5deg'];
+/** 4-directional outline + a soft drop shadow — keeps text overlaid on a spotlight card's
+    character art readable regardless of what's behind it, without a full opaque caption bar. */
+const OUTLINE_TEXT_SHADOW =
+  '-1px -1px 0 var(--color-canvas), 1px -1px 0 var(--color-canvas), -1px 1px 0 var(--color-canvas), 1px 1px 0 var(--color-canvas), 2px 2px 3px rgba(0,0,0,0.6)';
 const BADGE_ROTATIONS = ['-6deg', '5deg', '-4deg'];
 
 function HeroHeadline({ text, reducedMotion }: { text: string; reducedMotion: boolean }) {
@@ -106,21 +109,15 @@ function SpotlightCard({
   reveal: (delayMs: number, animationClass?: string) => { className: string; style?: CSSProperties };
   t: (key: TranslationKey, vars?: Record<string, string | number>) => string;
 }) {
-  const rotateDeg = PANEL_ROTATIONS[index % PANEL_ROTATIONS.length];
   const panelReveal = reveal(360 + index * 120, 'animate-panel-slam');
   const { title, mainName } = parseCharacterName(entry.characterName);
+  const glowStyle = { '--card-glow': RARITY_GLOW[entry.rarity] } as CSSProperties;
 
   return (
     <Link
       to={`/characters/${entry.characterSlug}`}
-      className={`group comic-panel-torn relative block border-4 bg-surface p-1 shadow-[6px_6px_0_rgba(0,0,0,0.35)] ${RARITY_STYLES[entry.rarity]} ${panelReveal.className}`}
-      style={
-        {
-          ...panelReveal.style,
-          '--slam-rotate': rotateDeg,
-          ...(reducedMotion ? { transform: `rotate(${rotateDeg})` } : {}),
-        } as CSSProperties
-      }
+      className={`group relative block overflow-hidden rounded-card border-2 border-border bg-surface transition duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_20px_45px_-18px_var(--card-glow)] ${RARITY_STYLES[entry.rarity]} ${panelReveal.className}`}
+      style={{ ...glowStyle, ...panelReveal.style }}
     >
       <div className="absolute left-1.5 top-1.5 z-10 flex gap-1">
         <span
@@ -140,8 +137,17 @@ function SpotlightCard({
           rarity={entry.rarity}
           image={entry.image}
           fit="cover"
-          className="aspect-[3/4] w-full text-lg"
+          vignette
+          className="aspect-[1080/512] w-full text-lg"
         />
+
+        {/* Bottom scrim so the overlaid name stays legible over any character art, bright or dark. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3"
+          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.5) 45%, transparent 100%)' }}
+        />
+
         {!reducedMotion && (
           <span
             aria-hidden="true"
@@ -151,19 +157,29 @@ function SpotlightCard({
             }}
           />
         )}
-      </div>
-      <div className="mt-1">
-        {title && (
-          <p className="truncate text-center text-[7px] font-bold uppercase tracking-wider text-accent-secondary/90">
-            {title}
+
+        <div className="absolute inset-x-0 bottom-0 z-20 px-1.5 pb-1.5">
+          {title && (
+            <p
+              className="truncate text-[7px] font-bold uppercase tracking-wider text-accent-secondary"
+              style={{ textShadow: OUTLINE_TEXT_SHADOW }}
+            >
+              {title}
+            </p>
+          )}
+          <p
+            className="truncate text-[11px] font-extrabold uppercase italic leading-tight tracking-wide text-white"
+            style={{ textShadow: OUTLINE_TEXT_SHADOW }}
+          >
+            {mainName}
           </p>
-        )}
-        <p className="truncate text-center text-[10px] font-bold uppercase tracking-wide text-foreground">
-          {mainName}
-        </p>
-        <p className="truncate text-center text-[9px] font-medium uppercase tracking-wide text-subtle">
-          {t(RELEASE_TIMING_LABEL_KEYS[entry.timing])}
-        </p>
+          <p
+            className="truncate text-[8px] font-semibold uppercase tracking-wide text-white/80"
+            style={{ textShadow: OUTLINE_TEXT_SHADOW }}
+          >
+            {t(RELEASE_TIMING_LABEL_KEYS[entry.timing])}
+          </p>
+        </div>
       </div>
     </Link>
   );
@@ -316,7 +332,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xs lg:max-w-[330px]">
+          <div className="relative mx-auto w-full max-w-sm lg:max-w-[480px]">
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 rounded-full blur-[90px] lg:hidden"
@@ -333,7 +349,7 @@ export function HeroSection() {
               </span>
             </div>
 
-            <div className={`relative flex flex-col gap-2 ${reducedMotion ? '' : 'animate-float-slow'}`}>
+            <div className={`relative grid grid-cols-2 gap-3 ${reducedMotion ? '' : 'animate-float-slow'}`}>
               {cnSpotlight.length > 0 && (
                 <div className="flex flex-col gap-2">
                   <span
@@ -341,7 +357,7 @@ export function HeroSection() {
                   >
                     {t(SERVER_LABEL_KEYS.CN)}
                   </span>
-                  <div className="grid grid-cols-2 items-start gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-1 gap-2">
                     {cnSpotlight.map(({ entry, index }) => (
                       <SpotlightCard key={entry.key} entry={entry} index={index} reducedMotion={reducedMotion} reveal={reveal} t={t} />
                     ))}
@@ -356,7 +372,7 @@ export function HeroSection() {
                   >
                     {t(SERVER_LABEL_KEYS.SEA)}
                   </span>
-                  <div className="grid grid-cols-2 items-start gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-1 gap-2">
                     {seaSpotlight.map(({ entry, index }) => (
                       <SpotlightCard key={entry.key} entry={entry} index={index} reducedMotion={reducedMotion} reveal={reveal} t={t} />
                     ))}

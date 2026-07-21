@@ -216,7 +216,10 @@ export function getCurrentMonthSpotlightEntries(characters: Character[]): Spotli
     }
   }
 
-  return entries.sort((a, b) => SPOTLIGHT_SERVER_ORDER[a.server] - SPOTLIGHT_SERVER_ORDER[b.server]);
+  return entries.sort((a, b) => {
+    const serverDiff = SPOTLIGHT_SERVER_ORDER[a.server] - SPOTLIGHT_SERVER_ORDER[b.server];
+    return serverDiff !== 0 ? serverDiff : a.date.getTime() - b.date.getTime();
+  });
 }
 
 /**

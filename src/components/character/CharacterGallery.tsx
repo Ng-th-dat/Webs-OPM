@@ -33,7 +33,7 @@ export function CharacterGallery({ characterName, images, rarity }: CharacterGal
         {t('characterDetail.gallery')}
       </h2>
 
-      <div style={glowStyle} className="relative mx-auto w-full max-w-sm sm:max-w-md">
+      <div style={glowStyle} className="relative w-full">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -inset-8 rounded-[2.5rem] opacity-70 blur-3xl"
@@ -45,7 +45,7 @@ export function CharacterGallery({ characterName, images, rarity }: CharacterGal
               src={images[activeIndex]}
               alt={characterName}
               loading="lazy"
-              className="aspect-[3/4] w-full object-cover"
+              className="aspect-[1080/512] w-full object-cover"
             />
             <div
               aria-hidden="true"

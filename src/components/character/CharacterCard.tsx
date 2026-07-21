@@ -17,7 +17,7 @@ export function CharacterCard({ character }: CharacterCardProps) {
     <Link
       to={`/characters/${character.slug}`}
       style={glowStyle}
-      className="group relative flex aspect-[3/4] w-full overflow-hidden rounded-card border-2 border-border bg-canvas p-1 transition duration-300 hover:-translate-y-1 hover:rotate-1 hover:border-accent/40 hover:shadow-[0_20px_45px_-18px_var(--card-glow)]"
+      className="group relative flex aspect-[1080/512] w-full overflow-hidden rounded-card border-2 border-border bg-canvas p-1 transition duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_20px_45px_-18px_var(--card-glow)]"
     >
       <div
         className={`relative flex h-full w-full flex-1 flex-col overflow-hidden rounded-[10px] border ${RARITY_STYLES[character.rarity]}`}
@@ -27,6 +27,7 @@ export function CharacterCard({ character }: CharacterCardProps) {
           rarity={character.rarity}
           image={character.image}
           fit="cover"
+          vignette
           className="absolute inset-0 h-full w-full rounded-none border-0 text-6xl"
         />
 
@@ -48,13 +49,13 @@ export function CharacterCard({ character }: CharacterCardProps) {
         {/* -webkit-line-clamp stops truncating once its element is blockified as a flex item
             (Chromium reports its display as flow-root instead of -webkit-box) — the wrapper div
             takes the mt-auto/flex-item role so the clamped h3 stays a plain block child. */}
-        <div className="relative mt-auto flex flex-col gap-0.5 px-3 py-2.5 sm:px-3.5 sm:py-3">
+        <div className="relative mt-auto flex flex-col gap-0.5 px-3 py-2 sm:px-3.5 sm:py-2.5">
           {title && (
             <span className="truncate text-[9px] font-bold uppercase tracking-wider text-accent-secondary/90">
               {title}
             </span>
           )}
-          <h3 className="line-clamp-2 text-sm font-extrabold italic uppercase leading-tight tracking-wide text-foreground sm:text-base lg:text-lg">
+          <h3 className="truncate text-sm font-extrabold italic uppercase leading-tight tracking-wide text-foreground sm:text-base lg:text-lg">
             {mainName}
           </h3>
         </div>
